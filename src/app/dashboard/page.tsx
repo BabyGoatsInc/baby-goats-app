@@ -1,0 +1,541 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabaseClient'
+import { User } from '@supabase/supabase-js'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import Link from 'next/link'
+
+interface Profile {
+  id: string
+  full_name: string
+  sport: string
+  grad_year: number | null
+  hero_name: string | null
+  hero_reason: string | null
+  age: number | null
+  team_name: string | null
+  jersey_number: string | null
+  is_parent_approved: boolean
+  created_at: string
+}
+
+interface Highlight {
+  id: string
+  title: string
+  video_url: string
+  description: string | null
+  likes_count: number
+  created_at: string
+}
+
+interface Stat {
+  id: string
+  stat_name: string
+  value: number
+  unit: string | null
+  category: string
+}
+
+interface Challenge {
+  id: string
+  title: string
+  description: string
+  category: string
+  difficulty: string
+  points: number
+}
+
+interface ChallengeCompletion {
+  challenge_id: string
+  completed_at: string
+}
+
+export default function DashboardPage() {
+  const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [highlights, setHighlights] = useState<Highlight[]>([])
+  const [stats, setStats] = useState<Stat[]>([])
+  const [todayChallenge, setTodayChallenge] = useState<Challenge | null>(null)
+  const [completedToday, setCompletedToday] = useState<ChallengeCompletion[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showAddHighlight, setShowAddHighlight] = useState(false)
+  const [showAddStat, setShowAddStat] = useState(false)
+  const [highlightForm, setHighlightForm] = useState({ title: '', video_url: '', description: '' })
+  const [statForm, setStatForm] = useState({ stat_name: '', value: 0, unit: '', category: 'performance' })
+
+  useEffect(() => {
+    const checkUserAndProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) {
+        window.location.href = '/'
+        return
+      }
+
+      setUser(session.user)
+
+      // Get user profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single()
+
+      if (!profileData) {
+        window.location.href = '/onboarding'
+        return
+      }
+
+      setProfile(profileData)
+
+      // Get user highlights
+      const { data: highlightsData } = await supabase
+        .from('highlights')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false })
+
+      setHighlights(highlightsData || [])
+
+      // Get user stats
+      const { data: statsData } = await supabase
+        .from('stats')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false })
+
+      setStats(statsData || [])
+
+      // Get today's challenge
+      const { data: challengeData } = await supabase
+        .from('challenges')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      if (challengeData && challengeData.length > 0) {
+        setTodayChallenge(challengeData[0])
+      }
+
+      // Check if user completed today's challenge
+      const today = new Date().toDateString()
+      const { data: completionsData } = await supabase
+        .from('challenge_completions')
+        .select('challenge_id, completed_at')
+        .eq('user_id', session.user.id)
+        .gte('completed_at', new Date(today).toISOString())
+
+      setCompletedToday(completionsData || [])
+      setLoading(false)
+    }
+
+    checkUserAndProfile()
+  }, [])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
+
+  const addHighlight = async () => {
+    if (!user || !highlightForm.title.trim() || !highlightForm.video_url.trim()) return
+
+    const { error } = await supabase
+      .from('highlights')
+      .insert({
+        user_id: user.id,
+        title: highlightForm.title,
+        video_url: highlightForm.video_url,
+        description: highlightForm.description
+      })
+
+    if (!error) {
+      // Refresh highlights
+      const { data: highlightsData } = await supabase
+        .from('highlights')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+
+      setHighlights(highlightsData || [])
+      setHighlightForm({ title: '', video_url: '', description: '' })
+      setShowAddHighlight(false)
+    }
+  }
+
+  const addStat = async () => {
+    if (!user || !statForm.stat_name.trim()) return
+
+    const { error } = await supabase
+      .from('stats')
+      .insert({
+        user_id: user.id,
+        stat_name: statForm.stat_name,
+        value: statForm.value,
+        unit: statForm.unit,
+        category: statForm.category
+      })
+
+    if (!error) {
+      // Refresh stats
+      const { data: statsData } = await supabase
+        .from('stats')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+
+      setStats(statsData || [])
+      setStatForm({ stat_name: '', value: 0, unit: '', category: 'performance' })
+      setShowAddStat(false)
+    }
+  }
+
+  const completeChallenge = async () => {
+    if (!user || !todayChallenge) return
+
+    const { error } = await supabase
+      .from('challenge_completions')
+      .insert({
+        user_id: user.id,
+        challenge_id: todayChallenge.id,
+        notes: 'Completed from dashboard'
+      })
+
+    if (!error) {
+      // Refresh completions
+      const today = new Date().toDateString()
+      const { data: completionsData } = await supabase
+        .from('challenge_completions')
+        .select('challenge_id, completed_at')
+        .eq('user_id', user.id)
+        .gte('completed_at', new Date(today).toISOString())
+
+      setCompletedToday(completionsData || [])
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading your dashboard...</div>
+      </div>
+    )
+  }
+
+  const isChallengeCompleted = todayChallenge && completedToday.some(c => c.challenge_id === todayChallenge.id)
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link href="/" className="text-2xl font-bold text-baby-goats-black">
+              BABY GOATS
+            </Link>
+            <div className="flex items-center space-x-4">
+              <Link href="/challenges">
+                <Button variant="outline">Challenges</Button>
+              </Link>
+              <Link href="/discover">
+                <Button variant="outline">Discover</Button>
+              </Link>
+              <Link href={`/profile/${profile?.id}`}>
+                <Button variant="outline">My Profile</Button>
+              </Link>
+              <Button variant="outline" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-baby-goats-black mb-2">
+            Welcome back, {profile?.full_name}! 🐐
+          </h1>
+          <p className="text-gray-600">
+            Ready to build your legacy today?
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Profile Summary & Actions */}
+          <div className="space-y-6">
+            {/* Profile Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Profile</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <p><strong>Sport:</strong> {profile?.sport}</p>
+                  <p><strong>Class of:</strong> {profile?.grad_year}</p>
+                  {profile?.team_name && <p><strong>Team:</strong> {profile.team_name}</p>}
+                  {profile?.jersey_number && <p><strong>Jersey:</strong> #{profile.jersey_number}</p>}
+                  {profile?.hero_name && (
+                    <div>
+                      <p><strong>Hero:</strong> {profile.hero_name}</p>
+                      {profile.hero_reason && (
+                        <p className="text-sm text-gray-600 mt-1">{profile.hero_reason}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button 
+                  variant="babygoats" 
+                  className="w-full"
+                  onClick={() => setShowAddHighlight(true)}
+                >
+                  Add Highlight
+                </Button>
+                <Button 
+                  variant="babygoats-outline" 
+                  className="w-full"
+                  onClick={() => setShowAddStat(true)}
+                >
+                  Update Stats
+                </Button>
+                <Link href="/challenges">
+                  <Button variant="outline" className="w-full">
+                    View All Challenges
+                  </Button>
+                </Link>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    const shareUrl = `${window.location.origin}/profile/${profile?.id}`
+                    navigator.clipboard.writeText(shareUrl)
+                    alert('Profile link copied to clipboard!')
+                  }}
+                >
+                  Share Profile
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Middle Column - Today's Challenge */}
+          <div className="space-y-6">
+            {/* Today's Challenge */}
+            {todayChallenge && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Today's Challenge</CardTitle>
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold text-white ${
+                      todayChallenge.category === 'resilient' ? 'bg-red-600' :
+                      todayChallenge.category === 'relentless' ? 'bg-gray-900' :
+                      'bg-gray-600'
+                    }`}>
+                      {todayChallenge.category.toUpperCase()}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      {todayChallenge.points} points
+                    </span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <h3 className="font-bold mb-2">{todayChallenge.title}</h3>
+                  <p className="text-gray-600 mb-4">{todayChallenge.description}</p>
+                  {isChallengeCompleted ? (
+                    <div className="flex items-center text-green-600 font-bold">
+                      ✅ Completed Today!
+                    </div>
+                  ) : (
+                    <Button variant="babygoats" onClick={completeChallenge}>
+                      Mark Complete
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Recent Stats */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Stats</CardTitle>
+                <CardDescription>Track your performance metrics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {stats.length === 0 ? (
+                  <p className="text-gray-500">No stats yet. Add your first stat!</p>
+                ) : (
+                  <div className="space-y-2">
+                    {stats.slice(0, 5).map((stat) => (
+                      <div key={stat.id} className="flex justify-between">
+                        <span>{stat.stat_name}:</span>
+                        <span className="font-bold">{stat.value}{stat.unit}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - Highlights */}
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Highlights</CardTitle>
+                <CardDescription>Showcase your best moments</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {highlights.length === 0 ? (
+                  <p className="text-gray-500">No highlights yet. Add your first highlight!</p>
+                ) : (
+                  <div className="space-y-4">
+                    {highlights.slice(0, 3).map((highlight) => (
+                      <div key={highlight.id} className="border rounded-lg p-3">
+                        <h4 className="font-bold text-sm">{highlight.title}</h4>
+                        {highlight.description && (
+                          <p className="text-xs text-gray-600 mt-1">{highlight.description}</p>
+                        )}
+                        <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
+                          <span>❤️ {highlight.likes_count}</span>
+                          <span>{new Date(highlight.created_at).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Add Highlight Modal */}
+        {showAddHighlight && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle>Add New Highlight</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="highlight_title">Title</Label>
+                  <Input
+                    id="highlight_title"
+                    value={highlightForm.title}
+                    onChange={(e) => setHighlightForm(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="e.g., 'Game winning shot'"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="highlight_url">Video URL</Label>
+                  <Input
+                    id="highlight_url"
+                    value={highlightForm.video_url}
+                    onChange={(e) => setHighlightForm(prev => ({ ...prev, video_url: e.target.value }))}
+                    placeholder="YouTube, Vimeo, or video file URL"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="highlight_desc">Description (Optional)</Label>
+                  <textarea
+                    id="highlight_desc"
+                    value={highlightForm.description}
+                    onChange={(e) => setHighlightForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Tell us about this moment..."
+                    className="w-full p-2 border rounded-md"
+                    rows={3}
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setShowAddHighlight(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="babygoats" onClick={addHighlight}>
+                    Add Highlight
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Add Stat Modal */}
+        {showAddStat && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader>
+                <CardTitle>Add New Stat</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="stat_name">Stat Name</Label>
+                  <Input
+                    id="stat_name"
+                    value={statForm.stat_name}
+                    onChange={(e) => setStatForm(prev => ({ ...prev, stat_name: e.target.value }))}
+                    placeholder="e.g., 'Points Per Game', 'Vertical Jump'"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label htmlFor="stat_value">Value</Label>
+                    <Input
+                      id="stat_value"
+                      type="number"
+                      step="0.1"
+                      value={statForm.value}
+                      onChange={(e) => setStatForm(prev => ({ ...prev, value: parseFloat(e.target.value) }))}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="stat_unit">Unit</Label>
+                    <Input
+                      id="stat_unit"
+                      value={statForm.unit}
+                      onChange={(e) => setStatForm(prev => ({ ...prev, unit: e.target.value }))}
+                      placeholder="PPG, inches, %"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="stat_category">Category</Label>
+                  <select
+                    id="stat_category"
+                    value={statForm.category}
+                    onChange={(e) => setStatForm(prev => ({ ...prev, category: e.target.value }))}
+                    className="w-full p-2 border rounded-md"
+                  >
+                    <option value="performance">Performance</option>
+                    <option value="physical">Physical</option>
+                    <option value="academic">Academic</option>
+                  </select>
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button variant="outline" onClick={() => setShowAddStat(false)}>
+                    Cancel
+                  </Button>
+                  <Button variant="babygoats" onClick={addStat}>
+                    Add Stat
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
