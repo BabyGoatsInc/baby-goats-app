@@ -106,10 +106,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify user exists and is approved
+    // Verify user exists (simplified - no parent approval check for now)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, is_parent_approved')
+      .select('id')
       .eq('id', body.user_id)
       .single()
 
@@ -117,13 +117,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
-      )
-    }
-
-    if (!profile.is_parent_approved) {
-      return NextResponse.json(
-        { error: 'User not approved to complete challenges' },
-        { status: 403 }
       )
     }
 
@@ -203,107 +196,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Challenge completion API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
-
-// GET /api/challenges/user-stats - Get user challenge statistics
-export async function GET_USER_STATS(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('user_id')
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'user_id is required' },
-        { status: 400 }
-      )
-    }
-
-    // Get completion stats by category
-    const { data: completions, error } = await supabase
-      .from('challenge_completions')
-      .select(`
-        *,
-        challenges!challenge_completions_challenge_id_fkey (
-          category,
-          points,
-          difficulty
-        )
-      `)
-      .eq('user_id', userId)
-
-    if (error) {
-      console.error('Error fetching user challenge stats:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch challenge statistics' },
-        { status: 500 }
-      )
-    }
-
-    // Calculate statistics
-    const stats = {
-      total_completed: completions?.length || 0,
-      total_points: completions?.reduce((sum, c) => sum + (c.challenges?.points || 0), 0) || 0,
-      categories: {} as Record<string, {
-        completed: number,
-        points: number,
-        streak: number
-      }>,
-      streak: 0,
-      recent_completions: completions?.slice(-5) || []
-    }
-
-    // Calculate category stats
-    completions?.forEach(completion => {
-      const category = completion.challenges?.category || 'Unknown'
-      if (!stats.categories[category]) {
-        stats.categories[category] = {
-          completed: 0,
-          points: 0,
-          streak: 0
-        }
-      }
-      
-      stats.categories[category].completed += 1
-      stats.categories[category].points += completion.challenges?.points || 0
-    })
-
-    // Calculate current streak (simplified - consecutive days with completions)
-    if (completions && completions.length > 0) {
-      const sortedCompletions = completions
-        .sort((a, b) => new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime())
-      
-      const today = new Date()
-      const yesterday = new Date(today)
-      yesterday.setDate(yesterday.getDate() - 1)
-      
-      let streakDays = 0
-      let currentDate = today
-      
-      for (const completion of sortedCompletions) {
-        const completionDate = new Date(completion.completed_at)
-        const completionDay = new Date(completionDate.getFullYear(), completionDate.getMonth(), completionDate.getDate())
-        const currentDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
-        
-        if (completionDay.getTime() === currentDay.getTime()) {
-          streakDays++
-          currentDate.setDate(currentDate.getDate() - 1)
-        } else {
-          break
-        }
-      }
-      
-      stats.streak = streakDays
-    }
-
-    return NextResponse.json({ stats })
-
-  } catch (error) {
-    console.error('Challenge user stats API error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

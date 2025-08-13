@@ -87,10 +87,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify user exists and is approved
+    // Verify user exists (simplified - no parent approval check for now)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, is_parent_approved')
+      .select('id')
       .eq('id', body.user_id)
       .single()
 
@@ -98,13 +98,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
-      )
-    }
-
-    if (!profile.is_parent_approved) {
-      return NextResponse.json(
-        { error: 'User not approved to create stats' },
-        { status: 403 }
       )
     }
 
@@ -182,159 +175,6 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Stat POST API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
-
-// PUT /api/stats/[id] - Update specific stat by ID
-export async function PUT(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { id, ...updateData } = body
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Stat ID is required' },
-        { status: 400 }
-      )
-    }
-
-    const { data: stat, error } = await supabase
-      .from('stats')
-      .update(updateData)
-      .eq('id', id)
-      .select(`
-        *,
-        profiles!stats_user_id_fkey (
-          id,
-          full_name,
-          sport,
-          avatar_url
-        )
-      `)
-      .single()
-
-    if (error) {
-      console.error('Error updating stat:', error)
-      return NextResponse.json(
-        { error: 'Failed to update stat' },
-        { status: 500 }
-      )
-    }
-
-    if (!stat) {
-      return NextResponse.json(
-        { error: 'Stat not found' },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json({ stat })
-
-  } catch (error) {
-    console.error('Stat PUT API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
-
-// DELETE /api/stats/[id] - Delete stat
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const id = searchParams.get('id')
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Stat ID is required' },
-        { status: 400 }
-      )
-    }
-
-    const { error } = await supabase
-      .from('stats')
-      .delete()
-      .eq('id', id)
-
-    if (error) {
-      console.error('Error deleting stat:', error)
-      return NextResponse.json(
-        { error: 'Failed to delete stat' },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ message: 'Stat deleted successfully' })
-
-  } catch (error) {
-    console.error('Stat DELETE API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
-
-// GET /api/stats/summary - Get user stats summary
-export async function GET_SUMMARY(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('user_id')
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'user_id is required' },
-        { status: 400 }
-      )
-    }
-
-    const { data: stats, error } = await supabase
-      .from('stats')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching user stats summary:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch stats summary' },
-        { status: 500 }
-      )
-    }
-
-    // Group stats by category
-    const summary = stats?.reduce((acc, stat) => {
-      if (!acc[stat.category]) {
-        acc[stat.category] = []
-      }
-      acc[stat.category].push({
-        id: stat.id,
-        name: stat.stat_name,
-        value: stat.value,
-        unit: stat.unit,
-        created_at: stat.created_at
-      })
-      return acc
-    }, {} as Record<string, Array<{
-      id: string,
-      name: string,
-      value: number,
-      unit: string | null,
-      created_at: string
-    }>>) || {}
-
-    return NextResponse.json({ 
-      summary,
-      total_stats: stats?.length || 0
-    })
-
-  } catch (error) {
-    console.error('Stats summary API error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

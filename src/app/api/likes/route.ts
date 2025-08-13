@@ -18,10 +18,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify user exists and is approved
+    // Verify user exists (simplified - no parent approval check for now)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, is_parent_approved')
+      .select('id')
       .eq('id', body.user_id)
       .single()
 
@@ -29,13 +29,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
-      )
-    }
-
-    if (!profile.is_parent_approved) {
-      return NextResponse.json(
-        { error: 'User not approved to like highlights' },
-        { status: 403 }
       )
     }
 
@@ -186,41 +179,6 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Likes GET API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
-
-// GET /api/likes/check - Check if user has liked a highlight
-export async function GET_CHECK(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('user_id')
-    const highlightId = searchParams.get('highlight_id')
-
-    if (!userId || !highlightId) {
-      return NextResponse.json(
-        { error: 'user_id and highlight_id are required' },
-        { status: 400 }
-      )
-    }
-
-    const { data: like } = await supabase
-      .from('likes')
-      .select('created_at')
-      .eq('user_id', userId)
-      .eq('highlight_id', highlightId)
-      .single()
-
-    return NextResponse.json({ 
-      liked: !!like,
-      liked_at: like?.created_at || null
-    })
-
-  } catch (error) {
-    console.error('Like check API error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
