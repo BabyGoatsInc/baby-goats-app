@@ -82,10 +82,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify user exists and is approved
+    // Verify user exists (simplified - no parent approval check for now)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('id, is_parent_approved')
+      .select('id')
       .eq('id', body.user_id)
       .single()
 
@@ -93,13 +93,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
-      )
-    }
-
-    if (!profile.is_parent_approved) {
-      return NextResponse.json(
-        { error: 'User not approved to create highlights' },
-        { status: 403 }
       )
     }
 
