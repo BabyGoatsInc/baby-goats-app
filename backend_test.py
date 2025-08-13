@@ -17,7 +17,7 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-# Test data
+# Test data - using realistic data for Baby Goats app
 TEST_USER_ID = str(uuid.uuid4())
 TEST_HIGHLIGHT_ID = str(uuid.uuid4())
 TEST_CHALLENGE_ID = str(uuid.uuid4())
