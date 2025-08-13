@@ -8,6 +8,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
+import { 
+  highlightsApi, 
+  statsApi, 
+  challengesApi, 
+  handleApiError, 
+  handleApiSuccess 
+} from '@/lib/api'
 
 interface Profile {
   id: string
@@ -47,6 +54,8 @@ interface Challenge {
   category: string
   difficulty: string
   points: number
+  completed?: boolean
+  completion?: any
 }
 
 interface ChallengeCompletion {
@@ -60,12 +69,13 @@ export default function DashboardPage() {
   const [highlights, setHighlights] = useState<Highlight[]>([])
   const [stats, setStats] = useState<Stat[]>([])
   const [todayChallenge, setTodayChallenge] = useState<Challenge | null>(null)
-  const [completedToday, setCompletedToday] = useState<ChallengeCompletion[]>([])
+  const [challengeStats, setChallengeStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [showAddHighlight, setShowAddHighlight] = useState(false)
   const [showAddStat, setShowAddStat] = useState(false)
   const [highlightForm, setHighlightForm] = useState({ title: '', video_url: '', description: '' })
   const [statForm, setStatForm] = useState({ stat_name: '', value: 0, unit: '', category: 'performance' })
+  const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     const checkUserAndProfile = async () => {
@@ -91,50 +101,68 @@ export default function DashboardPage() {
 
       setProfile(profileData)
 
-      // Get user highlights
-      const { data: highlightsData } = await supabase
-        .from('highlights')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
+      // Load data using API endpoints
+      await Promise.all([
+        loadHighlights(session.user.id),
+        loadStats(session.user.id),
+        loadTodayChallenge(session.user.id),
+        loadChallengeStats(session.user.id)
+      ])
 
-      setHighlights(highlightsData || [])
-
-      // Get user stats
-      const { data: statsData } = await supabase
-        .from('stats')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false })
-
-      setStats(statsData || [])
-
-      // Get today's challenge
-      const { data: challengeData } = await supabase
-        .from('challenges')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(1)
-
-      if (challengeData && challengeData.length > 0) {
-        setTodayChallenge(challengeData[0])
-      }
-
-      // Check if user completed today's challenge
-      const today = new Date().toDateString()
-      const { data: completionsData } = await supabase
-        .from('challenge_completions')
-        .select('challenge_id, completed_at')
-        .eq('user_id', session.user.id)
-        .gte('completed_at', new Date(today).toISOString())
-
-      setCompletedToday(completionsData || [])
       setLoading(false)
     }
 
     checkUserAndProfile()
   }, [])
+
+  const loadHighlights = async (userId: string) => {
+    const { data, error } = await highlightsApi.getHighlights({ 
+      user_id: userId, 
+      limit: 5 
+    })
+    
+    if (error) {
+      handleApiError(error, 'Failed to load highlights')
+    } else if (data) {
+      setHighlights(data.highlights)
+    }
+  }
+
+  const loadStats = async (userId: string) => {
+    const { data, error } = await statsApi.getStats({ 
+      user_id: userId, 
+      limit: 10 
+    })
+    
+    if (error) {
+      handleApiError(error, 'Failed to load stats')
+    } else if (data) {
+      setStats(data.stats)
+    }
+  }
+
+  const loadTodayChallenge = async (userId: string) => {
+    const { data, error } = await challengesApi.getChallenges({ 
+      user_id: userId, 
+      limit: 1 
+    })
+    
+    if (error) {
+      handleApiError(error, 'Failed to load challenges')
+    } else if (data && data.challenges.length > 0) {
+      setTodayChallenge(data.challenges[0])
+    }
+  }
+
+  const loadChallengeStats = async (userId: string) => {
+    const { data, error } = await challengesApi.getChallengeStats(userId)
+    
+    if (error) {
+      console.error('Failed to load challenge stats:', error)
+    } else if (data) {
+      setChallengeStats(data.stats)
+    }
+  }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -142,80 +170,82 @@ export default function DashboardPage() {
   }
 
   const addHighlight = async () => {
-    if (!user || !highlightForm.title.trim() || !highlightForm.video_url.trim()) return
+    if (!user || !highlightForm.title.trim() || !highlightForm.video_url.trim()) {
+      alert('Please fill in all required fields')
+      return
+    }
 
-    const { error } = await supabase
-      .from('highlights')
-      .insert({
-        user_id: user.id,
-        title: highlightForm.title,
-        video_url: highlightForm.video_url,
-        description: highlightForm.description
-      })
+    setSubmitting(true)
 
-    if (!error) {
-      // Refresh highlights
-      const { data: highlightsData } = await supabase
-        .from('highlights')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+    const { data, error } = await highlightsApi.createHighlight({
+      user_id: user.id,
+      title: highlightForm.title,
+      video_url: highlightForm.video_url,
+      description: highlightForm.description || undefined
+    })
 
-      setHighlights(highlightsData || [])
+    if (error) {
+      handleApiError(error, 'Failed to add highlight')
+    } else if (data) {
+      handleApiSuccess('Highlight added successfully!')
+      await loadHighlights(user.id)
       setHighlightForm({ title: '', video_url: '', description: '' })
       setShowAddHighlight(false)
     }
+
+    setSubmitting(false)
   }
 
   const addStat = async () => {
-    if (!user || !statForm.stat_name.trim()) return
+    if (!user || !statForm.stat_name.trim()) {
+      alert('Please fill in all required fields')
+      return
+    }
 
-    const { error } = await supabase
-      .from('stats')
-      .insert({
-        user_id: user.id,
-        stat_name: statForm.stat_name,
-        value: statForm.value,
-        unit: statForm.unit,
-        category: statForm.category
-      })
+    setSubmitting(true)
 
-    if (!error) {
-      // Refresh stats
-      const { data: statsData } = await supabase
-        .from('stats')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
+    const { data, error } = await statsApi.createStat({
+      user_id: user.id,
+      stat_name: statForm.stat_name,
+      value: statForm.value,
+      unit: statForm.unit || undefined,
+      category: statForm.category
+    })
 
-      setStats(statsData || [])
+    if (error) {
+      handleApiError(error, 'Failed to add stat')
+    } else if (data) {
+      handleApiSuccess('Stat added successfully!')
+      await loadStats(user.id)
       setStatForm({ stat_name: '', value: 0, unit: '', category: 'performance' })
       setShowAddStat(false)
     }
+
+    setSubmitting(false)
   }
 
   const completeChallenge = async () => {
     if (!user || !todayChallenge) return
 
-    const { error } = await supabase
-      .from('challenge_completions')
-      .insert({
-        user_id: user.id,
-        challenge_id: todayChallenge.id,
-        notes: 'Completed from dashboard'
-      })
+    setSubmitting(true)
 
-    if (!error) {
-      // Refresh completions
-      const today = new Date().toDateString()
-      const { data: completionsData } = await supabase
-        .from('challenge_completions')
-        .select('challenge_id, completed_at')
-        .eq('user_id', user.id)
-        .gte('completed_at', new Date(today).toISOString())
+    const { data, error } = await challengesApi.completeChallenge({
+      user_id: user.id,
+      challenge_id: todayChallenge.id,
+      notes: 'Completed from dashboard'
+    })
 
-      setCompletedToday(completionsData || [])
+    if (error) {
+      handleApiError(error, 'Failed to complete challenge')
+    } else if (data) {
+      handleApiSuccess(`Challenge completed! +${data.points_earned} points`)
+      await Promise.all([
+        loadTodayChallenge(user.id),
+        loadChallengeStats(user.id)
+      ])
     }
+
+    setSubmitting(false)
   }
 
   if (loading) {
@@ -226,7 +256,7 @@ export default function DashboardPage() {
     )
   }
 
-  const isChallengeCompleted = todayChallenge && completedToday.some(c => c.challenge_id === todayChallenge.id)
+  const isChallengeCompleted = todayChallenge?.completed === true
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -302,6 +332,7 @@ export default function DashboardPage() {
                   variant="babygoats" 
                   className="w-full"
                   onClick={() => setShowAddHighlight(true)}
+                  disabled={submitting}
                 >
                   Add Highlight
                 </Button>
@@ -309,6 +340,7 @@ export default function DashboardPage() {
                   variant="babygoats-outline" 
                   className="w-full"
                   onClick={() => setShowAddStat(true)}
+                  disabled={submitting}
                 >
                   Update Stats
                 </Button>
@@ -330,6 +362,31 @@ export default function DashboardPage() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Challenge Stats */}
+            {challengeStats && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Challenge Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span>Current Streak:</span>
+                      <span className="font-bold text-baby-goats-red">{challengeStats.streak} days</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Total Points:</span>
+                      <span className="font-bold">{challengeStats.total_points}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Completed:</span>
+                      <span className="font-bold text-green-600">{challengeStats.total_completed}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Middle Column - Today's Challenge */}
@@ -360,8 +417,12 @@ export default function DashboardPage() {
                       ✅ Completed Today!
                     </div>
                   ) : (
-                    <Button variant="babygoats" onClick={completeChallenge}>
-                      Mark Complete
+                    <Button 
+                      variant="babygoats" 
+                      onClick={completeChallenge}
+                      disabled={submitting}
+                    >
+                      {submitting ? 'Completing...' : 'Mark Complete'}
                     </Button>
                   )}
                 </CardContent>
@@ -460,11 +521,19 @@ export default function DashboardPage() {
                   />
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setShowAddHighlight(false)}>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowAddHighlight(false)}
+                    disabled={submitting}
+                  >
                     Cancel
                   </Button>
-                  <Button variant="babygoats" onClick={addHighlight}>
-                    Add Highlight
+                  <Button 
+                    variant="babygoats" 
+                    onClick={addHighlight}
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Adding...' : 'Add Highlight'}
                   </Button>
                 </div>
               </CardContent>
@@ -524,11 +593,19 @@ export default function DashboardPage() {
                   </select>
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setShowAddStat(false)}>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowAddStat(false)}
+                    disabled={submitting}
+                  >
                     Cancel
                   </Button>
-                  <Button variant="babygoats" onClick={addStat}>
-                    Add Stat
+                  <Button 
+                    variant="babygoats" 
+                    onClick={addStat}
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Adding...' : 'Add Stat'}
                   </Button>
                 </div>
               </CardContent>
