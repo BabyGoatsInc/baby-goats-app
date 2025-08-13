@@ -34,9 +34,11 @@ export async function GET(request: NextRequest) {
       query = query.eq('user_id', userId)
     }
     
-    if (isFeatured !== null) {
-      query = query.eq('is_featured', isFeatured === 'true')
-    }
+    // Note: is_featured column doesn't exist in current database schema
+    // Commenting out until column is added
+    // if (isFeatured !== null) {
+    //   query = query.eq('is_featured', isFeatured === 'true')
+    // }
 
     // Apply pagination
     query = query.range(offset, offset + limit - 1)
