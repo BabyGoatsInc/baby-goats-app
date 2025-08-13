@@ -11,7 +11,7 @@ from datetime import datetime
 import time
 
 # Configuration
-BASE_URL = "https://youngchampions.preview.emergentagent.com/api"
+BASE_URL = "http://localhost:3002/api"
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
