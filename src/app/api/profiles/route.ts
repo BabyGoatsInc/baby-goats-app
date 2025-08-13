@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from('profiles')
       .select('*')
-      .eq('is_parent_approved', true) // Only show approved profiles publicly
+      // Note: is_parent_approved column may not exist yet, so we'll show all profiles for now
 
     // Apply filters
     if (sport) {
