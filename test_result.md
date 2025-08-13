@@ -192,12 +192,11 @@ test_plan:
   current_focus:
     - "Profiles API (/api/profiles)"
     - "Highlights API (/api/highlights)"
-    - "Challenges API (/api/challenges)"
-    - "Stats API (/api/stats)"
-    - "Likes API (/api/likes)"
-  stuck_tasks: []
-  test_all: true
-  test_priority: "high_first"
+  stuck_tasks:
+    - "Profiles API (/api/profiles)"
+    - "Highlights API (/api/highlights)"
+  test_all: false
+  test_priority: "stuck_first"
 
 agent_communication:
     - agent: "main"
