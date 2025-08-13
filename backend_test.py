@@ -136,17 +136,13 @@ class APITester:
                 response.json() if response else None
             )
 
-        # Test 4: POST create profile
+        # Test 4: POST create profile (using simplified schema)
         profile_data = {
             'id': TEST_USER_ID,
-            'full_name': 'Test Athlete Johnson',
+            'full_name': 'Alex Rodriguez',
             'sport': 'Soccer',
             'grad_year': 2026,
-            'age': 16,
-            'team_name': 'Test United FC',
-            'jersey_number': '10',
-            'parent_email': 'parent@test.com',
-            'is_parent_approved': True
+            'location': 'Los Angeles, CA'
         }
         
         response = self.make_request('POST', '/profiles', data=profile_data)
