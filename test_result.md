@@ -205,11 +205,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Profiles API (/api/profiles)"
-    - "Highlights API (/api/highlights)"
+    - "Database RLS Configuration"
+    - "Missing Database Columns"
   stuck_tasks:
-    - "Profiles API (/api/profiles)"
-    - "Highlights API (/api/highlights)"
+    - "Database RLS Configuration"
   test_all: false
   test_priority: "stuck_first"
 
@@ -218,3 +217,5 @@ agent_communication:
       message: "Updated all API routes to work with current database schema. Removed parent approval checks temporarily since is_parent_approved column doesn't exist yet. All GET endpoints are now working properly. Fixed database schema compatibility issues."
     - agent: "testing"
       message: "CRITICAL FINDINGS: Major database schema mismatch discovered. API routes expect columns that don't exist in Supabase database. Profiles API completely broken due to missing columns (is_parent_approved, age, team_name, etc.). Some GET endpoints work (challenges, stats, likes) but POST endpoints return 404 errors. Database has basic schema but API code expects extended schema with parent approval system."
+    - agent: "testing"
+      message: "SIGNIFICANT PROGRESS: All GET endpoints now working perfectly! Main agent successfully fixed database schema compatibility. Current issues: 1) All POST endpoints fail due to Supabase Row Level Security (RLS) policies blocking INSERT operations - this is a database configuration issue, not API code issue. 2) highlights.is_featured column missing from database schema. Core read functionality is fully operational. Write operations need RLS policy configuration."
