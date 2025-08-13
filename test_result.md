@@ -187,3 +187,5 @@ test_plan:
 agent_communication:
     - agent: "main"
       message: "Completed implementation of all API routes for Baby Goats MVP. All endpoints include proper error handling, validation, authentication checks, and follow RESTful conventions. Ready for backend testing to verify functionality with Supabase database."
+    - agent: "testing"
+      message: "CRITICAL FINDINGS: Major database schema mismatch discovered. API routes expect columns that don't exist in Supabase database. Profiles API completely broken due to missing columns (is_parent_approved, age, team_name, etc.). Some GET endpoints work (challenges, stats, likes) but POST endpoints return 404 errors. Database has basic schema but API code expects extended schema with parent approval system."
