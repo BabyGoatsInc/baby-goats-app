@@ -355,10 +355,14 @@ export default function DiscoverPage() {
             </div>
 
             {/* Load More Button */}
-            {profiles.length >= 20 && (
+            {hasMore && (
               <div className="text-center mt-8">
-                <Button variant="outline" onClick={searchProfiles}>
-                  Load More Athletes
+                <Button 
+                  variant="outline" 
+                  onClick={loadMore}
+                  disabled={searching}
+                >
+                  {searching ? 'Loading...' : 'Load More Athletes'}
                 </Button>
               </div>
             )}
