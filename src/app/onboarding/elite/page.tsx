@@ -228,6 +228,8 @@ export default function EliteOnboardingPage() {
   const shouldShowWelcome = !data.completed_steps.includes('welcome-future')
   const shouldShowSportSelection = data.completed_steps.includes('welcome-future') && 
                                   !data.completed_steps.includes('sport-selection')
+  const shouldShowExperienceLevel = data.completed_steps.includes('sport-selection') &&
+                                   !data.completed_steps.includes('experience-level')
 
   if (shouldShowWelcome) {
     return <WelcomeSequence onComplete={handleWelcomeComplete} />
@@ -235,6 +237,10 @@ export default function EliteOnboardingPage() {
 
   if (shouldShowSportSelection) {
     return <SportSelectionScreen onNext={handleSportSelectionComplete} />
+  }
+
+  if (shouldShowExperienceLevel) {
+    return <ExperienceLevelScreen onNext={handleExperienceLevelComplete} />
   }
 
   // For now, show placeholder for remaining steps
