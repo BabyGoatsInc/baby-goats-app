@@ -303,206 +303,181 @@ export default function DailyChallenges({ onBack }: { onBack?: () => void } = {}
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
-      <LinearGradient
-        colors={['#1a1a2e', '#16213e', '#0f3460']}
-        style={styles.gradient}
-      >
+      <Animated.View style={[styles.content, { opacity: animationValue }]}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Animated.View
-            style={[
-              styles.content,
-              {
-                opacity: animationValue,
-                transform: [{
-                  translateY: animationValue.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [50, 0]
-                  })
-                }]
-              }
-            ]}
-          >
-            {/* Header with Navigation */}
-            <View style={styles.headerNav}>
-              <TouchableOpacity 
-                onPress={() => {
-                  if (onBack) {
-                    onBack();
-                  } else {
-                    console.log('No back handler provided');
-                  }
-                }}
-                style={styles.backButton}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.backButtonText}>← Home</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.profileButton}
-                onPress={() => {
-                  console.log('Navigate to profile');
-                }}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.profileButtonText}>Profile</Text>
-              </TouchableOpacity>
-            </View>
+          {/* Elite Header */}
+          <View style={styles.header}>
+            <TouchableOpacity 
+              onPress={() => {
+                if (onBack) {
+                  onBack();
+                } else {
+                  console.log('No back handler provided');
+                }
+              }}
+              style={styles.backButton}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.backText}>←</Text>
+            </TouchableOpacity>
+            
+            <Text style={styles.headerTitle}>TRAINING PROTOCOLS</Text>
+            
+            <View style={styles.headerSpacer} />
+          </View>
 
-            {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.headerTitle}>Daily Challenge</Text>
-              <Text style={styles.headerSubtitle}>Build Your Champion Character</Text>
-            </View>
-
-            {/* Progress Stats */}
-            <View style={styles.statsContainer}>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{userProgress.currentStreak}</Text>
-                <Text style={styles.statLabel}>Current Streak</Text>
+          {/* Performance Status */}
+          <View style={styles.statusSection}>
+            <Text style={styles.statusLabel}>Current Status</Text>
+            <View style={styles.statusGrid}>
+              <View style={styles.statusItem}>
+                <Text style={styles.statusNumber}>{userProgress.currentStreak}</Text>
+                <Text style={styles.statusText}>Day Streak</Text>
               </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{userProgress.longestStreak}</Text>
-                <Text style={styles.statLabel}>Longest Streak</Text>
+              <View style={styles.statusDivider} />
+              <View style={styles.statusItem}>
+                <Text style={styles.statusNumber}>{userProgress.longestStreak}</Text>
+                <Text style={styles.statusText}>Peak Streak</Text>
               </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{userProgress.totalChallengesCompleted}</Text>
-                <Text style={styles.statLabel}>Completed</Text>
+              <View style={styles.statusDivider} />
+              <View style={styles.statusItem}>
+                <Text style={styles.statusNumber}>{userProgress.totalChallengesCompleted}</Text>
+                <Text style={styles.statusText}>Completed</Text>
               </View>
             </View>
+          </View>
 
-            {/* Pillar Progress */}
-            <View style={styles.pillarContainer}>
-              <Text style={styles.pillarTitle}>Your Character Growth</Text>
-              <View style={styles.pillarGrid}>
-                {(['resilient', 'relentless', 'fearless'] as const).map((pillar) => (
-                  <View key={pillar} style={styles.pillarItem}>
-                    <LinearGradient
-                      colors={getPillarGradient(pillar)}
-                      style={styles.pillarCard}
-                    >
-                      <Text style={styles.pillarIcon}>{getPillarIcon(pillar)}</Text>
-                      <Text style={styles.pillarName}>{pillar.toUpperCase()}</Text>
-                      <Text style={styles.pillarCount}>{userProgress.pillarProgress[pillar]}</Text>
-                    </LinearGradient>
+          {/* Character Development Status */}
+          <View style={styles.developmentSection}>
+            <Text style={styles.developmentTitle}>CHARACTER DEVELOPMENT</Text>
+            
+            <View style={styles.pillarsList}>
+              {(['resilient', 'relentless', 'fearless'] as const).map((pillar) => (
+                <View key={pillar} style={styles.pillarRow}>
+                  <Text style={styles.pillarName}>{pillar.toUpperCase()}</Text>
+                  <View style={styles.pillarProgress}>
+                    <View 
+                      style={[
+                        styles.progressBar, 
+                        { width: `${Math.min(userProgress.pillarProgress[pillar] * 5, 100)}%` }
+                      ]} 
+                    />
                   </View>
-                ))}
-              </View>
+                  <Text style={styles.pillarValue}>{userProgress.pillarProgress[pillar]}</Text>
+                </View>
+              ))}
             </View>
+          </View>
 
-            {/* Today's Challenge */}
-            <View style={styles.challengeContainer}>
-              <LinearGradient
-                colors={getPillarGradient(currentChallenge.pillar)}
-                style={styles.challengeCard}
-              >
-                <View style={styles.challengeHeader}>
-                  <View style={styles.challengeMetadata}>
-                    <View style={[styles.pillarBadge, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-                      <Text style={styles.pillarBadgeText}>
-                        {getPillarIcon(currentChallenge.pillar)} {currentChallenge.pillar.toUpperCase()}
-                      </Text>
+          {/* Today's Protocol */}
+          <View style={styles.protocolSection}>
+            <Text style={styles.protocolLabel}>Today's Protocol</Text>
+            
+            <View style={styles.protocolCard}>
+              <View style={styles.protocolHeader}>
+                <View style={styles.protocolMeta}>
+                  <View style={styles.pillarBadge}>
+                    <Text style={styles.pillarBadgeText}>
+                      {currentChallenge.pillar.toUpperCase()}
+                    </Text>
+                  </View>
+                  <View style={styles.protocolTags}>
+                    <View style={[styles.tag, { backgroundColor: getDifficultyColor(currentChallenge.difficulty) }]}>
+                      <Text style={styles.tagText}>{currentChallenge.difficulty.toUpperCase()}</Text>
                     </View>
-                    <View style={styles.challengeTags}>
-                      <View style={[styles.tag, { backgroundColor: getDifficultyColor(currentChallenge.difficulty) }]}>
-                        <Text style={styles.tagText}>{currentChallenge.difficulty}</Text>
-                      </View>
-                      <View style={styles.tag}>
-                        <Text style={styles.tagText}>{currentChallenge.timeEstimate}</Text>
-                      </View>
-                      <View style={styles.tag}>
-                        <Text style={styles.tagText}>{currentChallenge.points} pts</Text>
-                      </View>
+                    <View style={styles.tag}>
+                      <Text style={styles.tagText}>{currentChallenge.timeEstimate}</Text>
+                    </View>
+                    <View style={styles.tag}>
+                      <Text style={styles.tagText}>+{currentChallenge.points}</Text>
                     </View>
                   </View>
                 </View>
-
-                <View style={styles.challengeContent}>
-                  <Text style={styles.challengeTitle}>{currentChallenge.title}</Text>
-                  <Text style={styles.challengeDescription}>{currentChallenge.description}</Text>
-                </View>
-
-                <TouchableOpacity
-                  style={[
-                    styles.completeButton,
-                    userProgress.completedToday && styles.completedButton
-                  ]}
-                  onPress={completeChallenge}
-                  disabled={userProgress.completedToday}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.completeButtonText}>
-                    {userProgress.completedToday ? '✅ Completed Today!' : 'Complete Challenge'}
-                  </Text>
-                </TouchableOpacity>
-              </LinearGradient>
-            </View>
-
-            {/* Challenge Tips */}
-            <View style={styles.tipsContainer}>
-              <Text style={styles.tipsTitle}>💡 Challenge Tips</Text>
-              <View style={styles.tipsList}>
-                <Text style={styles.tipItem}>• Take your time - quality over speed</Text>
-                <Text style={styles.tipItem}>• Focus on the mental aspect as much as physical</Text>
-                <Text style={styles.tipItem}>• Ask for help if you need it - that's fearless!</Text>
-                <Text style={styles.tipItem}>• Remember: every champion started where you are</Text>
               </View>
+
+              <View style={styles.protocolContent}>
+                <Text style={styles.protocolTitle}>{currentChallenge.title.toUpperCase()}</Text>
+                <Text style={styles.protocolDescription}>{currentChallenge.description}</Text>
+              </View>
+
+              <TouchableOpacity
+                style={[
+                  styles.executeButton,
+                  userProgress.completedToday && styles.completedButton
+                ]}
+                onPress={completeChallenge}
+                disabled={userProgress.completedToday}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.executeButtonText}>
+                  {userProgress.completedToday ? 'PROTOCOL COMPLETED' : 'EXECUTE PROTOCOL'}
+                </Text>
+              </TouchableOpacity>
             </View>
-          </Animated.View>
+          </View>
+
+          {/* Training Guidelines */}
+          <View style={styles.guidelinesSection}>
+            <Text style={styles.guidelinesTitle}>Training Guidelines</Text>
+            <View style={styles.guidelinesList}>
+              <Text style={styles.guidelineItem}>• Focus on form and technique over speed</Text>
+              <Text style={styles.guidelineItem}>• Mental preparation is equally important</Text>
+              <Text style={styles.guidelineItem}>• Seek guidance when needed - true strength</Text>
+              <Text style={styles.guidelineItem}>• Consistency builds champions</Text>
+            </View>
+          </View>
         </ScrollView>
 
-        {/* Celebration Overlay */}
+        {/* Achievement Overlay */}
         {showCelebration && (
-          <View style={styles.celebrationOverlay}>
-            <Animated.View style={styles.celebrationContent}>
-              <Text style={styles.celebrationTitle}>🎉 CHAMPION MOVE! 🎉</Text>
-              <Text style={styles.celebrationMessage}>
-                You just got stronger in the {currentChallenge.pillar.toUpperCase()} pillar!
+          <View style={styles.achievementOverlay}>
+            <View style={styles.achievementContent}>
+              <Text style={styles.achievementTitle}>PROTOCOL COMPLETED</Text>
+              <Text style={styles.achievementMessage}>
+                {currentChallenge.pillar.toUpperCase()} development advanced
               </Text>
-              <Text style={styles.celebrationPoints}>+{currentChallenge.points} points</Text>
-            </Animated.View>
+              <Text style={styles.achievementPoints}>+{currentChallenge.points} points</Text>
+            </View>
           </View>
         )}
 
-        {/* Completion Options Overlay */}
+        {/* Completion Options */}
         {showCompletionOptions && (
-          <View style={styles.celebrationOverlay}>
-            <Animated.View style={styles.completionOptionsContent}>
-              <Text style={styles.completionTitle}>🏆 Challenge Complete!</Text>
+          <View style={styles.completionOverlay}>
+            <View style={styles.completionContent}>
+              <Text style={styles.completionTitle}>TRAINING COMPLETE</Text>
               <Text style={styles.completionMessage}>
-                Amazing work! You earned {currentChallenge.points} points and strengthened your {currentChallenge.pillar.toUpperCase()} pillar!
+                Excellent execution. Your {currentChallenge.pillar.toUpperCase()} attribute has been strengthened.
               </Text>
               
-              <View style={styles.completionButtons}>
+              <View style={styles.completionActions}>
                 <TouchableOpacity
-                  style={[styles.completionButton, styles.primaryCompletionButton]}
+                  style={styles.completionButton}
                   onPress={() => {
                     setShowCompletionOptions(false);
-                    // Stay on challenges screen to see progress
                   }}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.completionButtonText}>View My Progress 📊</Text>
+                  <Text style={styles.completionButtonText}>Review Progress</Text>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
-                  style={[styles.completionButton, styles.secondaryCompletionButton]}
+                  style={styles.secondaryCompletionButton}
                   onPress={() => {
                     setShowCompletionOptions(false);
-                    console.log('Navigate to profile or home');
-                    // Could navigate to profile or other screens
+                    console.log('Navigate to next protocol');
                   }}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.completionButtonText}>See Tomorrow's Challenge 🚀</Text>
+                  <Text style={styles.secondaryCompletionText}>Continue Training</Text>
                 </TouchableOpacity>
               </View>
-            </Animated.View>
+            </View>
           </View>
         )}
-      </LinearGradient>
+      </Animated.View>
     </SafeAreaView>
   );
 }
