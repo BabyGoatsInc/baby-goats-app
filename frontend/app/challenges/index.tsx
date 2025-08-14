@@ -325,6 +325,33 @@ export default function DailyChallenges({ onBack }: { onBack?: () => void } = {}
               }
             ]}
           >
+            {/* Header with Navigation */}
+            <View style={styles.headerNav}>
+              <TouchableOpacity 
+                onPress={() => {
+                  if (onBack) {
+                    onBack();
+                  } else {
+                    console.log('No back handler provided');
+                  }
+                }}
+                style={styles.backButton}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.backButtonText}>← Home</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.profileButton}
+                onPress={() => {
+                  console.log('Navigate to profile');
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.profileButtonText}>Profile</Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Header */}
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Daily Challenge</Text>
