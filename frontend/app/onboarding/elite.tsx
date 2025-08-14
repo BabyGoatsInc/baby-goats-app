@@ -118,6 +118,41 @@ export default function EliteOnboarding() {
     );
   }
 
+  // Show Experience Level screen (placeholder)
+  if (currentStep === 3) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <LinearGradient
+          colors={['#667eea', '#764ba2']}
+          style={styles.gradient}
+        >
+          <View style={styles.contentContainer}>
+            <Text style={styles.mainTitle}>🎉 Onboarding Complete!</Text>
+            <Text style={[styles.subtitle, { color: '#4ecdc4' }]}>
+              Welcome to Baby Goats, {selectedSport?.name} champion!
+            </Text>
+            <Text style={styles.description}>
+              You selected {selectedSport?.name} with passion level {interestLevel}/10! 
+              Your journey to greatness begins now.
+            </Text>
+            
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: '#4ecdc4', marginTop: 40 }]}
+              onPress={() => {
+                // Navigate back to profile or dashboard
+                console.log('Onboarding complete!');
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>Start Training! 🚀</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
