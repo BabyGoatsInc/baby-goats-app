@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { WelcomeSequence } from '@/components/onboarding/welcome-sequence'
 import { ExperienceLevelScreen } from '@/components/onboarding/experience-level'
+import { GoalSettingWorkshop } from '@/components/onboarding/goal-setting'
 import { useOnboardingStore, OnboardingStep } from '@/lib/onboarding-state'
 
 // Enhanced Sport Selection Component
