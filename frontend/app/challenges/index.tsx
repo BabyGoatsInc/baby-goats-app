@@ -46,8 +46,8 @@ export default function DailyChallenges() {
     longestStreak: 12,
     totalChallengesCompleted: 45,
     pillarProgress: { resilient: 15, relentless: 18, fearless: 12 },
-    completedToday: false,
-    lastCompletedDate: '2024-01-13'
+    completedToday: false, // Allow users to complete today's challenge
+    lastCompletedDate: '2024-01-12' // Yesterday, so today's challenge is available
   });
   
   const [animationValue] = useState(new Animated.Value(0));
