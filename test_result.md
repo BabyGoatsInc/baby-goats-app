@@ -295,6 +295,30 @@ frontend:
           agent: "testing"
           comment: "CRITICAL: No navigation system implemented. No routing between pages, no protected routes, no user flow management."
 
+  - task: "Profile Screen Elite Redesign"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/app/profile/index.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Profile screen needs redesign to match new elite aesthetic with pure black background, minimal white typography, and professional messaging to replace current colorful gradient design."
+
+  - task: "Challenges Screen Elite Redesign"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/app/challenges/index.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Challenges screen needs redesign to match new elite aesthetic and rebrand as 'Training Protocols' to replace current colorful gradient design."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
