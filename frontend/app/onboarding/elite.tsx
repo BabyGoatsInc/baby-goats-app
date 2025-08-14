@@ -103,7 +103,8 @@ export default function EliteOnboarding() {
   const handleSportSelected = (sport: Sport, interest: number) => {
     setSelectedSport(sport);
     setInterestLevel(interest);
-    // Move to next step - Experience Level Assessment (will implement next)
+    // Move to next step - Experience Level Assessment
+    setCurrentStep(3); // Progress to Experience Level screen
     console.log(`Selected ${sport.name} with interest level ${interest}`);
   };
 
