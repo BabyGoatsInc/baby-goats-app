@@ -439,6 +439,43 @@ export default function DailyChallenges() {
             </Animated.View>
           </View>
         )}
+
+        {/* Completion Options Overlay */}
+        {showCompletionOptions && (
+          <View style={styles.celebrationOverlay}>
+            <Animated.View style={styles.completionOptionsContent}>
+              <Text style={styles.completionTitle}>🏆 Challenge Complete!</Text>
+              <Text style={styles.completionMessage}>
+                Amazing work! You earned {currentChallenge.points} points and strengthened your {currentChallenge.pillar.toUpperCase()} pillar!
+              </Text>
+              
+              <View style={styles.completionButtons}>
+                <TouchableOpacity
+                  style={[styles.completionButton, styles.primaryCompletionButton]}
+                  onPress={() => {
+                    setShowCompletionOptions(false);
+                    // Stay on challenges screen to see progress
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.completionButtonText}>View My Progress 📊</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.completionButton, styles.secondaryCompletionButton]}
+                  onPress={() => {
+                    setShowCompletionOptions(false);
+                    console.log('Navigate to profile or home');
+                    // Could navigate to profile or other screens
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.completionButtonText}>See Tomorrow's Challenge 🚀</Text>
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+          </View>
+        )}
       </LinearGradient>
     </SafeAreaView>
   );
