@@ -208,7 +208,12 @@ export default function EliteOnboardingPage() {
 
   const handleSportSelectionComplete = () => {
     completeStep('sport-selection')
-    setCurrentStep('experience-level') // For now, go to placeholder
+    setCurrentStep('experience-level')
+  }
+
+  const handleExperienceLevelComplete = () => {
+    completeStep('experience-level')
+    setCurrentStep('goal-setting') // Next step will be goal-setting
   }
 
   if (loading) {
