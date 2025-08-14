@@ -51,35 +51,46 @@ export default function Authentication({ onAuthSuccess, onBack }: AuthProps) {
   if (mode === 'login') {
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-        <LinearGradient colors={['#f093fb', '#f5576c']} style={styles.gradient}>
-          <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-            <Text style={styles.title}>Welcome Back, Champion! 🏆</Text>
-            <Text style={styles.subtitle}>Sign in to continue your journey</Text>
-            
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => {
-                // For now, create a mock user for demo
-                const mockUser: UserProfile = {
-                  id: 'returning_user',
-                  email: 'champion@babygoats.com',
-                  name: 'Returning Champion',
-                  age: 16,
-                  isParentApproved: true,
-                };
-                onAuthSuccess(mockUser);
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.buttonText}>Demo Sign In 🚀</Text>
+        <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => setMode('choice')} style={styles.backButton}>
+              <Text style={styles.backText}>← Back</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity onPress={() => setMode('choice')} style={styles.backLink}>
-              <Text style={styles.backLinkText}>← Back to options</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </LinearGradient>
+          </View>
+          
+          <View style={styles.brandingSection}>
+            <Text style={styles.brandName}>ATHLETES</Text>
+            <Text style={styles.platformName}>Access Account</Text>
+          </View>
+          
+          <View style={styles.messageSection}>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Continue your elite development</Text>
+          </View>
+          
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              // For now, create a mock user for demo
+              const mockUser: UserProfile = {
+                id: 'returning_user',
+                email: 'champion@athletes.com',
+                name: 'Returning Athlete',
+                age: 16,
+                isParentApproved: true,
+              };
+              onAuthSuccess(mockUser);
+            }}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonText}>Access Development Platform</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={() => setMode('choice')} style={styles.backLink}>
+            <Text style={styles.backLinkText}>← Return to options</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }
