@@ -23,7 +23,12 @@ interface Sport {
   gradient: string[];
 }
 
-export default function EliteOnboarding() {
+interface EliteOnboardingProps {
+  onComplete?: () => void;
+  onBack?: () => void;
+}
+
+export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingProps = {}) {
   const [currentStep, setCurrentStep] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(0.8));
