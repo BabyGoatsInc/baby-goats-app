@@ -11,21 +11,18 @@ export default function LandingPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
+    // Check for existing session
+    const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user || null)
+      if (session?.user) {
+        setUser(session.user)
+        // Redirect authenticated users to dashboard
+        window.location.href = '/dashboard'
+      }
       setLoading(false)
     }
 
-    checkUser()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null)
-    })
-
-    return () => subscription.unsubscribe()
+    checkSession()
   }, [])
 
 
