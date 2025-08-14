@@ -254,9 +254,9 @@ export default function DiscoverPage() {
                   variant="babygoats" 
                   onClick={handleSearch}
                   className="w-full"
-                  disabled={loading}
+                  disabled={searching}
                 >
-                  {loading ? 'Searching...' : 'Search'}
+                  {searching ? 'Searching...' : 'Search'}
                 </Button>
               </div>
             </div>
