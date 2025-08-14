@@ -1,5 +1,5 @@
 // API integration utilities for Baby Goats application
-import { supabase } from './supabaseClient'
+import { createClient } from '@/lib/supabase/client'
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://your-domain.com' 
@@ -7,6 +7,7 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 
 // Get auth token for API requests
 async function getAuthHeaders(): Promise<HeadersInit> {
+  const supabase = createClient()
   const { data: { session } } = await supabase.auth.getSession()
   
   return {
