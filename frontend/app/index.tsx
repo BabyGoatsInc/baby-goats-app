@@ -75,7 +75,15 @@ export default function Index() {
 
   // Elite Onboarding Screen
   if (currentScreen === 'onboarding') {
-    return <EliteOnboarding />;
+    return (
+      <EliteOnboarding 
+        onComplete={() => {
+          // When onboarding is complete, navigate to challenges
+          setCurrentScreen('challenges');
+        }}
+        onBack={handleBackToHome}
+      />
+    );
   }
 
   // Daily Challenges Screen
