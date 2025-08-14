@@ -712,4 +712,49 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#4CAF50',
   },
+  completionOptionsContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 32,
+    alignItems: 'center',
+    marginHorizontal: 30,
+    maxWidth: 340,
+  },
+  completionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  completionMessage: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  completionButtons: {
+    width: '100%',
+  },
+  completionButton: {
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  primaryCompletionButton: {
+    backgroundColor: '#4ecdc4',
+  },
+  secondaryCompletionButton: {
+    backgroundColor: 'rgba(255,107,107,0.1)',
+    borderWidth: 2,
+    borderColor: '#ff6b6b',
+  },
+  completionButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
 });
