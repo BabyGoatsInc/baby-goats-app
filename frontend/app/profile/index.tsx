@@ -105,7 +105,7 @@ export default function UserProfileScreen({ user, onNavigateTo, onLogout }: Prof
             </View>
             
             <Text style={styles.athleteName}>{user.name.toUpperCase()}</Text>
-            <Text style={styles.performanceLevel}>{getPerformanceLevel(user.age)} ATHLETE</Text>
+            <Text style={styles.performanceLevel}>{getPerformanceLevel(user.age)} BABY GOAT</Text>
             <Text style={styles.ageInfo}>Age {user.age}</Text>
             
             {user.sport && (
