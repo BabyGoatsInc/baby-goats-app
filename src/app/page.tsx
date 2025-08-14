@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { User } from '@supabase/supabase-js'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 export default function LandingPage() {
   const [user, setUser] = useState<User | null>(null)
