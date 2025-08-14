@@ -194,12 +194,11 @@ export default function LandingPage() {
           <p className="text-xl mb-8 text-gray-300">
             Join thousands of young athletes building their legacy
           </p>
-          <button 
-            onClick={handleGetStarted}
-            className="baby-goats-button baby-goats-button-primary text-xl px-12 py-4"
-          >
-            GET STARTED TODAY
-          </button>
+          <Link href="/signup">
+            <button className="baby-goats-button baby-goats-button-primary text-xl px-12 py-4">
+              GET STARTED TODAY
+            </button>
+          </Link>
         </div>
       </section>
 
