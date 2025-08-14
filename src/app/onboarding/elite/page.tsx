@@ -214,7 +214,12 @@ export default function EliteOnboardingPage() {
 
   const handleExperienceLevelComplete = () => {
     completeStep('experience-level')
-    setCurrentStep('goal-setting') // Next step will be goal-setting
+    setCurrentStep('goal-setting')
+  }
+
+  const handleGoalSettingComplete = () => {
+    completeStep('goal-setting')
+    setCurrentStep('schedule-setup') // Next step will be schedule setup
   }
 
   if (loading) {
