@@ -97,17 +97,15 @@ export default function LandingPage() {
               The ultimate platform for the next generation of champions
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                onClick={handleGetStarted}
-                className="baby-goats-button baby-goats-button-primary text-xl px-12 py-4"
-              >
-                GET STARTED
-              </button>
-              <Link 
-                href="#features"
-                className="baby-goats-button border-2 border-white hover:bg-white hover:text-gray-900 text-white text-xl px-12 py-4"
-              >
-                LEARN MORE
+              <Link href="/signup">
+                <Button variant="babygoats" size="lg" className="w-full sm:w-auto">
+                  Get Started Free
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button variant="babygoats-outline" size="lg" className="w-full sm:w-auto">
+                  Sign In
+                </Button>
               </Link>
             </div>
           </div>
