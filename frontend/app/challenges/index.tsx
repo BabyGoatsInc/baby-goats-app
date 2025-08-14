@@ -256,14 +256,11 @@ export default function DailyChallenges() {
     setUserProgress(newProgress);
     setShowCelebration(true);
     
-    // Show celebration
-    setTimeout(() => setShowCelebration(false), 3000);
-
-    Alert.alert(
-      '🏆 Challenge Complete!',
-      `Amazing work! You earned ${currentChallenge.points} points and strengthened your ${currentChallenge.pillar} pillar!`,
-      [{ text: 'Keep Growing!', style: 'default' }]
-    );
+    // Show celebration longer and then show completion options
+    setTimeout(() => {
+      setShowCelebration(false);
+      setShowCompletionOptions(true);
+    }, 3000);
   };
 
   const getPillarColor = (pillar: string) => {
