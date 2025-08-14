@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from "react-native";
 import EliteOnboarding from './onboarding/elite';
 import DailyChallenges from './challenges/index';
 import Authentication from './auth/index';
@@ -36,7 +35,7 @@ export default function Index() {
 
   const handleAuthSuccess = (authenticatedUser: UserProfile) => {
     setUser(authenticatedUser);
-    setCurrentScreen('profile'); // Show profile after successful auth
+    setCurrentScreen('profile');
   };
 
   const handleLogout = () => {
@@ -77,10 +76,7 @@ export default function Index() {
   if (currentScreen === 'onboarding') {
     return (
       <EliteOnboarding 
-        onComplete={() => {
-          // When onboarding is complete, navigate to challenges
-          setCurrentScreen('challenges');
-        }}
+        onComplete={() => setCurrentScreen('challenges')}
         onBack={handleBackToHome}
       />
     );
@@ -95,129 +91,129 @@ export default function Index() {
     );
   }
 
-  // Home Screen
+  // Elite Home Screen
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={['#1a1a2e', '#16213e', '#0f3460']}
-        style={styles.gradient}
-      >
-        <View style={styles.content}>
-          {/* Hero Section */}
-          <View style={styles.heroSection}>
-            <Text style={styles.appTitle}>BABY GOATS</Text>
-            <Text style={styles.tagline}>Where Champions Begin</Text>
-          </View>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      <View style={styles.content}>
+        {/* Elite Header */}
+        <View style={styles.header}>
+          <Text style={styles.brandName}>ATHLETES</Text>
+          <Text style={styles.tagline}>Elite Development Platform</Text>
+        </View>
 
-          {/* User Status */}
-          {user && (
-            <View style={styles.userStatusContainer}>
-              <Text style={styles.welcomeText}>Welcome back, {user.name}! 👋</Text>
+        {/* User Status */}
+        {user && (
+          <View style={styles.userStatusContainer}>
+            <Text style={styles.welcomeText}>Welcome back, {user.name}</Text>
+            <TouchableOpacity
+              style={styles.profileLink}
+              onPress={() => setCurrentScreen('profile')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.profileLinkText}>View Performance →</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Mission Statement */}
+        <View style={styles.missionSection}>
+          <Text style={styles.missionText}>
+            Transform potential into performance. Master the mental game. Join the elite.
+          </Text>
+        </View>
+
+        {/* Elite Actions */}
+        <View style={styles.actionsSection}>
+          {/* Authentication Flow */}
+          {!user && (
+            <>
               <TouchableOpacity
-                style={styles.profileLinkButton}
-                onPress={() => setCurrentScreen('profile')}
+                style={styles.primaryAction}
+                onPress={() => setCurrentScreen('auth')}
                 activeOpacity={0.8}
               >
-                <Text style={styles.profileLinkText}>View Profile →</Text>
+                <Text style={styles.primaryActionText}>Begin Elite Training</Text>
               </TouchableOpacity>
-            </View>
+              
+              <TouchableOpacity
+                style={styles.secondaryAction}
+                onPress={() => setCurrentScreen('auth')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.secondaryActionText}>Access Account</Text>
+              </TouchableOpacity>
+            </>
           )}
 
-          {/* Description */}
-          <View style={styles.descriptionSection}>
-            <Text style={styles.description}>
-              Transform your mindset. Build championship habits. Join the elite community of young athletes ready to unleash their potential.
-            </Text>
-          </View>
+          {/* Authenticated User Options */}
+          {user && (
+            <>
+              <TouchableOpacity
+                style={styles.primaryAction}
+                onPress={() => setCurrentScreen('challenges')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.primaryActionText}>Training Protocol</Text>
+              </TouchableOpacity>
 
-          {/* CTA Buttons */}
-          <View style={styles.buttonSection}>
-            {/* Authentication Flow */}
-            {!user && (
-              <>
+              {!user.sport && (
                 <TouchableOpacity
-                  style={styles.primaryButton}
-                  onPress={() => setCurrentScreen('auth')}
+                  style={styles.progressAction}
+                  onPress={() => setCurrentScreen('onboarding')}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.buttonText}>🚀 Join Baby Goats</Text>
+                  <Text style={styles.progressActionText}>Complete Assessment</Text>
                 </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.primaryButton, { backgroundColor: '#4ecdc4' }]}
-                  onPress={() => setCurrentScreen('auth')}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.buttonText}>🏆 Sign In</Text>
-                </TouchableOpacity>
-              </>
-            )}
+              )}
+            </>
+          )}
 
-            {/* Authenticated User Options */}
-            {user && (
-              <>
-                <TouchableOpacity
-                  style={styles.primaryButton}
-                  onPress={() => setCurrentScreen('challenges')}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.buttonText}>🎯 Today's Challenge</Text>
-                </TouchableOpacity>
-
-                {!user.sport && (
-                  <TouchableOpacity
-                    style={[styles.primaryButton, { backgroundColor: '#feca57' }]}
-                    onPress={() => setCurrentScreen('onboarding')}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.buttonText}>⚡ Complete Onboarding</Text>
-                  </TouchableOpacity>
-                )}
-              </>
-            )}
-
-            {/* Demo Options for Visitors */}
+          {/* Demo Access */}
+          <View style={styles.demoSection}>
+            <Text style={styles.demoLabel}>Explore Platform</Text>
             <TouchableOpacity
-              style={styles.secondaryButton}
+              style={styles.demoAction}
               onPress={() => setCurrentScreen('onboarding')}
               activeOpacity={0.8}
             >
-              <Text style={styles.secondaryButtonText}>Preview Onboarding</Text>
+              <Text style={styles.demoActionText}>Assessment Process</Text>
             </TouchableOpacity>
             
             <TouchableOpacity
-              style={styles.secondaryButton}
+              style={styles.demoAction}
               onPress={() => setCurrentScreen('challenges')}
               activeOpacity={0.8}
             >
-              <Text style={styles.secondaryButtonText}>Preview Challenges</Text>
+              <Text style={styles.demoActionText}>Training Protocols</Text>
             </TouchableOpacity>
           </View>
+        </View>
 
-          {/* Features Preview */}
-          <View style={styles.featuresSection}>
-            <Text style={styles.featuresTitle}>What Awaits You:</Text>
-            <View style={styles.featuresList}>
-              <View style={styles.featureItem}>
-                <Text style={styles.featureIcon}>🧠</Text>
-                <Text style={styles.featureText}>Champion Mindset Training</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Text style={styles.featureIcon}>⚡</Text>
-                <Text style={styles.featureText}>Daily G.O.A.T. Challenges</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Text style={styles.featureIcon}>🏆</Text>
-                <Text style={styles.featureText}>Elite Community Access</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Text style={styles.featureIcon}>🛡️</Text>
-                <Text style={styles.featureText}>Safe & Parent-Approved</Text>
-              </View>
+        {/* Elite Features */}
+        <View style={styles.featuresSection}>
+          <Text style={styles.featuresTitle}>Platform Capabilities</Text>
+          <View style={styles.featureGrid}>
+            <View style={styles.featureItem}>
+              <View style={styles.featureIcon} />
+              <Text style={styles.featureText}>Mental Performance</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <View style={styles.featureIcon} />
+              <Text style={styles.featureText}>Elite Protocols</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <View style={styles.featureIcon} />
+              <Text style={styles.featureText}>Performance Analytics</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <View style={styles.featureIcon} />
+              <Text style={styles.featureText}>Secure Development</Text>
             </View>
           </View>
         </View>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 }
@@ -225,134 +221,171 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0c0c0c",
-  },
-  gradient: {
-    flex: 1,
+    backgroundColor: "#000000",
   },
   content: {
     flex: 1,
     paddingHorizontal: 24,
-    justifyContent: 'space-between',
-    paddingTop: 60,
+    paddingTop: 40,
     paddingBottom: 40,
   },
-  heroSection: {
+  header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 48,
+    marginTop: 60,
   },
-  appTitle: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
+  brandName: {
+    fontSize: 36,
+    fontWeight: '300',
+    color: '#FFFFFF',
+    letterSpacing: 8,
     marginBottom: 8,
-    letterSpacing: 2,
   },
   tagline: {
-    fontSize: 18,
-    color: '#ff6b6b',
-    fontWeight: '600',
-    textAlign: 'center',
-    letterSpacing: 1,
+    fontSize: 14,
+    color: '#666666',
+    fontWeight: '400',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   userStatusContainer: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    marginBottom: 20,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   welcomeText: {
-    color: '#fff',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
     marginBottom: 8,
   },
-  profileLinkButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+  profileLink: {
+    alignSelf: 'flex-start',
   },
   profileLinkText: {
-    color: '#4ecdc4',
+    color: '#CCCCCC',
     fontSize: 14,
-    fontWeight: '600',
-    textDecorationLine: 'underline',
+    fontWeight: '400',
   },
-  descriptionSection: {
+  missionSection: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 48,
   },
-  description: {
+  missionText: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.85)',
+    color: '#CCCCCC',
     textAlign: 'center',
     lineHeight: 24,
-    maxWidth: 320,
+    maxWidth: 280,
+    fontWeight: '300',
   },
-  buttonSection: {
-    alignItems: 'center',
-    marginBottom: 30,
+  actionsSection: {
+    marginBottom: 48,
   },
-  primaryButton: {
-    backgroundColor: '#ff6b6b',
-    paddingVertical: 18,
+  primaryAction: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 16,
     paddingHorizontal: 32,
-    borderRadius: 50,
+    borderRadius: 4,
     marginBottom: 12,
-    elevation: 5,
-    shadowColor: '#ff6b6b',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    minWidth: 280,
+    alignItems: 'center',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  primaryActionText: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: '500',
+    letterSpacing: 1,
   },
-  secondaryButton: {
-    borderWidth: 2,
+  secondaryAction: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.3)',
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 32,
-    borderRadius: 50,
-    minWidth: 280,
-    marginBottom: 8,
+    borderRadius: 4,
+    marginBottom: 24,
+    alignItems: 'center',
   },
-  secondaryButtonText: {
-    color: 'rgba(255,255,255,0.8)',
+  secondaryActionText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '400',
+    letterSpacing: 1,
+  },
+  progressAction: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  progressActionText: {
+    color: '#CCCCCC',
     fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: '400',
+    letterSpacing: 1,
+  },
+  demoSection: {
+    alignItems: 'center',
+  },
+  demoLabel: {
+    color: '#666666',
+    fontSize: 12,
+    fontWeight: '400',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 16,
+  },
+  demoAction: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginBottom: 8,
+    alignItems: 'center',
+  },
+  demoActionText: {
+    color: '#999999',
+    fontSize: 14,
+    fontWeight: '300',
+    letterSpacing: 0.5,
   },
   featuresSection: {
     alignItems: 'center',
   },
   featuresTitle: {
-    fontSize: 16,
-    color: '#4ecdc4',
-    fontWeight: '600',
-    marginBottom: 16,
-    textAlign: 'center',
+    fontSize: 12,
+    color: '#666666',
+    fontWeight: '400',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: 24,
   },
-  featuresList: {
-    alignItems: 'flex-start',
+  featureGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   featureItem: {
-    flexDirection: 'row',
+    width: '48%',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 20,
   },
   featureIcon: {
-    fontSize: 18,
-    marginRight: 12,
+    width: 4,
+    height: 4,
+    backgroundColor: '#333333',
+    borderRadius: 2,
+    marginBottom: 8,
   },
   featureText: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 14,
-    fontWeight: '500',
+    color: '#666666',
+    fontSize: 12,
+    fontWeight: '300',
+    textAlign: 'center',
+    letterSpacing: 0.5,
   },
 });
