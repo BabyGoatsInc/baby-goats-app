@@ -167,6 +167,7 @@ export default function DashboardPage() {
   }
 
   const handleSignOut = async () => {
+    const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/'
   }
