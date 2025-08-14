@@ -52,9 +52,9 @@ export default function LandingPage() {
                   Dashboard
                 </Link>
               ) : (
-                <button onClick={handleSignIn} className="baby-goats-button baby-goats-button-secondary">
+                <Link href="/login" className="baby-goats-button baby-goats-button-secondary">
                   Sign In
-                </button>
+                </Link>
               )}
             </div>
           </div>
