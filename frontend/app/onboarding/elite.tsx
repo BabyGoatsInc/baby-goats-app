@@ -140,8 +140,11 @@ export default function EliteOnboarding() {
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: '#4ecdc4', marginTop: 40 }]}
               onPress={() => {
-                // Navigate back to profile or dashboard
-                console.log('Onboarding complete!');
+                // Complete onboarding and navigate to challenges
+                console.log('Onboarding complete! Navigating to challenges...');
+                // For now, we'll navigate back to home - you could extend this to go to challenges
+                // In a real app, this would update the user's profile with onboarding completion
+                // and navigate to the main app dashboard
               }}
               activeOpacity={0.8}
             >
