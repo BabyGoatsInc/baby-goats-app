@@ -11,13 +11,24 @@ import {
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import SportSelection from './sport-selection';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+interface Sport {
+  id: string;
+  name: string;
+  emoji: string;
+  mindset: string;
+  gradient: string[];
+}
 
 export default function EliteOnboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(0.8));
+  const [selectedSport, setSelectedSport] = useState<Sport | null>(null);
+  const [interestLevel, setInterestLevel] = useState(5);
 
   useEffect(() => {
     // Entrance animation
@@ -78,10 +89,175 @@ export default function EliteOnboarding() {
         }),
       ]).start();
     } else {
-      // Navigate to next screen (will implement routing later)
-      console.log('Navigate to sport selection');
+      // Move to sport selection
+      setCurrentStep(2);
     }
   };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSportSelected = (sport: Sport, interest: number) => {
+    setSelectedSport(sport);
+    setInterestLevel(interest);
+    // Move to next step - Experience Level Assessment (will implement next)
+    console.log(`Selected ${sport.name} with interest level ${interest}`);
+  };
+
+  // Show Sport Selection screen
+  if (currentStep === 2) {
+    return (
+      <SportSelection 
+        onNext={handleSportSelected}
+        onBack={handleBack}
+      />
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      
+      <LinearGradient
+        colors={currentStepData.gradient}
+        style={styles.gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        {/* Progress Dots */}
+        <View style={styles.progressContainer}>
+          {steps.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.progressDot,
+                {
+                  backgroundColor: index <= currentStep ? currentStepData.accentColor : 'rgba(255,255,255,0.3)',
+                  transform: [{ scale: index === currentStep ? 1.2 : 1 }],
+                },
+              ]}
+            />
+          ))}
+        </View>
+
+        {/* Main Content */}
+        <Animated.View
+          style={[
+            styles.contentContainer,
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }],
+            },
+          ]}
+        >
+          {/* Athletic Silhouettes Animation (Step 1) */}
+          {currentStep === 0 && (
+            <View style={styles.heroSection}>
+              <View style={styles.silhouettesContainer}>
+                <AthleteSilhouette color="#ff6b6b" delay={0} />
+                <AthleteSilhouette color="#4ecdc4" delay={300} />
+                <AthleteSilhouette color="#45b7d1" delay={600} />
+              </View>
+            </View>
+          )}
+
+          {/* Sport Selection Preview (Step 2) */}
+          {currentStep === 1 && (
+            <View style={styles.heroSection}>
+              <View style={styles.sportPreviewContainer}>
+                <View style={styles.sportCard}>
+                  <Text style={styles.sportEmoji}>🏀</Text>
+                  <Text style={styles.sportName}>Basketball</Text>
+                </View>
+                <View style={styles.sportCard}>
+                  <Text style={styles.sportEmoji}>⚽</Text>
+                  <Text style={styles.sportName}>Soccer</Text>
+                </View>
+                <View style={styles.sportCard}>
+                  <Text style={styles.sportEmoji}>🎾</Text>
+                  <Text style={styles.sportName}>Tennis</Text>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {/* Title Section */}
+          <View style={styles.titleSection}>
+            <Text style={styles.mainTitle}>{currentStepData.title}</Text>
+            <Text style={[styles.subtitle, { color: currentStepData.accentColor }]}>
+              {currentStepData.subtitle}
+            </Text>
+            <Text style={styles.description}>{currentStepData.description}</Text>
+          </View>
+        </Animated.View>
+
+        {/* Action Button */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: currentStepData.accentColor }]}
+            onPress={handleNext}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonText}>{currentStepData.buttonText}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Inspiring Quote (Step 1 only) */}
+        {currentStep === 0 && (
+          <View style={styles.quoteContainer}>
+            <Text style={styles.quote}>
+              "The expert in anything was once a beginner."
+            </Text>
+          </View>
+        )}
+      </LinearGradient>
+    </SafeAreaView>
+  );
+}
+
+// Animated Athlete Silhouette Component
+function AthleteSilhouette({ color, delay }: { color: string; delay: number }) {
+  const [bounceAnim] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    const startBounce = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(bounceAnim, {
+            toValue: -10,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(bounceAnim, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    };
+
+    const timer = setTimeout(startBounce, delay);
+    return () => clearTimeout(timer);
+  }, [bounceAnim, delay]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.silhouette,
+        {
+          backgroundColor: color,
+          transform: [{ translateY: bounceAnim }],
+        },
+      ]}
+    >
+      <View style={[styles.silhouetteHead, { backgroundColor: color }]} />
+    </Animated.View>
+  );
+}
 
   return (
     <SafeAreaView style={styles.container}>
