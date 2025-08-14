@@ -6,6 +6,11 @@ import { User } from '@supabase/supabase-js'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
+import { 
+  challengesApi, 
+  handleApiError, 
+  handleApiSuccess 
+} from '@/lib/api'
 
 interface Challenge {
   id: string
