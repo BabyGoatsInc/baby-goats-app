@@ -187,19 +187,25 @@ export default function ChallengesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-baby-goats-red">{streak}</div>
+                <div className="text-3xl font-bold text-baby-goats-red">
+                  {challengeStats?.streak || 0}
+                </div>
                 <div className="text-sm text-gray-600">Day Streak</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-baby-goats-black">{totalPoints}</div>
+                <div className="text-3xl font-bold text-baby-goats-black">
+                  {challengeStats?.total_points || 0}
+                </div>
                 <div className="text-sm text-gray-600">Total Points</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-green-600">{completions.length}</div>
+                <div className="text-3xl font-bold text-green-600">
+                  {challengeStats?.total_completed || 0}
+                </div>
                 <div className="text-sm text-gray-600">Completed</div>
               </CardContent>
             </Card>
