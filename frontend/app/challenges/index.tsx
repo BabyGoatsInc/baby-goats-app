@@ -11,7 +11,6 @@ import {
   Animated,
   Alert,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
