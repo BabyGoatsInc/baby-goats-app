@@ -43,10 +43,13 @@ const SPORTS = [
 export default function DiscoverPage() {
   const [profiles, setProfiles] = useState<ProfileWithStats[]>([])
   const [loading, setLoading] = useState(true)
+  const [searching, setSearching] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedSport, setSelectedSport] = useState('all')
   const [selectedGradYear, setSelectedGradYear] = useState('')
   const [currentUser, setCurrentUser] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(false)
+  const [offset, setOffset] = useState(0)
 
   useEffect(() => {
     const loadProfiles = async () => {
@@ -54,70 +57,90 @@ export default function DiscoverPage() {
       const { data: { session } } = await supabase.auth.getSession()
       setCurrentUser(session?.user?.id || null)
 
-      await searchProfiles()
+      await searchProfiles(true) // Reset search
     }
 
     loadProfiles()
   }, [])
 
-  const searchProfiles = async () => {
-    setLoading(true)
+  const searchProfiles = async (reset = false) => {
+    setSearching(true)
+    if (reset) {
+      setOffset(0)
+    }
 
-    let query = supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false })
+    const currentOffset = reset ? 0 : offset
 
-    // Apply filters
-    if (searchTerm) {
-      query = query.or(`full_name.ilike.%${searchTerm}%,team_name.ilike.%${searchTerm}%`)
+    // Build search parameters
+    const searchParams: any = {
+      limit: 20,
+      offset: currentOffset
+    }
+
+    if (searchTerm.trim()) {
+      searchParams.search = searchTerm.trim()
     }
 
     if (selectedSport !== 'all') {
-      query = query.eq('sport', selectedSport)
+      searchParams.sport = selectedSport
     }
 
     if (selectedGradYear) {
-      query = query.eq('grad_year', parseInt(selectedGradYear))
+      searchParams.grad_year = parseInt(selectedGradYear)
     }
 
-    const { data: profilesData } = await query.limit(20)
+    const { data, error } = await profilesApi.getProfiles(searchParams)
 
-    if (profilesData) {
+    if (error) {
+      handleApiError(error, 'Failed to search profiles')
+      setProfiles([])
+    } else if (data) {
       // Enrich profiles with additional data
       const enrichedProfiles = await Promise.all(
-        profilesData.map(async (profile) => {
-          // Get highlights count
-          const { count: highlightsCount } = await supabase
-            .from('highlights')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', profile.id)
+        data.profiles.map(async (profile) => {
+          // Get highlights count using API
+          const { data: highlightsData } = await highlightsApi.getHighlights({
+            user_id: profile.id,
+            limit: 1 // Just to get count efficiently
+          })
 
-          // Get top stat
-          const { data: topStat } = await supabase
-            .from('stats')
-            .select('stat_name, value, unit')
-            .eq('user_id', profile.id)
-            .eq('category', 'performance')
-            .order('created_at', { ascending: false })
-            .limit(1)
+          // Get top stat using API
+          const { data: statsData } = await statsApi.getStats({
+            user_id: profile.id,
+            category: 'performance',
+            limit: 1
+          })
 
           return {
             ...profile,
-            highlights_count: highlightsCount || 0,
-            top_stat: topStat?.[0] || null
+            highlights_count: highlightsData?.highlights?.length || 0,
+            top_stat: statsData?.stats?.[0] || null
           }
         })
       )
 
-      setProfiles(enrichedProfiles)
+      if (reset) {
+        setProfiles(enrichedProfiles)
+      } else {
+        setProfiles(prev => [...prev, ...enrichedProfiles])
+      }
+
+      setHasMore(data.pagination.hasMore)
+      setOffset(currentOffset + data.profiles.length)
     }
 
     setLoading(false)
+    setSearching(false)
   }
 
   const handleSearch = () => {
-    searchProfiles()
+    searchProfiles(true)
+  }
+
+  const loadMore = () => {
+    if (!searching && hasMore) {
+      searchProfiles(false)
+    }
   }
 
   const getSportEmoji = (sport: string) => {
