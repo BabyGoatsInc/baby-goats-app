@@ -145,11 +145,13 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: '#4ecdc4', marginTop: 40 }]}
               onPress={() => {
-                // Complete onboarding and navigate to challenges
-                console.log('Onboarding complete! Navigating to challenges...');
-                // For now, we'll navigate back to home - you could extend this to go to challenges
-                // In a real app, this would update the user's profile with onboarding completion
-                // and navigate to the main app dashboard
+                // Complete onboarding and navigate
+                console.log('Onboarding complete! Navigating...');
+                if (onComplete) {
+                  onComplete();
+                } else {
+                  console.log('No onComplete handler provided');
+                }
               }}
               activeOpacity={0.8}
             >
