@@ -37,39 +37,19 @@ interface ProfileProps {
 
 export default function UserProfileScreen({ user, onNavigateTo, onLogout }: ProfileProps) {
   const [fadeAnim] = useState(new Animated.Value(0));
-  const [scaleAnim] = useState(new Animated.Value(0.8));
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 100,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 600,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
-  const getAgeGroup = (age: number) => {
-    if (age <= 10) return 'Young Champion';
-    if (age <= 13) return 'Rising Star';
-    return 'Future Elite';
-  };
-
-  const getMotivationalMessage = () => {
-    const messages = [
-      "Every champion started exactly where you are! 🌟",
-      "Your journey to greatness begins with today! 🚀",
-      "Champions aren't made overnight, they're made every day! ⚡",
-      "The only way to become great is to start! 🔥",
-      "Your potential is unlimited - let's unlock it! 🗝️"
-    ];
-    return messages[Math.floor(Math.random() * messages.length)];
+  const getPerformanceLevel = (age: number) => {
+    if (age <= 10) return 'DEVELOPING';
+    if (age <= 13) return 'ADVANCING';
+    return 'ELITE';
   };
 
   const handleLogout = () => {
@@ -83,189 +63,175 @@ export default function UserProfileScreen({ user, onNavigateTo, onLogout }: Prof
     );
   };
 
-  const totalPillarProgress = user.pillarProgress 
+  const totalProgress = user.pillarProgress 
     ? user.pillarProgress.resilient + user.pillarProgress.relentless + user.pillarProgress.fearless
     : 0;
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
-      <LinearGradient
-        colors={['#667eea', '#764ba2', '#f093fb']}
-        style={styles.gradient}
-      >
+      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Animated.View
-            style={[
-              styles.content,
-              {
-                opacity: fadeAnim,
-                transform: [{ scale: scaleAnim }],
-              },
-            ]}
-          >
-            {/* Header */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => onNavigateTo('home')} style={styles.backButton}>
-                <Text style={styles.backText}>← Home</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                <Text style={styles.logoutText}>Sign Out</Text>
-              </TouchableOpacity>
-            </View>
+          {/* Elite Header */}
+          <View style={styles.header}>
+            <TouchableOpacity 
+              onPress={() => onNavigateTo('home')} 
+              style={styles.backButton}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.backText}>←</Text>
+            </TouchableOpacity>
+            
+            <Text style={styles.headerTitle}>ATHLETE</Text>
+            
+            <TouchableOpacity 
+              onPress={handleLogout} 
+              style={styles.logoutButton}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.logoutText}>Exit</Text>
+            </TouchableOpacity>
+          </View>
 
-            {/* Profile Header */}
-            <View style={styles.profileHeader}>
-              <View style={styles.avatarContainer}>
-                <LinearGradient
-                  colors={['#ff6b6b', '#feca57', '#4ecdc4']}
-                  style={styles.avatar}
-                >
-                  <Text style={styles.avatarText}>
-                    {user.name.substring(0, 2).toUpperCase()}
-                  </Text>
-                </LinearGradient>
+          {/* Athlete Identity */}
+          <View style={styles.identitySection}>
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>
+                  {user.name.substring(0, 2).toUpperCase()}
+                </Text>
               </View>
-              
-              <Text style={styles.profileName}>{user.name}</Text>
-              <Text style={styles.profileAgeGroup}>{getAgeGroup(user.age)}</Text>
-              <Text style={styles.profileAge}>Age {user.age}</Text>
-              
-              {user.sport && (
-                <View style={styles.sportBadge}>
-                  <Text style={styles.sportText}>🏆 {user.sport} Athlete</Text>
-                </View>
-              )}
-
-              {!user.isParentApproved && user.parentEmail && (
-                <View style={styles.approvalNotice}>
-                  <Text style={styles.approvalText}>
-                    🛡️ Waiting for parent approval at {user.parentEmail}
-                  </Text>
-                </View>
-              )}
             </View>
+            
+            <Text style={styles.athleteName}>{user.name.toUpperCase()}</Text>
+            <Text style={styles.performanceLevel}>{getPerformanceLevel(user.age)} ATHLETE</Text>
+            <Text style={styles.ageInfo}>Age {user.age}</Text>
+            
+            {user.sport && (
+              <View style={styles.sportBadge}>
+                <Text style={styles.sportText}>{user.sport.toUpperCase()}</Text>
+              </View>
+            )}
+          </View>
 
-            {/* Motivational Message */}
-            <View style={styles.motivationContainer}>
-              <Text style={styles.motivationMessage}>{getMotivationalMessage()}</Text>
+          {/* Performance Metrics */}
+          <View style={styles.metricsSection}>
+            <Text style={styles.sectionTitle}>PERFORMANCE METRICS</Text>
+            
+            <View style={styles.metricsGrid}>
+              <View style={styles.metricItem}>
+                <Text style={styles.metricNumber}>{user.currentStreak || 0}</Text>
+                <Text style={styles.metricLabel}>Day Streak</Text>
+              </View>
+              <View style={styles.metricDivider} />
+              <View style={styles.metricItem}>
+                <Text style={styles.metricNumber}>{totalProgress}</Text>
+                <Text style={styles.metricLabel}>Development Points</Text>
+              </View>
+              <View style={styles.metricDivider} />
+              <View style={styles.metricItem}>
+                <Text style={styles.metricNumber}>{user.totalChallengesCompleted || 0}</Text>
+                <Text style={styles.metricLabel}>Protocols Completed</Text>
+              </View>
             </View>
+          </View>
 
-            {/* Progress Stats */}
-            {totalPillarProgress > 0 && (
-              <View style={styles.statsContainer}>
-                <Text style={styles.statsTitle}>Your Champion Progress</Text>
+          {/* Character Development */}
+          {user.pillarProgress && (
+            <View style={styles.developmentSection}>
+              <Text style={styles.sectionTitle}>CHARACTER DEVELOPMENT</Text>
+              
+              <View style={styles.pillarList}>
+                <View style={styles.pillarRow}>
+                  <Text style={styles.pillarName}>RESILIENT</Text>
+                  <View style={styles.pillarProgress}>
+                    <View style={[styles.progressBar, { width: `${Math.min(user.pillarProgress.resilient * 5, 100)}%` }]} />
+                  </View>
+                  <Text style={styles.pillarValue}>{user.pillarProgress.resilient}</Text>
+                </View>
                 
-                <View style={styles.statsGrid}>
-                  <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{user.currentStreak || 0}</Text>
-                    <Text style={styles.statLabel}>Day Streak</Text>
+                <View style={styles.pillarRow}>
+                  <Text style={styles.pillarName}>RELENTLESS</Text>
+                  <View style={styles.pillarProgress}>
+                    <View style={[styles.progressBar, { width: `${Math.min(user.pillarProgress.relentless * 5, 100)}%` }]} />
                   </View>
-                  <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{totalPillarProgress}</Text>
-                    <Text style={styles.statLabel}>Character Points</Text>
-                  </View>
-                  <View style={styles.statItem}>
-                    <Text style={styles.statNumber}>{user.totalChallengesCompleted || 0}</Text>
-                    <Text style={styles.statLabel}>Completed</Text>
-                  </View>
+                  <Text style={styles.pillarValue}>{user.pillarProgress.relentless}</Text>
                 </View>
-
-                {/* Pillar Progress */}
-                {user.pillarProgress && (
-                  <View style={styles.pillarContainer}>
-                    <Text style={styles.pillarTitle}>Character Pillars</Text>
-                    <View style={styles.pillarGrid}>
-                      <View style={[styles.pillarCard, { backgroundColor: '#4ecdc4' }]}>
-                        <Text style={styles.pillarIcon}>🛡️</Text>
-                        <Text style={styles.pillarName}>RESILIENT</Text>
-                        <Text style={styles.pillarCount}>{user.pillarProgress.resilient}</Text>
-                      </View>
-                      <View style={[styles.pillarCard, { backgroundColor: '#ff6b6b' }]}>
-                        <Text style={styles.pillarIcon}>🔥</Text>
-                        <Text style={styles.pillarName}>RELENTLESS</Text>
-                        <Text style={styles.pillarCount}>{user.pillarProgress.relentless}</Text>
-                      </View>
-                      <View style={[styles.pillarCard, { backgroundColor: '#feca57' }]}>
-                        <Text style={styles.pillarIcon}>⚡</Text>
-                        <Text style={styles.pillarName}>FEARLESS</Text>
-                        <Text style={styles.pillarCount}>{user.pillarProgress.fearless}</Text>
-                      </View>
-                    </View>
+                
+                <View style={styles.pillarRow}>
+                  <Text style={styles.pillarName}>FEARLESS</Text>
+                  <View style={styles.pillarProgress}>
+                    <View style={[styles.progressBar, { width: `${Math.min(user.pillarProgress.fearless * 5, 100)}%` }]} />
                   </View>
-                )}
+                  <Text style={styles.pillarValue}>{user.pillarProgress.fearless}</Text>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {/* Training Actions */}
+          <View style={styles.actionsSection}>
+            <Text style={styles.sectionTitle}>TRAINING ACCESS</Text>
+            
+            <TouchableOpacity
+              style={styles.primaryAction}
+              onPress={() => onNavigateTo('challenges')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.primaryActionText}>Access Training Protocols</Text>
+            </TouchableOpacity>
+
+            {!user.sport && (
+              <TouchableOpacity
+                style={styles.secondaryAction}
+                onPress={() => onNavigateTo('onboarding')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.secondaryActionText}>Complete Assessment</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Profile Information */}
+          <View style={styles.infoSection}>
+            <Text style={styles.sectionTitle}>PROFILE DATA</Text>
+            
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Contact</Text>
+              <Text style={styles.infoValue}>{user.email}</Text>
+            </View>
+            
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Status</Text>
+              <Text style={styles.infoValue}>Active Development</Text>
+            </View>
+            
+            {user.sport && user.interestLevel && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Commitment Level</Text>
+                <Text style={styles.infoValue}>{user.interestLevel}/10</Text>
               </View>
             )}
 
-            {/* Action Buttons */}
-            <View style={styles.actionContainer}>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.primaryAction]}
-                onPress={() => onNavigateTo('challenges')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.actionButtonText}>🎯 Today's Challenge</Text>
-              </TouchableOpacity>
-
-              {!user.sport && (
-                <TouchableOpacity
-                  style={[styles.actionButton, styles.secondaryAction]}
-                  onPress={() => onNavigateTo('onboarding')}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.actionButtonText}>⚡ Complete Onboarding</Text>
-                </TouchableOpacity>
-              )}
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.tertiaryAction]}
-                onPress={() => {
-                  Alert.alert(
-                    '🚧 Coming Soon!',
-                    'Training plans, achievements, and more features are being built by our champion developers!',
-                    [{ text: 'Can\'t Wait!', style: 'default' }]
-                  );
-                }}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.actionButtonText}>📊 View Achievements</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Profile Info */}
-            <View style={styles.infoContainer}>
-              <Text style={styles.infoTitle}>Profile Details</Text>
-              
-              <View style={styles.infoItem}>
-                <Text style={styles.infoLabel}>Email:</Text>
-                <Text style={styles.infoValue}>{user.email}</Text>
+            {!user.isParentApproved && user.parentEmail && (
+              <View style={styles.approvalNotice}>
+                <Text style={styles.approvalText}>
+                  Guardian approval pending: {user.parentEmail}
+                </Text>
               </View>
-              
-              <View style={styles.infoItem}>
-                <Text style={styles.infoLabel}>Member Since:</Text>
-                <Text style={styles.infoValue}>Today (Welcome!)</Text>
-              </View>
-              
-              {user.sport && user.interestLevel && (
-                <View style={styles.infoItem}>
-                  <Text style={styles.infoLabel}>Sport Passion:</Text>
-                  <Text style={styles.infoValue}>{user.interestLevel}/10 🔥</Text>
-                </View>
-              )}
-            </View>
+            )}
+          </View>
 
-            {/* Champion Quote */}
-            <View style={styles.quoteContainer}>
-              <Text style={styles.quote}>
-                "Success isn't given. It's earned in the gym, on the field, and in every single choice you make."
-              </Text>
-              <Text style={styles.quoteAuthor}>— Champion's Mindset</Text>
-            </View>
-          </Animated.View>
+          {/* Elite Quote */}
+          <View style={styles.quoteSection}>
+            <Text style={styles.quote}>
+              "Excellence is not a skill, it's an attitude."
+            </Text>
+            <Text style={styles.quoteSource}>— Elite Performance Philosophy</Text>
+          </View>
         </ScrollView>
-      </LinearGradient>
+      </Animated.View>
     </SafeAreaView>
   );
 }
