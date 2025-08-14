@@ -20,22 +20,24 @@ interface Challenge {
   difficulty: string
   points: number
   created_at: string
+  completed?: boolean
+  completion?: any
 }
 
-interface ChallengeCompletion {
-  id: string
-  challenge_id: string
-  completed_at: string
-  notes: string | null
+interface ChallengeStats {
+  total_completed: number
+  total_points: number
+  categories: Record<string, any>
+  streak: number
+  recent_completions: any[]
 }
 
 export default function ChallengesPage() {
   const [user, setUser] = useState<User | null>(null)
   const [challenges, setChallenges] = useState<Challenge[]>([])
-  const [completions, setCompletions] = useState<ChallengeCompletion[]>([])
+  const [challengeStats, setChallengeStats] = useState<ChallengeStats | null>(null)
   const [loading, setLoading] = useState(true)
-  const [streak, setStreak] = useState(0)
-  const [totalPoints, setTotalPoints] = useState(0)
+  const [submitting, setSubmitting] = useState<string | null>(null) // Track which challenge is being submitted
 
   useEffect(() => {
     const loadChallengesData = async () => {
@@ -47,53 +49,11 @@ export default function ChallengesPage() {
 
       setUser(session.user)
 
-      // Load all challenges
-      const { data: challengesData } = await supabase
-        .from('challenges')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-
-      setChallenges(challengesData || [])
-
-      // Load user's completions
-      const { data: completionsData } = await supabase
-        .from('challenge_completions')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('completed_at', { ascending: false })
-
-      setCompletions(completionsData || [])
-
-      // Calculate streak and points
-      if (completionsData) {
-        const challengePoints = challengesData?.reduce((acc, challenge) => {
-          const isCompleted = completionsData.some(c => c.challenge_id === challenge.id)
-          return acc + (isCompleted ? challenge.points : 0)
-        }, 0) || 0
-        
-        setTotalPoints(challengePoints)
-
-        // Calculate streak (consecutive days with at least one completion)
-        const completionDates = completionsData.map(c => new Date(c.completed_at).toDateString())
-        const uniqueDates = [...new Set(completionDates)].sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-        
-        let currentStreak = 0
-        const today = new Date().toDateString()
-        
-        for (let i = 0; i < uniqueDates.length; i++) {
-          const expectedDate = new Date()
-          expectedDate.setDate(expectedDate.getDate() - i)
-          
-          if (uniqueDates[i] === expectedDate.toDateString()) {
-            currentStreak++
-          } else {
-            break
-          }
-        }
-        
-        setStreak(currentStreak)
-      }
+      // Load data using API endpoints
+      await Promise.all([
+        loadChallenges(session.user.id),
+        loadChallengeStats(session.user.id)
+      ])
 
       setLoading(false)
     }
@@ -101,46 +61,63 @@ export default function ChallengesPage() {
     loadChallengesData()
   }, [])
 
+  const loadChallenges = async (userId: string) => {
+    const { data, error } = await challengesApi.getChallenges({
+      user_id: userId,
+      is_active: true
+    })
+
+    if (error) {
+      handleApiError(error, 'Failed to load challenges')
+    } else if (data) {
+      setChallenges(data.challenges)
+    }
+  }
+
+  const loadChallengeStats = async (userId: string) => {
+    const { data, error } = await challengesApi.getChallengeStats(userId)
+    
+    if (error) {
+      console.error('Failed to load challenge stats:', error)
+    } else if (data) {
+      setChallengeStats(data.stats)
+    }
+  }
+
   const completeChallenge = async (challenge: Challenge) => {
     if (!user) return
 
     const notes = prompt('Add a note about completing this challenge (optional):')
     
-    const { error } = await supabase
-      .from('challenge_completions')
-      .insert({
-        user_id: user.id,
-        challenge_id: challenge.id,
-        notes: notes || null
-      })
+    setSubmitting(challenge.id)
 
-    if (!error) {
-      // Refresh completions
-      const { data: completionsData } = await supabase
-        .from('challenge_completions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('completed_at', { ascending: false })
+    const { data, error } = await challengesApi.completeChallenge({
+      user_id: user.id,
+      challenge_id: challenge.id,
+      notes: notes || undefined
+    })
 
-      setCompletions(completionsData || [])
-      
-      // Update total points
-      setTotalPoints(prev => prev + challenge.points)
-    } else {
-      if (error.message.includes('duplicate key')) {
+    if (error) {
+      if (error.includes('duplicate') || error.includes('already completed')) {
         alert('You have already completed this challenge today!')
       } else {
-        alert('Error completing challenge. Please try again.')
+        handleApiError(error, 'Failed to complete challenge')
       }
+    } else if (data) {
+      handleApiSuccess(`Challenge completed! +${data.points_earned} points`)
+      
+      // Refresh data to show updated completion status
+      await Promise.all([
+        loadChallenges(user.id),
+        loadChallengeStats(user.id)
+      ])
     }
+
+    setSubmitting(null)
   }
 
-  const isChallengeCompleted = (challengeId: string) => {
-    const today = new Date().toDateString()
-    return completions.some(c => 
-      c.challenge_id === challengeId && 
-      new Date(c.completed_at).toDateString() === today
-    )
+  const isChallengeCompleted = (challenge: Challenge) => {
+    return challenge.completed === true
   }
 
   const getCategoryColor = (category: string) => {
