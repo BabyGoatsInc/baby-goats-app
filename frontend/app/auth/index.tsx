@@ -4,16 +4,12 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   SafeAreaView,
   StatusBar,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
   Animated,
-  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import ConversationalAuth from './conversational';
 
 interface AuthProps {
   onAuthSuccess: (user: UserProfile) => void;
@@ -30,15 +26,7 @@ interface UserProfile {
 }
 
 export default function Authentication({ onAuthSuccess, onBack }: AuthProps) {
-  const [mode, setMode] = useState<'login' | 'signup'>('signup');
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    age: '',
-    parentEmail: '',
-  });
-  const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<'choice' | 'signup' | 'login'>('choice');
   const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
@@ -49,77 +37,122 @@ export default function Authentication({ onAuthSuccess, onBack }: AuthProps) {
     }).start();
   }, []);
 
-  const validateForm = () => {
-    if (!formData.email || !formData.password) {
-      Alert.alert('Missing Info', 'Please enter email and password');
-      return false;
-    }
+  // Show conversational signup
+  if (mode === 'signup') {
+    return (
+      <ConversationalAuth 
+        onAuthSuccess={onAuthSuccess}
+        onBack={() => setMode('choice')}
+      />
+    );
+  }
 
-    if (mode === 'signup') {
-      if (!formData.name || !formData.age) {
-        Alert.alert('Missing Info', 'Please fill in all required fields');
-        return false;
-      }
+  // Show simple login (can be enhanced later)
+  if (mode === 'login') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <LinearGradient colors={['#f093fb', '#f5576c']} style={styles.gradient}>
+          <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+            <Text style={styles.title}>Welcome Back, Champion! 🏆</Text>
+            <Text style={styles.subtitle}>Sign in to continue your journey</Text>
+            
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => {
+                // For now, create a mock user for demo
+                const mockUser: UserProfile = {
+                  id: 'returning_user',
+                  email: 'champion@babygoats.com',
+                  name: 'Returning Champion',
+                  age: 16,
+                  isParentApproved: true,
+                };
+                onAuthSuccess(mockUser);
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>Demo Sign In 🚀</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={() => setMode('choice')} style={styles.backLink}>
+              <Text style={styles.backLinkText}>← Back to options</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </LinearGradient>
+      </SafeAreaView>
+    );
+  }
 
-      const age = parseInt(formData.age);
-      if (age < 8 || age > 16) {
-        Alert.alert('Age Requirement', 'Baby Goats is for athletes aged 8-16');
-        return false;
-      }
+  // Show choice screen
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      
+      <LinearGradient
+        colors={['#667eea', '#764ba2']}
+        style={styles.gradient}
+      >
+        <Animated.View
+          style={[
+            styles.content,
+            { opacity: fadeAnim },
+          ]}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              <Text style={styles.backText}>← Back</Text>
+            </TouchableOpacity>
+            
+            <View style={styles.logoContainer}>
+              <Text style={styles.logo}>🐐</Text>
+              <Text style={styles.appName}>BABY GOATS</Text>
+            </View>
+          </View>
 
-      if (age < 13 && !formData.parentEmail) {
-        Alert.alert('Parent Email Required', 'Athletes under 13 need parent approval for safety');
-        return false;
-      }
-    }
+          {/* Title Section */}
+          <View style={styles.titleSection}>
+            <Text style={styles.title}>Ready to Join the Champions?</Text>
+            <Text style={styles.subtitle}>
+              Your journey to greatness starts with a single choice
+            </Text>
+          </View>
 
-    return true;
-  };
+          {/* Choice Buttons */}
+          <View style={styles.choiceContainer}>
+            <TouchableOpacity
+              style={[styles.choiceButton, styles.signupButton]}
+              onPress={() => setMode('signup')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.choiceEmoji}>🚀</Text>
+              <Text style={styles.choiceTitle}>I'm New Here!</Text>
+              <Text style={styles.choiceSubtitle}>Join the Baby Goats family</Text>
+            </TouchableOpacity>
 
-  const handleAuth = async () => {
-    if (!validateForm()) return;
+            <TouchableOpacity
+              style={[styles.choiceButton, styles.loginButton]}
+              onPress={() => setMode('login')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.choiceEmoji}>🏆</Text>
+              <Text style={styles.choiceTitle}>Welcome Back!</Text>
+              <Text style={styles.choiceSubtitle}>Continue your journey</Text>
+            </TouchableOpacity>
+          </View>
 
-    setLoading(true);
-
-    try {
-      // Simulate API call - In real app, this would connect to backend
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const age = parseInt(formData.age);
-      const mockUser: UserProfile = {
-        id: 'user_' + Date.now(),
-        email: formData.email,
-        name: formData.name || 'Champion',
-        age: age || 14,
-        parentEmail: formData.parentEmail || undefined,
-        isParentApproved: age >= 13 || !!formData.parentEmail,
-      };
-
-      if (mode === 'signup' && age < 13) {
-        // For users under 13, show parent approval message and proceed
-        onAuthSuccess(mockUser);
-      } else {
-        // For users 13+, directly proceed to success
-        onAuthSuccess(mockUser);
-      }
-
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
-    setFormData({
-      email: formData.email,
-      password: '',
-      name: '',
-      age: '',
-      parentEmail: '',
-    });
-  };
+          {/* Age Notice */}
+          <View style={styles.ageNotice}>
+            <Text style={styles.ageNoticeText}>
+              🌟 Open to athletes of all ages! We welcome everyone from young beginners to seasoned champions.
+            </Text>
+          </View>
+        </Animated.View>
+      </LinearGradient>
+    </SafeAreaView>
+  );
+}
 
   return (
     <SafeAreaView style={styles.container}>
