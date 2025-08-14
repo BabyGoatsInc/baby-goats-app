@@ -52,6 +52,7 @@ export default function DailyChallenges() {
   
   const [animationValue] = useState(new Animated.Value(0));
   const [showCelebration, setShowCelebration] = useState(false);
+  const [showCompletionOptions, setShowCompletionOptions] = useState(false);
 
   // Challenge Database - Start with 15 core challenges
   const challenges: Challenge[] = [
