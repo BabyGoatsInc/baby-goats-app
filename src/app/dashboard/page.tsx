@@ -472,7 +472,12 @@ export default function DashboardPage() {
                           <p className="text-xs text-gray-600 mt-1">{highlight.description}</p>
                         )}
                         <div className="flex justify-between items-center mt-2 text-xs text-gray-500">
-                          <span>❤️ {highlight.likes_count}</span>
+                          <LikeButton 
+                            highlightId={highlight.id}
+                            initialLikesCount={highlight.likes_count}
+                            userId={user?.id}
+                            size="sm"
+                          />
                           <span>{new Date(highlight.created_at).toLocaleDateString()}</span>
                         </div>
                       </div>
