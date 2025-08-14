@@ -99,7 +99,7 @@ export default function Index() {
       <View style={styles.content}>
         {/* Elite Header */}
         <View style={styles.header}>
-          <Text style={styles.brandName}>ATHLETES</Text>
+          <Text style={styles.brandName}>BABY GOATS</Text>
           <Text style={styles.tagline}>Elite Development Platform</Text>
         </View>
 
