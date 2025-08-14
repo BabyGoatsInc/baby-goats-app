@@ -96,27 +96,11 @@ export default function Authentication({ onAuthSuccess, onBack }: AuthProps) {
       };
 
       if (mode === 'signup' && age < 13) {
-        Alert.alert(
-          '🛡️ Parent Approval Needed',
-          `We've sent an approval email to ${formData.parentEmail}. Your parent needs to approve your account for safety!`,
-          [
-            {
-              text: 'Got it!',
-              onPress: () => onAuthSuccess(mockUser)
-            }
-          ]
-        );
+        // For users under 13, show parent approval message and proceed
+        onAuthSuccess(mockUser);
       } else {
-        Alert.alert(
-          '🎉 Welcome to Baby Goats!',
-          mode === 'login' ? 'Welcome back, champion!' : 'Your journey to greatness begins now!',
-          [
-            {
-              text: 'Let\'s Go!',
-              onPress: () => onAuthSuccess(mockUser)
-            }
-          ]
-        );
+        // For users 13+, directly proceed to success
+        onAuthSuccess(mockUser);
       }
 
     } catch (error) {
