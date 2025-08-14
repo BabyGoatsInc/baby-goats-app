@@ -236,6 +236,8 @@ export default function EliteOnboardingPage() {
                                   !data.completed_steps.includes('sport-selection')
   const shouldShowExperienceLevel = data.completed_steps.includes('sport-selection') &&
                                    !data.completed_steps.includes('experience-level')
+  const shouldShowGoalSetting = data.completed_steps.includes('experience-level') &&
+                               !data.completed_steps.includes('goal-setting')
 
   if (shouldShowWelcome) {
     return <WelcomeSequence onComplete={handleWelcomeComplete} />
@@ -247,6 +249,10 @@ export default function EliteOnboardingPage() {
 
   if (shouldShowExperienceLevel) {
     return <ExperienceLevelScreen onNext={handleExperienceLevelComplete} />
+  }
+
+  if (shouldShowGoalSetting) {
+    return <GoalSettingWorkshop onNext={handleGoalSettingComplete} />
   }
 
   // For now, show placeholder for remaining steps
