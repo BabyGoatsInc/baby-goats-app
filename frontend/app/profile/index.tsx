@@ -83,7 +83,7 @@ export default function UserProfileScreen({ user, onNavigateTo, onLogout }: Prof
               <Text style={styles.backText}>←</Text>
             </TouchableOpacity>
             
-            <Text style={styles.headerTitle}>ATHLETE</Text>
+            <Text style={styles.headerTitle}>BABY GOATS</Text>
             
             <TouchableOpacity 
               onPress={handleLogout} 
