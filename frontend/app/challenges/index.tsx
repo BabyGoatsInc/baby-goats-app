@@ -292,10 +292,10 @@ export default function DailyChallenges({ onBack }: { onBack?: () => void } = {}
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return '#4CAF50';
-      case 'medium': return '#FF9800';
-      case 'hard': return '#F44336';
-      default: return '#666';
+      case 'easy': return 'rgba(255,255,255,0.2)';
+      case 'medium': return 'rgba(255,255,255,0.3)';
+      case 'hard': return 'rgba(255,255,255,0.4)';
+      default: return 'rgba(255,255,255,0.2)';
     }
   };
 
