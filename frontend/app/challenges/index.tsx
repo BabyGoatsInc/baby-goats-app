@@ -39,7 +39,7 @@ interface UserProgress {
   lastCompletedDate: string;
 }
 
-export default function DailyChallenges() {
+export default function DailyChallenges({ onBack }: { onBack?: () => void } = {}) {
   const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(null);
   const [userProgress, setUserProgress] = useState<UserProgress>({
     currentStreak: 5, // Mock data for demo
