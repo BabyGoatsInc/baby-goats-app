@@ -88,7 +88,11 @@ export default function Index() {
 
   // Daily Challenges Screen
   if (currentScreen === 'challenges') {
-    return <DailyChallenges />;
+    return (
+      <DailyChallenges 
+        onBack={() => setCurrentScreen('home')}
+      />
+    );
   }
 
   // Home Screen
