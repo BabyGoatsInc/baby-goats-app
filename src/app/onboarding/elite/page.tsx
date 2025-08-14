@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { WelcomeSequence } from '@/components/onboarding/welcome-sequence'
+import { ExperienceLevelScreen } from '@/components/onboarding/experience-level'
 import { useOnboardingStore, OnboardingStep } from '@/lib/onboarding-state'
 
 // Enhanced Sport Selection Component
