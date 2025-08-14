@@ -154,186 +154,6 @@ export default function Authentication({ onAuthSuccess, onBack }: AuthProps) {
   );
 }
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      
-      <LinearGradient
-        colors={mode === 'signup' ? ['#667eea', '#764ba2'] : ['#f093fb', '#f5576c']}
-        style={styles.gradient}
-      >
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardContainer}
-        >
-          <ScrollView 
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            <Animated.View
-              style={[
-                styles.content,
-                {
-                  opacity: fadeAnim,
-                  transform: [{
-                    translateY: fadeAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [50, 0]
-                    })
-                  }]
-                }
-              ]}
-            >
-              {/* Header */}
-              <View style={styles.header}>
-                <TouchableOpacity onPress={onBack} style={styles.backButton}>
-                  <Text style={styles.backText}>← Back</Text>
-                </TouchableOpacity>
-                
-                <View style={styles.logoContainer}>
-                  <Text style={styles.logo}>🐐</Text>
-                  <Text style={styles.appName}>BABY GOATS</Text>
-                </View>
-              </View>
-
-              {/* Title Section */}
-              <View style={styles.titleSection}>
-                <Text style={styles.title}>
-                  {mode === 'signup' ? 'Join the Champions' : 'Welcome Back, Champion'}
-                </Text>
-                <Text style={styles.subtitle}>
-                  {mode === 'signup' 
-                    ? 'Every legend starts with the first step' 
-                    : 'Continue your journey to greatness'
-                  }
-                </Text>
-              </View>
-
-              {/* Form */}
-              <View style={styles.form}>
-                {/* Name Field (Signup only) */}
-                {mode === 'signup' && (
-                  <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Champion Name *</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={formData.name}
-                      onChangeText={(text) => setFormData({...formData, name: text})}
-                      placeholder="What should we call you?"
-                      placeholderTextColor="rgba(255,255,255,0.6)"
-                      autoCapitalize="words"
-                    />
-                  </View>
-                )}
-
-                {/* Age Field (Signup only) */}
-                {mode === 'signup' && (
-                  <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Age (8-16) *</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={formData.age}
-                      onChangeText={(text) => setFormData({...formData, age: text.replace(/[^0-9]/g, '')})}
-                      placeholder="How old are you?"
-                      placeholderTextColor="rgba(255,255,255,0.6)"
-                      keyboardType="numeric"
-                      maxLength={2}
-                    />
-                  </View>
-                )}
-
-                {/* Email Field */}
-                <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Email *</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={formData.email}
-                    onChangeText={(text) => setFormData({...formData, email: text.toLowerCase().trim()})}
-                    placeholder="your.email@example.com"
-                    placeholderTextColor="rgba(255,255,255,0.6)"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                </View>
-
-                {/* Password Field */}
-                <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Password *</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={formData.password}
-                    onChangeText={(text) => setFormData({...formData, password: text})}
-                    placeholder="Create a strong password"
-                    placeholderTextColor="rgba(255,255,255,0.6)"
-                    secureTextEntry
-                    autoCapitalize="none"
-                  />
-                </View>
-
-                {/* Parent Email (for under 13) */}
-                {mode === 'signup' && parseInt(formData.age) > 0 && parseInt(formData.age) < 13 && (
-                  <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Parent/Guardian Email *</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={formData.parentEmail}
-                      onChangeText={(text) => setFormData({...formData, parentEmail: text.toLowerCase().trim()})}
-                      placeholder="parent@example.com"
-                      placeholderTextColor="rgba(255,255,255,0.6)"
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                    />
-                    <Text style={styles.helperText}>
-                      🛡️ Required for safety - we'll send them an approval email
-                    </Text>
-                  </View>
-                )}
-
-                {/* Submit Button */}
-                <TouchableOpacity
-                  style={[styles.submitButton, loading && styles.submitButtonLoading]}
-                  onPress={handleAuth}
-                  disabled={loading}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.submitButtonText}>
-                    {loading 
-                      ? (mode === 'signup' ? 'Creating Account...' : 'Signing In...') 
-                      : (mode === 'signup' ? '🚀 Start My Journey' : '🏆 Welcome Back')
-                    }
-                  </Text>
-                </TouchableOpacity>
-
-                {/* Toggle Mode */}
-                <TouchableOpacity onPress={toggleMode} style={styles.toggleButton}>
-                  <Text style={styles.toggleText}>
-                    {mode === 'signup' 
-                      ? 'Already a champion? Sign In' 
-                      : 'New here? Join the Champions'
-                    }
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Safety Notice */}
-              {mode === 'signup' && (
-                <View style={styles.safetyNotice}>
-                  <Text style={styles.safetyTitle}>🛡️ Your Safety Matters</Text>
-                  <Text style={styles.safetyText}>
-                    Baby Goats is committed to keeping young athletes safe. We follow COPPA guidelines and require parent approval for athletes under 13.
-                  </Text>
-                </View>
-              )}
-            </Animated.View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </LinearGradient>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -342,13 +162,12 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  keyboardContainer: {
-    flex: 1,
-  },
   content: {
+    flex: 1,
     paddingHorizontal: 24,
     paddingTop: StatusBar.currentHeight || 40,
-    minHeight: '100%',
+    justifyContent: 'space-between',
+    paddingBottom: 40,
   },
   header: {
     flexDirection: 'row',
@@ -386,87 +205,85 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
+    lineHeight: 34,
   },
   subtitle: {
     fontSize: 16,
     color: 'rgba(255,255,255,0.8)',
     textAlign: 'center',
-    maxWidth: 280,
+    maxWidth: 300,
+    lineHeight: 22,
   },
-  form: {
-    marginBottom: 30,
+  choiceContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
   },
-  inputContainer: {
-    marginBottom: 20,
+  choiceButton: {
+    width: 280,
+    padding: 24,
+    borderRadius: 20,
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 2,
   },
-  label: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
+  signupButton: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderColor: 'rgba(255,255,255,0.4)',
+  },
+  loginButton: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.3)',
+  },
+  choiceEmoji: {
+    fontSize: 32,
     marginBottom: 8,
   },
-  input: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
+  choiceTitle: {
     color: '#fff',
-    minHeight: 50,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
-  helperText: {
-    fontSize: 12,
+  choiceSubtitle: {
     color: 'rgba(255,255,255,0.7)',
-    marginTop: 4,
-    fontStyle: 'italic',
+    fontSize: 14,
+    textAlign: 'center',
   },
-  submitButton: {
+  ageNotice: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+  },
+  ageNoticeText: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  actionButton: {
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 2,
     borderColor: '#fff',
-    borderRadius: 50,
     paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 50,
     alignItems: 'center',
-    marginTop: 20,
     marginBottom: 20,
   },
-  submitButtonLoading: {
-    opacity: 0.7,
-  },
-  submitButtonText: {
+  buttonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  toggleButton: {
+  backLink: {
     alignItems: 'center',
     padding: 12,
   },
-  toggleText: {
+  backLinkText: {
     color: 'rgba(255,255,255,0.8)',
     fontSize: 14,
     textDecorationLine: 'underline',
-  },
-  safetyNotice: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-  },
-  safetyTitle: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  safetyText: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
   },
 });
