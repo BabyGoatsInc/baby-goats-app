@@ -80,6 +80,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const checkUserAndProfile = async () => {
+      const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
         window.location.href = '/'
