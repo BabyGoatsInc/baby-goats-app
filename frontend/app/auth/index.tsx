@@ -110,7 +110,7 @@ export default function Authentication({ onAuthSuccess, onBack }: AuthProps) {
 
         {/* Elite Branding */}
         <View style={styles.brandingSection}>
-          <Text style={styles.brandName}>ATHLETES</Text>
+          <Text style={styles.brandName}>BABY GOATS</Text>
           <Text style={styles.platformName}>Elite Development Platform</Text>
         </View>
 
