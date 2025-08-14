@@ -87,69 +87,56 @@ export default function Authentication({ onAuthSuccess, onBack }: AuthProps) {
   // Show choice screen
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
-      <LinearGradient
-        colors={['#667eea', '#764ba2']}
-        style={styles.gradient}
-      >
-        <Animated.View
-          style={[
-            styles.content,
-            { opacity: fadeAnim },
-          ]}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
-              <Text style={styles.backText}>← Back</Text>
-            </TouchableOpacity>
-            
-            <View style={styles.logoContainer}>
-              <Text style={styles.logo}>🐐</Text>
-              <Text style={styles.appName}>BABY GOATS</Text>
-            </View>
-          </View>
+      <View style={styles.content}>
+        {/* Elite Header */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <Text style={styles.backText}>← Back</Text>
+          </TouchableOpacity>
+        </View>
 
-          {/* Title Section */}
-          <View style={styles.titleSection}>
-            <Text style={styles.title}>Ready to Join the Champions?</Text>
-            <Text style={styles.subtitle}>
-              Your journey to greatness starts with a single choice
-            </Text>
-          </View>
+        {/* Elite Branding */}
+        <View style={styles.brandingSection}>
+          <Text style={styles.brandName}>ATHLETES</Text>
+          <Text style={styles.platformName}>Elite Development Platform</Text>
+        </View>
 
-          {/* Choice Buttons */}
-          <View style={styles.choiceContainer}>
-            <TouchableOpacity
-              style={[styles.choiceButton, styles.signupButton]}
-              onPress={() => setMode('signup')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.choiceEmoji}>🚀</Text>
-              <Text style={styles.choiceTitle}>I'm New Here!</Text>
-              <Text style={styles.choiceSubtitle}>Join the Baby Goats family</Text>
-            </TouchableOpacity>
+        {/* Authentication Message */}
+        <View style={styles.messageSection}>
+          <Text style={styles.title}>Access Your Development</Text>
+          <Text style={styles.subtitle}>
+            Continue your path to elite performance
+          </Text>
+        </View>
 
-            <TouchableOpacity
-              style={[styles.choiceButton, styles.loginButton]}
-              onPress={() => setMode('login')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.choiceEmoji}>🏆</Text>
-              <Text style={styles.choiceTitle}>Welcome Back!</Text>
-              <Text style={styles.choiceSubtitle}>Continue your journey</Text>
-            </TouchableOpacity>
-          </View>
+        {/* Choice Actions */}
+        <View style={styles.choiceContainer}>
+          <TouchableOpacity
+            style={styles.primaryChoice}
+            onPress={() => setMode('signup')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.primaryChoiceText}>Create Account</Text>
+          </TouchableOpacity>
 
-          {/* Age Notice */}
-          <View style={styles.ageNotice}>
-            <Text style={styles.ageNoticeText}>
-              🌟 Open to athletes of all ages! We welcome everyone from young beginners to seasoned champions.
-            </Text>
-          </View>
-        </Animated.View>
-      </LinearGradient>
+          <TouchableOpacity
+            style={styles.secondaryChoice}
+            onPress={() => setMode('login')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.secondaryChoiceText}>Access Existing Account</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Platform Notice */}
+        <View style={styles.noticeContainer}>
+          <Text style={styles.noticeText}>
+            Secure development environment for athletes of all levels
+          </Text>
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
