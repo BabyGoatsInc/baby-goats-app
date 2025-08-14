@@ -228,7 +228,8 @@ export default function ChallengesPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {categoryCharlenges.map((challenge) => {
-                  const isCompleted = isChallengeCompleted(challenge.id)
+                  const isCompleted = isChallengeCompleted(challenge)
+                  const isSubmitting = submitting === challenge.id
                   
                   return (
                     <Card key={challenge.id} className={`relative ${isCompleted ? 'bg-green-50 border-green-200' : ''}`}>
@@ -257,8 +258,9 @@ export default function ChallengesPage() {
                             variant="babygoats" 
                             className="w-full"
                             onClick={() => completeChallenge(challenge)}
+                            disabled={isSubmitting}
                           >
-                            Complete Challenge
+                            {isSubmitting ? 'Completing...' : 'Complete Challenge'}
                           </Button>
                         )}
                       </CardContent>
