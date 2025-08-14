@@ -15,6 +15,7 @@ import {
   handleApiError, 
   handleApiSuccess 
 } from '@/lib/api'
+import { LikeButton } from '@/components/baby-goats/like-button'
 
 interface Profile {
   id: string
