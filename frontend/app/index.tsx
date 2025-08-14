@@ -2,16 +2,23 @@ import React, { useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import EliteOnboarding from './onboarding/elite';
+import DailyChallenges from './challenges/index';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
+type Screen = 'home' | 'onboarding' | 'challenges';
 
 export default function Index() {
   console.log(EXPO_PUBLIC_BACKEND_URL, "EXPO_PUBLIC_BACKEND_URL");
   
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState<Screen>('home');
 
-  if (showOnboarding) {
+  if (currentScreen === 'onboarding') {
     return <EliteOnboarding />;
+  }
+
+  if (currentScreen === 'challenges') {
+    return <DailyChallenges />;
   }
 
   return (
@@ -34,14 +41,22 @@ export default function Index() {
             </Text>
           </View>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <View style={styles.buttonSection}>
             <TouchableOpacity
               style={styles.primaryButton}
-              onPress={() => setShowOnboarding(true)}
+              onPress={() => setCurrentScreen('onboarding')}
               activeOpacity={0.8}
             >
               <Text style={styles.buttonText}>Start Elite Onboarding</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.primaryButton, { backgroundColor: '#4ecdc4' }]}
+              onPress={() => setCurrentScreen('challenges')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>Daily Challenges</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.8}>
