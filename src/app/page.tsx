@@ -28,29 +28,7 @@ export default function LandingPage() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const handleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOtp({
-      email: prompt('Enter your email:') || '',
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`
-      }
-    })
-    
-    if (error) {
-      alert('Error: ' + error.message)
-    } else {
-      alert('Check your email for the magic link!')
-    }
-  }
 
-  const handleGetStarted = () => {
-    if (user) {
-      // Check if user has completed onboarding
-      window.location.href = '/dashboard'
-    } else {
-      handleSignIn()
-    }
-  }
 
   if (loading) {
     return (
