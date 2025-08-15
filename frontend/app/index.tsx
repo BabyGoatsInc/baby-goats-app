@@ -132,85 +132,117 @@ export default function Index() {
     );
   }
 
-  // Arena Glow Welcome Screen
+  // BABY GOATS Landing Page
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0A1B1F" />
+      <StatusBar barStyle="light-content" backgroundColor="#0B0C0E" />
       
-      {/* Cinematic Teal Gradient Background */}
+      {/* Background Gradient */}
       <LinearGradient
-        colors={['#0A1B1F', '#0F2A2F', '#1A3A3F', '#25484D']}
-        locations={[0, 0.3, 0.7, 1]}
+        colors={['#0B0C0E', '#1A1B1E', '#0B0C0E']}
+        locations={[0, 0.5, 1]}
         style={styles.backgroundGradient}
       />
       
-      {/* Bokeh Light Particles */}
-      <View style={styles.bokehContainer}>
-        <Animated.View style={[styles.bokehParticle, styles.particle1, animatedGlowStyle]} />
-        <Animated.View style={[styles.bokehParticle, styles.particle2]} />
-        <Animated.View style={[styles.bokehParticle, styles.particle3, animatedGlowStyle]} />
-        <Animated.View style={[styles.bokehParticle, styles.particle4]} />
-        <Animated.View style={[styles.bokehParticle, styles.particle5, animatedGlowStyle]} />
-        <Animated.View style={[styles.bokehParticle, styles.particle6]} />
-      </View>
-      
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.content}>
-          {/* Title with glow effect */}
-          <View style={styles.titleContainer}>
-            {/* Enhanced glow background */}
-            <Animated.View style={[styles.titleGlow, animatedGlowStyle]}>
-              <LinearGradient
-                colors={['rgba(58, 184, 255, 0.3)', 'rgba(109, 77, 255, 0.2)', 'transparent']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.glowGradient}
-              />
-            </Animated.View>
-            
-            {/* Light sweep effect */}
-            <Animated.View style={[styles.lightSweep, animatedSweepStyle]}>
-              <LinearGradient
-                colors={['transparent', 'rgba(58, 184, 255, 0.4)', 'transparent']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.sweepGradient}
-              />
-            </Animated.View>
-            
-            {/* Main title */}
-            <Text style={[styles.title, isTablet && styles.titleTablet]}>
-              BABY G.O.A.T.S
-            </Text>
+        <ScrollView 
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.brandName}>BABY GOATS</Text>
+            <View style={styles.nav}>
+              <TouchableOpacity style={styles.navItem} onPress={() => setCurrentScreen('onboarding')}>
+                <Text style={styles.navText}>Academy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.navItem} onPress={() => setCurrentScreen('profile')}>
+                <Text style={styles.navText}>Mentorship</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.navItem} onPress={() => setCurrentScreen('challenges')}>
+                <Text style={styles.navText}>Community</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          
-          {/* Subheadline */}
-          <Text style={[styles.subheadline, isTablet && styles.subheadlineTablet]}>
-            Where hungry athletes become hard to ignore.
-          </Text>
-          
-          {/* Primary CTA Button */}
-          <TouchableOpacity
-            style={[styles.ctaButton, isTablet && styles.ctaButtonTablet]}
-            onPress={() => setCurrentScreen('auth')}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.ctaText, isTablet && styles.ctaTextTablet]}>
-              Begin
+
+          {/* Hero Section */}
+          <Animated.View style={[styles.heroSection, animatedFadeStyle]}>
+            <Text style={styles.eyebrow}>Future Legends</Text>
+            
+            <View style={styles.heroContent}>
+              <Text style={[styles.heroBody, isTablet && styles.heroBodyTablet]}>
+                Where young champions forge their path to greatness. Every legend started as a dream. Transform your potential into legendary performance through dedication, elite training, and unwavering belief.
+              </Text>
+            </View>
+
+            <View style={styles.ctaContainer}>
+              <TouchableOpacity
+                style={[styles.primaryCta, isTablet && styles.primaryCtaTablet]}
+                onPress={() => setCurrentScreen('auth')}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.primaryCtaText, isTablet && styles.primaryCtaTextTablet]}>
+                  Join the Legacy
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[styles.secondaryCta, isTablet && styles.secondaryCtaTablet]}
+                onPress={() => setCurrentScreen('onboarding')}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.secondaryCtaText, isTablet && styles.secondaryCtaTextTablet]}>
+                  Champion Stories
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+
+          {/* Quote Section */}
+          <Animated.View style={[styles.quoteSection, animatedGlowStyle]}>
+            <Text style={[styles.quote, isTablet && styles.quoteTablet]}>
+              Champions aren't made in comfort zones
             </Text>
-          </TouchableOpacity>
-          
-          {/* Secondary Link */}
-          <TouchableOpacity
-            style={styles.secondaryLink}
-            onPress={() => setCurrentScreen('onboarding')}
-            activeOpacity={0.7}
-          >
-            <Text style={[styles.secondaryLinkText, isTablet && styles.secondaryLinkTextTablet]}>
-              Watch how it works
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <Text style={styles.kicker}>For the next generation of GOATs</Text>
+          </Animated.View>
+
+          {/* Stats Section */}
+          <View style={styles.statsSection}>
+            <View style={styles.statsGrid}>
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, isTablet && styles.statValueTablet]}>1000+</Text>
+                <Text style={[styles.statLabel, isTablet && styles.statLabelTablet]}>Young Athletes</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, isTablet && styles.statValueTablet]}>50+</Text>
+                <Text style={[styles.statLabel, isTablet && styles.statLabelTablet]}>Elite Mentors</Text>
+              </View>
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, isTablet && styles.statValueTablet]}>24/7</Text>
+                <Text style={[styles.statLabel, isTablet && styles.statLabelTablet]}>Dream Support</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerTagline}>Building champions since 2024</Text>
+            <View style={styles.socialLinks}>
+              <TouchableOpacity style={styles.socialLink}>
+                <Text style={styles.socialText}>TikTok</Text>
+              </TouchableOpacity>
+              <View style={styles.socialDivider} />
+              <TouchableOpacity style={styles.socialLink}>
+                <Text style={styles.socialText}>Instagram</Text>
+              </TouchableOpacity>
+              <View style={styles.socialDivider} />
+              <TouchableOpacity style={styles.socialLink}>
+                <Text style={styles.socialText}>YouTube</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );
