@@ -1,5 +1,15 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Dimensions, ImageBackground } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withTiming, 
+  withRepeat, 
+  withSequence,
+  interpolate,
+  Easing
+} from 'react-native-reanimated';
 import EliteOnboarding from './onboarding/elite';
 import DailyChallenges from './challenges/index';
 import Authentication from './auth/index';
