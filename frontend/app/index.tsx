@@ -168,7 +168,10 @@ export default function Index() {
 
           {/* Hero Section */}
           <Animated.View style={[styles.heroSection, animatedFadeStyle]}>
-            <Text style={styles.eyebrow}>Future Legends</Text>
+            <View style={styles.eyebrowContainer}>
+              <Text style={styles.eyebrowFuture}>Future</Text>
+              <Text style={styles.eyebrowLegends}>Legends</Text>
+            </View>
             
             <View style={styles.heroContent}>
               <Text style={[styles.heroBody, isTablet && styles.heroBodyTablet]}>
@@ -183,7 +186,7 @@ export default function Index() {
                 activeOpacity={0.8}
               >
                 <Text style={[styles.primaryCtaText, isTablet && styles.primaryCtaTextTablet]}>
-                  Join the Legacy
+                  JOIN THE LEGACY
                 </Text>
               </TouchableOpacity>
               
@@ -193,19 +196,22 @@ export default function Index() {
                 activeOpacity={0.7}
               >
                 <Text style={[styles.secondaryCtaText, isTablet && styles.secondaryCtaTextTablet]}>
-                  Champion Stories
+                  CHAMPION STORIES
                 </Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
 
           {/* Quote Section */}
-          <Animated.View style={[styles.quoteSection, animatedGlowStyle]}>
+          <View style={styles.quoteSection}>
             <Text style={[styles.quote, isTablet && styles.quoteTablet]}>
-              Champions aren't made in comfort zones
+              "Champions aren't made in comfort zones"
             </Text>
-            <Text style={styles.kicker}>For the next generation of GOATs</Text>
-          </Animated.View>
+            <View style={styles.kickerContainer}>
+              <View style={styles.kickerLine} />
+              <Text style={styles.kicker}>FOR THE NEXT GENERATION OF GOATS</Text>
+            </View>
+          </View>
 
           {/* Stats Section */}
           <View style={styles.statsSection}>
