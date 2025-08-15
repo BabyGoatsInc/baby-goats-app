@@ -160,8 +160,31 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
     );
   }
 
-  // Show Experience Level screen (placeholder)
+  // Show Experience Level screen
   if (currentStep === 3) {
+    return (
+      <ExperienceLevel 
+        sport={selectedSport!}
+        onNext={handleExperienceSelected}
+        onBack={handleBack}
+      />
+    );
+  }
+
+  // Show Goal Setting screen
+  if (currentStep === 4) {
+    return (
+      <GoalSetting 
+        sport={selectedSport!}
+        experienceLevel={selectedExperience!}
+        onComplete={handleGoalsComplete}
+        onBack={handleBack}
+      />
+    );
+  }
+
+  // Show Experience Level screen (placeholder)
+  if (currentStep === 5) {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
