@@ -43,33 +43,77 @@ export default function Index() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [user, setUser] = useState<UserProfile | null>(null);
 
-  // Animation values
-  const glowAnimation = useSharedValue(0);
-  const fadeInAnimation = useSharedValue(0);
+  // Animation values for luxury entrance
+  const navOpacity = useSharedValue(0);
+  const navTranslateY = useSharedValue(-20);
+  const heroOpacity = useSharedValue(0);
+  const heroTranslateY = useSharedValue(40);
+  const bodyOpacity = useSharedValue(0);
+  const bodyTranslateY = useSharedValue(30);
+  const ctaOpacity = useSharedValue(0);
+  const ctaTranslateY = useSharedValue(20);
+  const quoteOpacity = useSharedValue(0);
+  const quoteTranslateY = useSharedValue(20);
+  const statsOpacity = useSharedValue(0);
+  const statsTranslateY = useSharedValue(30);
+  const footerOpacity = useSharedValue(0);
 
   useEffect(() => {
-    // Start subtle glow animation
-    glowAnimation.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 3000, easing: Easing.inOut(Easing.quad) }),
-        withTiming(0.7, { duration: 3000, easing: Easing.inOut(Easing.quad) })
-      ),
-      -1,
-      true
-    );
+    // Orchestrated entrance animations
+    navOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) });
+    navTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.quad) });
 
-    // Fade in animation
-    fadeInAnimation.value = withTiming(1, { duration: 1500, easing: Easing.out(Easing.quad) });
+    heroOpacity.value = withDelay(300, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+    heroTranslateY.value = withDelay(300, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+
+    bodyOpacity.value = withDelay(600, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+    bodyTranslateY.value = withDelay(600, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+
+    ctaOpacity.value = withDelay(900, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+    ctaTranslateY.value = withDelay(900, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+
+    quoteOpacity.value = withDelay(1200, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+    quoteTranslateY.value = withDelay(1200, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+
+    statsOpacity.value = withDelay(1500, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+    statsTranslateY.value = withDelay(1500, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+
+    footerOpacity.value = withDelay(2000, withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) }));
   }, []);
 
-  const animatedGlowStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(glowAnimation.value, [0, 1], [0.3, 0.6]);
-    return { opacity };
-  });
+  // Animated styles
+  const navAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: navOpacity.value,
+    transform: [{ translateY: navTranslateY.value }]
+  }));
 
-  const animatedFadeStyle = useAnimatedStyle(() => ({
-    opacity: fadeInAnimation.value,
-    transform: [{ translateY: interpolate(fadeInAnimation.value, [0, 1], [20, 0]) }]
+  const heroAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: heroOpacity.value,
+    transform: [{ translateY: heroTranslateY.value }]
+  }));
+
+  const bodyAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: bodyOpacity.value,
+    transform: [{ translateY: bodyTranslateY.value }]
+  }));
+
+  const ctaAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: ctaOpacity.value,
+    transform: [{ translateY: ctaTranslateY.value }]
+  }));
+
+  const quoteAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: quoteOpacity.value,
+    transform: [{ translateY: quoteTranslateY.value }]
+  }));
+
+  const statsAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: statsOpacity.value,
+    transform: [{ translateY: statsTranslateY.value }]
+  }));
+
+  const footerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: footerOpacity.value
   }));
 
   const handleAuthSuccess = (authenticatedUser: UserProfile) => {
