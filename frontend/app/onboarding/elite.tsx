@@ -188,25 +188,47 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-        <LinearGradient
-          colors={['#667eea', '#764ba2']}
-          style={styles.gradient}
-        >
+        <View style={styles.completionContainer}>
           <View style={styles.contentContainer}>
-            <Text style={styles.mainTitle}>🎉 Onboarding Complete!</Text>
-            <Text style={[styles.subtitle, { color: '#4ecdc4' }]}>
-              Welcome to Baby Goats, {selectedSport?.name} champion!
-            </Text>
-            <Text style={styles.description}>
-              You selected {selectedSport?.name} with passion level {interestLevel}/10! 
-              Your journey to greatness begins now.
-            </Text>
+            <Text style={styles.completionTitle}>CHAMPION PROFILE CREATED</Text>
+            <Text style={styles.completionSubtitle}>Your personalized development path is ready</Text>
+            
+            <View style={styles.profileSummary}>
+              <View style={styles.summarySection}>
+                <Text style={styles.summaryLabel}>SPORT</Text>
+                <Text style={styles.summaryValue}>{selectedSport?.name} {selectedSport?.emoji}</Text>
+              </View>
+              
+              <View style={styles.summarySection}>
+                <Text style={styles.summaryLabel}>LEVEL</Text>
+                <Text style={styles.summaryValue}>{selectedExperience?.title}</Text>
+              </View>
+              
+              <View style={styles.summarySection}>
+                <Text style={styles.summaryLabel}>PASSION</Text>
+                <Text style={styles.summaryValue}>{interestLevel}/10</Text>
+              </View>
+              
+              <View style={styles.summarySection}>
+                <Text style={styles.summaryLabel}>FOCUS GOALS</Text>
+                {selectedGoals.map((goal, index) => (
+                  <Text key={goal.id} style={styles.goalSummary}>
+                    {goal.icon} {goal.title}
+                  </Text>
+                ))}
+              </View>
+            </View>
             
             <TouchableOpacity
-              style={[styles.actionButton, { backgroundColor: '#4ecdc4', marginTop: 40 }]}
+              style={styles.launchButton}
               onPress={() => {
                 // Complete onboarding and navigate
-                console.log('Onboarding complete! Navigating...');
+                console.log('Elite Onboarding complete! Profile:', {
+                  sport: selectedSport,
+                  experience: selectedExperience,
+                  passion: interestLevel,
+                  goals: selectedGoals
+                });
                 if (onComplete) {
                   onComplete();
                 } else {
@@ -215,10 +237,10 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
               }}
               activeOpacity={0.8}
             >
-              <Text style={styles.buttonText}>Start Training! 🚀</Text>
+              <Text style={styles.launchButtonText}>LAUNCH TRAINING PROTOCOLS</Text>
             </TouchableOpacity>
           </View>
-        </LinearGradient>
+        </View>
       </SafeAreaView>
     );
   }
