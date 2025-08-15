@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Dimensions, ImageBackground } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Dimensions, ScrollView } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { 
   useSharedValue, 
