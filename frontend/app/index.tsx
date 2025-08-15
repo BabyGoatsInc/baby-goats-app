@@ -47,56 +47,32 @@ export default function Index() {
 
   // Animation values
   const glowAnimation = useSharedValue(0);
-  const sweepAnimation = useSharedValue(0);
+  const fadeInAnimation = useSharedValue(0);
 
   useEffect(() => {
-    // Start glow animation
+    // Start subtle glow animation
     glowAnimation.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.quad) }),
-        withTiming(0.7, { duration: 2000, easing: Easing.inOut(Easing.quad) })
+        withTiming(1, { duration: 3000, easing: Easing.inOut(Easing.quad) }),
+        withTiming(0.7, { duration: 3000, easing: Easing.inOut(Easing.quad) })
       ),
       -1,
       true
     );
 
-    // Start light sweep animation every 12 seconds
-    sweepAnimation.value = withRepeat(
-      withSequence(
-        withTiming(0, { duration: 0 }),
-        withTiming(1, { duration: 1500, easing: Easing.out(Easing.quad) }),
-        withTiming(1, { duration: 10500 }) // Wait 10.5s before next sweep
-      ),
-      -1,
-      false
-    );
+    // Fade in animation
+    fadeInAnimation.value = withTiming(1, { duration: 1500, easing: Easing.out(Easing.quad) });
   }, []);
 
   const animatedGlowStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(glowAnimation.value, [0, 1], [0.6, 1]);
-    const scale = interpolate(glowAnimation.value, [0, 1], [1, 1.02]);
-    return {
-      opacity,
-      transform: [{ scale }]
-    };
+    const opacity = interpolate(glowAnimation.value, [0, 1], [0.3, 0.6]);
+    return { opacity };
   });
 
-  const animatedSweepStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(
-      sweepAnimation.value,
-      [0, 1],
-      [-screenWidth, screenWidth * 1.5]
-    );
-    const opacity = interpolate(
-      sweepAnimation.value,
-      [0, 0.3, 0.7, 1],
-      [0, 0.3, 0.3, 0]
-    );
-    return {
-      transform: [{ translateX }],
-      opacity
-    };
-  });
+  const animatedFadeStyle = useAnimatedStyle(() => ({
+    opacity: fadeInAnimation.value,
+    transform: [{ translateY: interpolate(fadeInAnimation.value, [0, 1], [20, 0]) }]
+  }));
 
   const handleAuthSuccess = (authenticatedUser: UserProfile) => {
     setUser(authenticatedUser);
