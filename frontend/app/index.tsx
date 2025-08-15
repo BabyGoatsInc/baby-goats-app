@@ -146,6 +146,18 @@ export default function Index() {
     setCurrentScreen('home');
   };
 
+  // Show loading if fonts aren't loaded yet
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      </View>
+    );
+  }
+
   // Other screen components remain the same
   if (currentScreen === 'auth') {
     return (
