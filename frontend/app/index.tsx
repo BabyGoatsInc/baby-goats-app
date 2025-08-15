@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   heroTitleContainer: {
     alignItems: 'center',
-    marginBottom: isTablet ? 48 : 32,
+    marginBottom: isTablet ? 32 : 24,
   },
   heroTitle: {
     fontSize: isTablet ? 48 : 32,
