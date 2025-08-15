@@ -55,6 +55,8 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
   const [scaleAnim] = useState(new Animated.Value(0.8));
   const [selectedSport, setSelectedSport] = useState<Sport | null>(null);
   const [interestLevel, setInterestLevel] = useState(5);
+  const [selectedExperience, setSelectedExperience] = useState<ExperienceLevel | null>(null);
+  const [selectedGoals, setSelectedGoals] = useState<Goal[]>([]);
 
   useEffect(() => {
     // Entrance animation
