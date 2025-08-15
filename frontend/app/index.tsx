@@ -156,24 +156,73 @@ export default function Index() {
     );
   }
 
-  // Minimalist Home Screen
+  // Arena Glow Welcome Screen
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#0A0B0D" />
       
-      <View style={styles.content}>
-        <Text style={styles.brandName}>BABY GOATS</Text>
-        <Text style={styles.tagline}>Built for Athletes Obsessed with Greatness.</Text>
-        
-        <TouchableOpacity
-          style={styles.beginButton}
-          onPress={() => setCurrentScreen('auth')}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.beginText}>BEGIN</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      {/* Background with gradient overlay */}
+      <LinearGradient
+        colors={['#0A0B0D', 'rgba(10, 11, 13, 0.9)', 'rgba(10, 11, 13, 0.54)']}
+        locations={[0, 0.3, 1]}
+        style={styles.backgroundGradient}
+      />
+      
+      {/* Stadium bokeh background pattern */}
+      <View style={styles.bokehPattern} />
+      
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.content}>
+          {/* Title with glow effect */}
+          <View style={styles.titleContainer}>
+            {/* Glow background */}
+            <Animated.View style={[styles.titleGlow, animatedGlowStyle]}>
+              <LinearGradient
+                colors={['rgba(58, 184, 255, 0.15)', 'rgba(109, 77, 255, 0.15)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.glowGradient}
+              />
+            </Animated.View>
+            
+            {/* Light sweep effect */}
+            <Animated.View style={[styles.lightSweep, animatedSweepStyle]}>
+              <LinearGradient
+                colors={['transparent', 'rgba(255, 255, 255, 0.1)', 'transparent']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.sweepGradient}
+              />
+            </Animated.View>
+            
+            {/* Main title */}
+            <Text style={[styles.title, isTablet && styles.titleTablet]}>
+              BABY G.O.A.T.S
+            </Text>
+          </View>
+          
+          {/* Subheadline */}
+          <Text style={[styles.subheadline, isTablet && styles.subheadlineTablet]}>
+            Built for athletes obsessed with greatness.
+          </Text>
+          
+          {/* Primary CTA Button */}
+          <TouchableOpacity
+            style={[styles.ctaButton, isTablet && styles.ctaButtonTablet]}
+            onPress={() => setCurrentScreen('auth')}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.02)']}
+              style={styles.ctaButtonGradient}
+            />
+            <Text style={[styles.ctaText, isTablet && styles.ctaTextTablet]}>
+              Begin
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 }
 
