@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
 import { Database } from '@/lib/supabaseClient'
+import { createClient } from '@supabase/supabase-js'
+
+// Create an admin client for MVP development
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  // Use service role key for admin operations - in production this should be from env vars
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, // Using anon key for now
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
