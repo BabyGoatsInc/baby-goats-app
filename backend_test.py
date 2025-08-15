@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite for Baby Goats Application
-Tests all API endpoints: profiles, highlights, challenges, stats, and likes
+Backend API Testing Suite for Baby Goats Application - FastAPI Proxy System
+Tests all API endpoints through FastAPI proxy (port 8001) that forwards to Next.js APIs (port 3001)
 """
 
 import requests
@@ -10,8 +10,9 @@ import uuid
 from datetime import datetime
 import time
 
-# Configuration
-BASE_URL = "http://localhost:3001/api"
+# Configuration - Testing FastAPI proxy system
+BASE_URL = "https://goat-training-1.preview.emergentagent.com/api"
+NEXTJS_DIRECT_URL = "http://localhost:3001/api"  # For comparison testing
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
