@@ -337,13 +337,13 @@ const styles = StyleSheet.create({
     marginBottom: isTablet ? 48 : 32,
   },
   heroTitle: {
-    fontSize: isTablet ? 80 : 48,
+    fontSize: isTablet ? 48 : 32,
     fontWeight: '300',
     color: '#FFFFFF',
-    letterSpacing: -2,
+    letterSpacing: -1,
     textAlign: 'center',
     fontFamily: 'System',
-    lineHeight: isTablet ? 88 : 52,
+    lineHeight: isTablet ? 52 : 36,
   },
   heroTitleItalic: {
     fontStyle: 'italic',
