@@ -5,9 +5,7 @@ import Animated, {
   useSharedValue, 
   useAnimatedStyle, 
   withTiming, 
-  withRepeat, 
-  withSequence,
-  interpolate,
+  withDelay,
   Easing
 } from 'react-native-reanimated';
 import EliteOnboarding from './onboarding/elite';
