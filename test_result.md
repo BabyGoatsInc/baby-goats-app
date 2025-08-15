@@ -391,15 +391,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Frontend implementation completely missing - requires full Baby Goats app development"
-    - "Landing Page & Authentication Flow"
-    - "Dashboard Page (/dashboard)"
-    - "Challenges Page (/challenges)"
-    - "Discover Page (/discover)"
-    - "Like Functionality"
-    - "Mobile Experience & Responsive Design"
-    - "User Journey Flow & Navigation"
-  stuck_tasks: []
+    - "Phase 1 COMPLETE: Elite Onboarding Experience fully implemented with sophisticated screens"
+    - "Phase 2 ARCHITECTURE DECISION: Two backend systems discovered - Need to align frontend/backend routing"
+    - "Next.js APIs (port 3001) vs FastAPI backend (port 8001) routing conflict"
+    - "RLS Policy Configuration needed for write operations"
+  stuck_tasks: 
+    - "Backend Architecture Alignment: Frontend calls /api/* routes (FastAPI 8001) but Baby Goats APIs are on Next.js (3001)"
   test_all: false
   test_priority: "high_first"
 
