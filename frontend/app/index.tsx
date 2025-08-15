@@ -16,6 +16,8 @@ import Authentication from './auth/index';
 import UserProfileScreen from './profile/index';
 
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const isTablet = screenWidth >= 768;
 
 type Screen = 'home' | 'auth' | 'onboarding' | 'challenges' | 'profile';
 
