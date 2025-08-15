@@ -251,8 +251,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0A1B1F',
-    position: 'relative',
+    backgroundColor: '#0B0C0E',
   },
   backgroundGradient: {
     position: 'absolute',
@@ -261,177 +260,244 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-  bokehContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  bokehParticle: {
-    position: 'absolute',
-    borderRadius: 50,
-    backgroundColor: 'rgba(58, 184, 255, 0.3)',
-  },
-  particle1: {
-    width: 80,
-    height: 80,
-    top: '15%',
-    left: '20%',
-    backgroundColor: 'rgba(58, 184, 255, 0.4)',
-  },
-  particle2: {
-    width: 60,
-    height: 60,
-    top: '25%',
-    right: '15%',
-    backgroundColor: 'rgba(109, 77, 255, 0.3)',
-  },
-  particle3: {
-    width: 100,
-    height: 100,
-    top: '45%',
-    left: '10%',
-    backgroundColor: 'rgba(58, 184, 255, 0.2)',
-  },
-  particle4: {
-    width: 40,
-    height: 40,
-    top: '60%',
-    right: '25%',
-    backgroundColor: 'rgba(58, 184, 255, 0.5)',
-  },
-  particle5: {
-    width: 120,
-    height: 120,
-    bottom: '20%',
-    right: '10%',
-    backgroundColor: 'rgba(109, 77, 255, 0.2)',
-  },
-  particle6: {
-    width: 70,
-    height: 70,
-    bottom: '30%',
-    left: '15%',
-    backgroundColor: 'rgba(58, 184, 255, 0.3)',
-  },
   safeArea: {
     flex: 1,
-    zIndex: 10,
   },
-  content: {
+  scrollView: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  
+  // Header Styles
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 32,
-    maxWidth: 640,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#222326',
+  },
+  brandName: {
+    fontSize: isTablet ? 28 : 24,
+    fontWeight: '300',
+    color: '#FFFFFF',
+    letterSpacing: 2,
+    fontFamily: 'System', // Saira Extra Condensed fallback
+  },
+  nav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  navItem: {
+    marginHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  navText: {
+    fontSize: 14,
+    color: '#B3B3B3',
+    fontWeight: '400',
+    fontFamily: 'System', // Inter fallback
+  },
+
+  // Hero Section
+  heroSection: {
+    paddingHorizontal: 24,
+    paddingVertical: isTablet ? 80 : 60,
+    alignItems: 'center',
+    maxWidth: 800,
     alignSelf: 'center',
     width: '100%',
   },
-  titleContainer: {
-    position: 'relative',
-    alignItems: 'center',
-    marginBottom: isTablet ? 22 : 14,
+  eyebrow: {
+    fontSize: isTablet ? 16 : 14,
+    color: '#D23A3A',
+    fontWeight: '500',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    marginBottom: isTablet ? 32 : 24,
+    fontFamily: 'System',
   },
-  titleGlow: {
-    position: 'absolute',
-    top: -30,
-    left: -40,
-    right: -40,
-    bottom: -30,
+  heroContent: {
+    marginBottom: isTablet ? 48 : 40,
   },
-  glowGradient: {
-    flex: 1,
-    borderRadius: 80,
-  },
-  lightSweep: {
-    position: 'absolute',
-    top: -20,
-    bottom: -20,
-    width: 120,
-    left: -60,
-  },
-  sweepGradient: {
-    flex: 1,
-    borderRadius: 60,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: '300',
+  heroBody: {
+    fontSize: 18,
     color: '#FFFFFF',
     textAlign: 'center',
-    letterSpacing: -1.5,
-    fontFamily: 'System',
-    lineHeight: 42,
-    textShadowColor: 'rgba(58, 184, 255, 0.5)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 20,
-  },
-  titleTablet: {
-    fontSize: 72,
-    letterSpacing: -2,
-    lineHeight: 80,
-  },
-  subheadline: {
-    fontSize: 16,
+    lineHeight: 28,
     fontWeight: '400',
-    color: 'rgba(255, 255, 255, 0.9)',
-    textAlign: 'center',
-    marginBottom: isTablet ? 56 : 48,
     letterSpacing: 0.3,
     fontFamily: 'System',
-    lineHeight: 22,
-    maxWidth: 320,
   },
-  subheadlineTablet: {
-    fontSize: 20,
-    lineHeight: 28,
-    maxWidth: 480,
+  heroBodyTablet: {
+    fontSize: 22,
+    lineHeight: 34,
   },
-  ctaButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    paddingVertical: 16,
-    paddingHorizontal: 48,
-    borderRadius: 12,
-    height: 48,
-    justifyContent: 'center',
+  ctaContainer: {
+    flexDirection: isTablet ? 'row' : 'column',
     alignItems: 'center',
-    shadowColor: 'rgba(58, 184, 255, 0.3)',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    marginBottom: isTablet ? 24 : 20,
+    gap: isTablet ? 24 : 16,
   },
-  ctaButtonTablet: {
-    height: 56,
-    paddingHorizontal: 64,
+  primaryCta: {
+    backgroundColor: '#D23A3A',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    minWidth: isTablet ? 180 : 160,
+    alignItems: 'center',
+  },
+  primaryCtaTablet: {
     paddingVertical: 18,
-    borderRadius: 16,
+    paddingHorizontal: 40,
+    minWidth: 200,
   },
-  ctaText: {
+  primaryCtaText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-    color: '#0A1B1F',
     letterSpacing: 0.5,
     fontFamily: 'System',
   },
-  ctaTextTablet: {
+  primaryCtaTextTablet: {
     fontSize: 18,
-    letterSpacing: 0.8,
   },
-  secondaryLink: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+  secondaryCta: {
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    minWidth: isTablet ? 180 : 160,
+    alignItems: 'center',
   },
-  secondaryLinkText: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: 'rgba(255, 255, 255, 0.7)',
-    textAlign: 'center',
-    letterSpacing: 0.3,
-    textDecorationLine: 'underline',
+  secondaryCtaTablet: {
+    paddingVertical: 18,
+    paddingHorizontal: 40,
+    minWidth: 200,
   },
-  secondaryLinkTextTablet: {
+  secondaryCtaText: {
+    color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: '400',
+    letterSpacing: 0.5,
+    fontFamily: 'System',
+  },
+  secondaryCtaTextTablet: {
+    fontSize: 18,
+  },
+
+  // Quote Section
+  quoteSection: {
+    paddingHorizontal: 24,
+    paddingVertical: isTablet ? 80 : 60,
+    alignItems: 'center',
+    backgroundColor: 'rgba(210, 58, 58, 0.05)',
+    marginHorizontal: 16,
+    borderRadius: 16,
+    marginBottom: isTablet ? 80 : 60,
+  },
+  quote: {
+    fontSize: isTablet ? 32 : 24,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontWeight: '300',
+    letterSpacing: -0.5,
+    lineHeight: isTablet ? 40 : 32,
+    marginBottom: 16,
+    fontFamily: 'System', // Saira Extra Condensed fallback
+  },
+  quoteTablet: {
+    fontSize: 36,
+    lineHeight: 44,
+  },
+  kicker: {
+    fontSize: 14,
+    color: '#B3B3B3',
+    textAlign: 'center',
+    fontWeight: '400',
+    letterSpacing: 0.5,
+    fontFamily: 'System',
+  },
+
+  // Stats Section
+  statsSection: {
+    paddingHorizontal: 24,
+    paddingVertical: isTablet ? 60 : 40,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#222326',
+    marginBottom: isTablet ? 80 : 60,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    maxWidth: 600,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statValue: {
+    fontSize: isTablet ? 48 : 36,
+    color: '#D23A3A',
+    fontWeight: '300',
+    letterSpacing: -1,
+    marginBottom: 8,
+    fontFamily: 'System', // Saira Extra Condensed fallback
+  },
+  statValueTablet: {
+    fontSize: 56,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#B3B3B3',
+    textAlign: 'center',
+    fontWeight: '400',
+    letterSpacing: 0.5,
+    fontFamily: 'System',
+  },
+  statLabelTablet: {
+    fontSize: 14,
+  },
+
+  // Footer
+  footer: {
+    paddingHorizontal: 24,
+    paddingVertical: isTablet ? 60 : 40,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderColor: '#222326',
+  },
+  footerTagline: {
+    fontSize: 14,
+    color: '#B3B3B3',
+    marginBottom: 24,
+    fontFamily: 'System',
+  },
+  socialLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  socialLink: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  socialText: {
+    fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: '400',
+    fontFamily: 'System',
+  },
+  socialDivider: {
+    width: 1,
+    height: 16,
+    backgroundColor: '#222326',
   },
 });
