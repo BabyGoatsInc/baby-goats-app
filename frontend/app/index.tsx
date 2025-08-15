@@ -46,6 +46,13 @@ export default function Index() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [user, setUser] = useState<UserProfile | null>(null);
 
+  // Load fonts
+  let [fontsLoaded] = useFonts({
+    SairaExtraCondensed_300Light,
+    Inter_400Regular,
+    Inter_500Medium,
+  });
+
   // Animation values for luxury entrance
   const navOpacity = useSharedValue(0);
   const navTranslateY = useSharedValue(-20);
@@ -62,27 +69,29 @@ export default function Index() {
   const footerOpacity = useSharedValue(0);
 
   useEffect(() => {
-    // Orchestrated entrance animations
-    navOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) });
-    navTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.quad) });
+    if (fontsLoaded) {
+      // Orchestrated entrance animations
+      navOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) });
+      navTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.quad) });
 
-    heroOpacity.value = withDelay(300, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-    heroTranslateY.value = withDelay(300, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+      heroOpacity.value = withDelay(300, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+      heroTranslateY.value = withDelay(300, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
 
-    bodyOpacity.value = withDelay(600, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-    bodyTranslateY.value = withDelay(600, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+      bodyOpacity.value = withDelay(600, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+      bodyTranslateY.value = withDelay(600, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
 
-    ctaOpacity.value = withDelay(900, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-    ctaTranslateY.value = withDelay(900, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+      ctaOpacity.value = withDelay(900, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+      ctaTranslateY.value = withDelay(900, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
 
-    quoteOpacity.value = withDelay(1200, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-    quoteTranslateY.value = withDelay(1200, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+      quoteOpacity.value = withDelay(1200, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+      quoteTranslateY.value = withDelay(1200, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
 
-    statsOpacity.value = withDelay(1500, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-    statsTranslateY.value = withDelay(1500, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
+      statsOpacity.value = withDelay(1500, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
+      statsTranslateY.value = withDelay(1500, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
 
-    footerOpacity.value = withDelay(2000, withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) }));
-  }, []);
+      footerOpacity.value = withDelay(2000, withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) }));
+    }
+  }, [fontsLoaded]);
 
   // Animated styles
   const navAnimatedStyle = useAnimatedStyle(() => ({
