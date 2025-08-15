@@ -159,26 +159,33 @@ export default function Index() {
   // Arena Glow Welcome Screen
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0A0B0D" />
+      <StatusBar barStyle="light-content" backgroundColor="#0A1B1F" />
       
-      {/* Background with gradient overlay */}
+      {/* Cinematic Teal Gradient Background */}
       <LinearGradient
-        colors={['#0A0B0D', 'rgba(10, 11, 13, 0.9)', 'rgba(10, 11, 13, 0.54)']}
-        locations={[0, 0.3, 1]}
+        colors={['#0A1B1F', '#0F2A2F', '#1A3A3F', '#25484D']}
+        locations={[0, 0.3, 0.7, 1]}
         style={styles.backgroundGradient}
       />
       
-      {/* Stadium bokeh background pattern */}
-      <View style={styles.bokehPattern} />
+      {/* Bokeh Light Particles */}
+      <View style={styles.bokehContainer}>
+        <Animated.View style={[styles.bokehParticle, styles.particle1, animatedGlowStyle]} />
+        <Animated.View style={[styles.bokehParticle, styles.particle2]} />
+        <Animated.View style={[styles.bokehParticle, styles.particle3, animatedGlowStyle]} />
+        <Animated.View style={[styles.bokehParticle, styles.particle4]} />
+        <Animated.View style={[styles.bokehParticle, styles.particle5, animatedGlowStyle]} />
+        <Animated.View style={[styles.bokehParticle, styles.particle6]} />
+      </View>
       
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.content}>
           {/* Title with glow effect */}
           <View style={styles.titleContainer}>
-            {/* Glow background */}
+            {/* Enhanced glow background */}
             <Animated.View style={[styles.titleGlow, animatedGlowStyle]}>
               <LinearGradient
-                colors={['rgba(58, 184, 255, 0.15)', 'rgba(109, 77, 255, 0.15)']}
+                colors={['rgba(58, 184, 255, 0.3)', 'rgba(109, 77, 255, 0.2)', 'transparent']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.glowGradient}
@@ -188,7 +195,7 @@ export default function Index() {
             {/* Light sweep effect */}
             <Animated.View style={[styles.lightSweep, animatedSweepStyle]}>
               <LinearGradient
-                colors={['transparent', 'rgba(255, 255, 255, 0.1)', 'transparent']}
+                colors={['transparent', 'rgba(58, 184, 255, 0.4)', 'transparent']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.sweepGradient}
@@ -203,7 +210,7 @@ export default function Index() {
           
           {/* Subheadline */}
           <Text style={[styles.subheadline, isTablet && styles.subheadlineTablet]}>
-            Built for athletes obsessed with greatness.
+            Where hungry athletes become hard to ignore.
           </Text>
           
           {/* Primary CTA Button */}
@@ -212,12 +219,19 @@ export default function Index() {
             onPress={() => setCurrentScreen('auth')}
             activeOpacity={0.8}
           >
-            <LinearGradient
-              colors={['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.02)']}
-              style={styles.ctaButtonGradient}
-            />
             <Text style={[styles.ctaText, isTablet && styles.ctaTextTablet]}>
               Begin
+            </Text>
+          </TouchableOpacity>
+          
+          {/* Secondary Link */}
+          <TouchableOpacity
+            style={styles.secondaryLink}
+            onPress={() => setCurrentScreen('onboarding')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.secondaryLinkText, isTablet && styles.secondaryLinkTextTablet]}>
+              Watch how it works
             </Text>
           </TouchableOpacity>
         </View>
