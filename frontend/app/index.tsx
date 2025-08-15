@@ -308,6 +308,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Inter_400Regular',
+  },
   
   // Navigation
   navigation: {
@@ -328,7 +338,7 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     color: '#FFFFFF',
     letterSpacing: 4,
-    fontFamily: 'System',
+    fontFamily: 'SairaExtraCondensed_300Light',
   },
   navLinks: {
     flexDirection: 'row',
@@ -340,7 +350,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '400',
     letterSpacing: 2,
-    fontFamily: 'System',
+    fontFamily: 'Inter_400Regular',
   },
 
   // Hero Section
@@ -366,7 +376,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     letterSpacing: -1,
     textAlign: 'center',
-    fontFamily: 'System',
+    fontFamily: 'SairaExtraCondensed_300Light',
     lineHeight: isTablet ? 52 : 36,
   },
   heroTitleItalic: {
@@ -381,9 +391,9 @@ const styles = StyleSheet.create({
     color: '#CCCCCC',
     textAlign: 'center',
     lineHeight: isTablet ? 28 : 24,
-    fontWeight: '300',
+    fontWeight: '400',
     letterSpacing: 0.3,
-    fontFamily: 'System',
+    fontFamily: 'Inter_400Regular',
     maxWidth: isTablet ? 600 : 350,
   },
 
@@ -408,7 +418,7 @@ const styles = StyleSheet.create({
     color: '#EC1616', // Red color as specified
     fontWeight: '400',
     letterSpacing: 2,
-    fontFamily: 'System',
+    fontFamily: 'Inter_400Regular',
   },
   secondaryCta: {
     paddingVertical: 16,
@@ -422,7 +432,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     letterSpacing: 2,
     textDecorationLine: 'underline',
-    fontFamily: 'System',
+    fontFamily: 'Inter_400Regular',
   },
 
   // Quote Section
@@ -445,7 +455,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     textAlign: 'center',
     fontWeight: '300',
-    fontFamily: 'System',
+    fontFamily: 'SairaExtraCondensed_300Light',
     marginBottom: 16,
     letterSpacing: -0.5,
   },
@@ -455,7 +465,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     letterSpacing: 2,
     textAlign: 'center',
-    fontFamily: 'System',
+    fontFamily: 'Inter_400Regular',
   },
 
   // Stats Section
@@ -487,7 +497,7 @@ const styles = StyleSheet.create({
     fontSize: isTablet ? 32 : 24,
     color: '#FFFFFF',
     fontWeight: '300',
-    fontFamily: 'System',
+    fontFamily: 'SairaExtraCondensed_300Light',
     marginBottom: 8,
     letterSpacing: -1,
   },
@@ -497,7 +507,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     letterSpacing: 2,
     textAlign: 'center',
-    fontFamily: 'System',
+    fontFamily: 'Inter_400Regular',
   },
   elegantDivider: {
     width: 96,
@@ -524,7 +534,7 @@ const styles = StyleSheet.create({
     color: '#666666',
     fontWeight: '400',
     letterSpacing: 2,
-    fontFamily: 'System',
+    fontFamily: 'Inter_400Regular',
   },
   socialLinks: {
     flexDirection: 'row',
@@ -536,6 +546,6 @@ const styles = StyleSheet.create({
     color: '#666666',
     fontWeight: '400',
     letterSpacing: 2,
-    fontFamily: 'System',
+    fontFamily: 'Inter_400Regular',
   },
 });
