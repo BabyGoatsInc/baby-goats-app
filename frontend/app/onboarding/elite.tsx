@@ -25,6 +25,25 @@ interface Sport {
   gradient: string[];
 }
 
+interface ExperienceLevel {
+  id: string;
+  title: string;
+  description: string;
+  subtitle: string;
+  mindset: string;
+  icon: string;
+}
+
+interface Goal {
+  id: string;
+  title: string;
+  description: string;
+  timeframe: string;
+  difficulty: 'Foundation' | 'Growth' | 'Elite';
+  icon: string;
+  pillars: string[];
+}
+
 interface EliteOnboardingProps {
   onComplete?: () => void;
   onBack?: () => void;
