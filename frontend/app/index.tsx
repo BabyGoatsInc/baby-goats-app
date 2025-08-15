@@ -134,7 +134,7 @@ export default function Index() {
     setCurrentScreen('home');
   };
 
-  // Authentication Screen
+  // Other screen components remain the same
   if (currentScreen === 'auth') {
     return (
       <Authentication 
@@ -144,7 +144,6 @@ export default function Index() {
     );
   }
 
-  // User Profile Screen
   if (currentScreen === 'profile' && user) {
     return (
       <UserProfileScreen 
@@ -155,7 +154,6 @@ export default function Index() {
     );
   }
 
-  // Elite Onboarding Screen
   if (currentScreen === 'onboarding') {
     return (
       <EliteOnboarding 
@@ -165,7 +163,6 @@ export default function Index() {
     );
   }
 
-  // Daily Challenges Screen
   if (currentScreen === 'challenges') {
     return (
       <DailyChallenges 
@@ -174,124 +171,110 @@ export default function Index() {
     );
   }
 
-  // BABY GOATS Landing Page
+  // Luxury Home Page
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0B0C0E" />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
-      {/* Background Gradient */}
-      <LinearGradient
-        colors={['#0B0C0E', '#1A1B1E', '#0B0C0E']}
-        locations={[0, 0.5, 1]}
-        style={styles.backgroundGradient}
-      />
-      
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.brandName}>BABY GOATS</Text>
-            <View style={styles.nav}>
-              <TouchableOpacity style={styles.navItem} onPress={() => setCurrentScreen('onboarding')}>
-                <Text style={styles.navText}>Academy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.navItem} onPress={() => setCurrentScreen('profile')}>
-                <Text style={styles.navText}>Mentorship</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.navItem} onPress={() => setCurrentScreen('challenges')}>
-                <Text style={styles.navText}>Community</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+      {/* Navigation */}
+      <Animated.View style={[styles.navigation, navAnimatedStyle]}>
+        <Text style={styles.brandName}>BABY GOATS</Text>
+        <View style={styles.navLinks}>
+          <TouchableOpacity onPress={() => setCurrentScreen('onboarding')}>
+            <Text style={styles.navLink}>ACADEMY</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setCurrentScreen('profile')}>
+            <Text style={styles.navLink}>MENTORSHIP</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setCurrentScreen('challenges')}>
+            <Text style={styles.navLink}>COMMUNITY</Text>
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
 
-          {/* Hero Section */}
-          <Animated.View style={[styles.heroSection, animatedFadeStyle]}>
-            <View style={styles.eyebrowContainer}>
-              <Text style={styles.eyebrowFuture}>Future</Text>
-              <Text style={styles.eyebrowLegends}>Legends</Text>
-            </View>
-            
-            <View style={styles.heroContent}>
-              <Text style={[styles.heroBody, isTablet && styles.heroBodyTablet]}>
-                Where young champions forge their path to greatness. Every legend started as a dream. Transform your potential into legendary performance through dedication, elite training, and unwavering belief.
-              </Text>
-            </View>
-
-            <View style={styles.ctaContainer}>
-              <TouchableOpacity
-                style={[styles.primaryCta, isTablet && styles.primaryCtaTablet]}
-                onPress={() => setCurrentScreen('auth')}
-                activeOpacity={0.8}
-              >
-                <Text style={[styles.primaryCtaText, isTablet && styles.primaryCtaTextTablet]}>
-                  JOIN THE LEGACY
-                </Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity
-                style={[styles.secondaryCta, isTablet && styles.secondaryCtaTablet]}
-                onPress={() => setCurrentScreen('onboarding')}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.secondaryCtaText, isTablet && styles.secondaryCtaTextTablet]}>
-                  CHAMPION STORIES
-                </Text>
-              </TouchableOpacity>
-            </View>
+      {/* Hero Section */}
+      <View style={styles.heroContainer}>
+        <View style={styles.heroContent}>
+          <Animated.View style={[styles.heroTitleContainer, heroAnimatedStyle]}>
+            <Text style={styles.heroTitle}>Future</Text>
+            <Text style={[styles.heroTitle, styles.heroTitleItalic]}>Legends</Text>
           </Animated.View>
 
-          {/* Quote Section */}
-          <View style={styles.quoteSection}>
-            <Text style={[styles.quote, isTablet && styles.quoteTablet]}>
+          <Animated.View style={[styles.heroBodyContainer, bodyAnimatedStyle]}>
+            <Text style={styles.heroBody}>
+              Where young champions forge their path to greatness. Every legend started as a dream.
+              Transform your potential into legendary performance through dedication, elite training,
+              and unwavering belief.
+            </Text>
+          </Animated.View>
+
+          <Animated.View style={[styles.ctaContainer, ctaAnimatedStyle]}>
+            <TouchableOpacity 
+              style={styles.primaryCta}
+              onPress={() => setCurrentScreen('auth')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.primaryCtaText}>JOIN THE LEGACY</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.secondaryCta}
+              onPress={() => setCurrentScreen('onboarding')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.secondaryCtaText}>CHAMPION STORIES</Text>
+            </TouchableOpacity>
+          </Animated.View>
+
+          {/* Inspirational Quote */}
+          <Animated.View style={[styles.quoteSection, quoteAnimatedStyle]}>
+            <View style={styles.quoteDivider} />
+            <Text style={styles.quote}>
               "Champions aren't made in comfort zones"
             </Text>
-            <View style={styles.kickerContainer}>
-              <View style={styles.kickerLine} />
-              <Text style={styles.kicker}>FOR THE NEXT GENERATION OF GOATS</Text>
-            </View>
-          </View>
+            <Text style={styles.quoteAttribution}>
+              — FOR THE NEXT GENERATION OF GOATS
+            </Text>
+          </Animated.View>
+        </View>
+      </View>
 
-          {/* Stats Section */}
-          <View style={styles.statsSection}>
-            <View style={styles.statsGrid}>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, isTablet && styles.statValueTablet]}>1000+</Text>
-                <Text style={[styles.statLabel, isTablet && styles.statLabelTablet]}>Young Athletes</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, isTablet && styles.statValueTablet]}>50+</Text>
-                <Text style={[styles.statLabel, isTablet && styles.statLabelTablet]}>Elite Mentors</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, isTablet && styles.statValueTablet]}>24/7</Text>
-                <Text style={[styles.statLabel, isTablet && styles.statLabelTablet]}>Dream Support</Text>
-              </View>
-            </View>
+      {/* Stats Section */}
+      <Animated.View style={[styles.statsContainer, statsAnimatedStyle]}>
+        <View style={styles.statsGrid}>
+          <View style={[styles.statItem, styles.statBorder]}>
+            <Text style={styles.statValue}>1000+</Text>
+            <Text style={styles.statLabel}>YOUNG ATHLETES</Text>
           </View>
+          <View style={[styles.statItem, styles.statBorder]}>
+            <Text style={styles.statValue}>50+</Text>
+            <Text style={styles.statLabel}>ELITE MENTORS</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>24/7</Text>
+            <Text style={styles.statLabel}>DREAM SUPPORT</Text>
+          </View>
+        </View>
+        
+        {/* Elegant divider */}
+        <View style={styles.elegantDivider} />
+      </Animated.View>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerTagline}>Building champions since 2024</Text>
-            <View style={styles.socialLinks}>
-              <TouchableOpacity style={styles.socialLink}>
-                <Text style={styles.socialText}>TikTok</Text>
-              </TouchableOpacity>
-              <View style={styles.socialDivider} />
-              <TouchableOpacity style={styles.socialLink}>
-                <Text style={styles.socialText}>Instagram</Text>
-              </TouchableOpacity>
-              <View style={styles.socialDivider} />
-              <TouchableOpacity style={styles.socialLink}>
-                <Text style={styles.socialText}>YouTube</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+      {/* Footer */}
+      <Animated.View style={[styles.footer, footerAnimatedStyle]}>
+        <Text style={styles.footerTagline}>BUILDING CHAMPIONS SINCE 2024</Text>
+        <View style={styles.socialLinks}>
+          <TouchableOpacity>
+            <Text style={styles.socialLink}>TIKTOK</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.socialLink}>INSTAGRAM</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.socialLink}>YOUTUBE</Text>
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
     </View>
   );
 }
