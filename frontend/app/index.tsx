@@ -8,6 +8,9 @@ import Animated, {
   withDelay,
   Easing
 } from 'react-native-reanimated';
+import { useFonts, SairaExtraCondensed_300Light } from '@expo-google-fonts/saira-extra-condensed';
+import { Inter_400Regular, Inter_500Medium } from '@expo-google-fonts/inter';
+
 import EliteOnboarding from './onboarding/elite';
 import DailyChallenges from './challenges/index';
 import Authentication from './auth/index';
