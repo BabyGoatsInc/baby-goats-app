@@ -696,15 +696,105 @@ class APITester:
                     response.json() if response else None
                 )
 
+    def test_original_fastapi_endpoints(self):
+        """Test original FastAPI endpoints (non-proxy)"""
+        print("🧪 Testing Original FastAPI Endpoints...")
+        
+        # Test 1: Root endpoint
+        response = self.make_request('GET', '/')
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            self.log_result(
+                "GET /api/ - Root endpoint",
+                True,
+                f"Message: {data.get('message', 'No message')}"
+            )
+        else:
+            self.log_result(
+                "GET /api/ - Root endpoint",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 2: GET status checks
+        response = self.make_request('GET', '/status')
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            self.log_result(
+                "GET /api/status - Get status checks",
+                True,
+                f"Retrieved {len(data)} status checks"
+            )
+        else:
+            self.log_result(
+                "GET /api/status - Get status checks",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 3: POST status check
+        status_data = {
+            'client_name': 'API Test Client'
+        }
+        
+        response = self.make_request('POST', '/status', data=status_data)
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            self.log_result(
+                "POST /api/status - Create status check",
+                True,
+                f"Created status check with ID: {data.get('id', 'Unknown')}"
+            )
+        else:
+            self.log_result(
+                "POST /api/status - Create status check",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+    def test_debug_schema_endpoint(self):
+        """Test debug schema endpoint through proxy"""
+        print("🧪 Testing Debug Schema Endpoint...")
+        
+        response = self.make_request('GET', '/debug/schema')
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            self.log_result(
+                "GET /api/debug/schema - Schema info",
+                True,
+                f"Retrieved schema with {len(data.get('tables', []))} tables"
+            )
+        else:
+            self.log_result(
+                "GET /api/debug/schema - Schema info",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
     def run_all_tests(self):
         """Run all API tests"""
-        print(f"🚀 Starting Baby Goats API Testing Suite")
-        print(f"📍 Base URL: {BASE_URL}")
+        print(f"🚀 Starting Baby Goats API Proxy Testing Suite")
+        print(f"📍 FastAPI Proxy URL: {BASE_URL}")
+        print(f"🔄 Testing proxy forwarding to Next.js APIs")
         print(f"🕐 Started at: {datetime.now().isoformat()}")
         print("=" * 60)
         
         try:
-            # Run all test suites
+            # Test original FastAPI endpoints first
+            self.test_original_fastapi_endpoints()
+            
+            # Test debug schema endpoint
+            self.test_debug_schema_endpoint()
+            
+            # Run all Baby Goats API proxy tests
             self.test_profiles_api()
             self.test_highlights_api()
             self.test_challenges_api()
