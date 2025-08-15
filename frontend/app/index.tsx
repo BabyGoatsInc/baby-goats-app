@@ -91,128 +91,22 @@ export default function Index() {
     );
   }
 
-  // Elite Home Screen
+  // Minimalist Home Screen
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
       <View style={styles.content}>
-        {/* Elite Header */}
-        <View style={styles.header}>
-          <Text style={styles.brandName}>BABY GOATS</Text>
-          <Text style={styles.tagline}>Elite Development Platform</Text>
-        </View>
-
-        {/* User Status */}
-        {user && (
-          <View style={styles.userStatusContainer}>
-            <Text style={styles.welcomeText}>Welcome back, {user.name}</Text>
-            <TouchableOpacity
-              style={styles.profileLink}
-              onPress={() => setCurrentScreen('profile')}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.profileLinkText}>View Performance →</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Mission Statement */}
-        <View style={styles.missionSection}>
-          <Text style={styles.missionText}>
-            Transform potential into performance. Master the mental game. Join the elite.
-          </Text>
-        </View>
-
-        {/* Elite Actions */}
-        <View style={styles.actionsSection}>
-          {/* Authentication Flow */}
-          {!user && (
-            <>
-              <TouchableOpacity
-                style={styles.primaryAction}
-                onPress={() => setCurrentScreen('auth')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.primaryActionText}>Begin Elite Training</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity
-                style={styles.secondaryAction}
-                onPress={() => setCurrentScreen('auth')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.secondaryActionText}>Access Account</Text>
-              </TouchableOpacity>
-            </>
-          )}
-
-          {/* Authenticated User Options */}
-          {user && (
-            <>
-              <TouchableOpacity
-                style={styles.primaryAction}
-                onPress={() => setCurrentScreen('challenges')}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.primaryActionText}>Training Protocol</Text>
-              </TouchableOpacity>
-
-              {!user.sport && (
-                <TouchableOpacity
-                  style={styles.progressAction}
-                  onPress={() => setCurrentScreen('onboarding')}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.progressActionText}>Complete Assessment</Text>
-                </TouchableOpacity>
-              )}
-            </>
-          )}
-
-          {/* Demo Access */}
-          <View style={styles.demoSection}>
-            <Text style={styles.demoLabel}>Explore Platform</Text>
-            <TouchableOpacity
-              style={styles.demoAction}
-              onPress={() => setCurrentScreen('onboarding')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.demoActionText}>Assessment Process</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.demoAction}
-              onPress={() => setCurrentScreen('challenges')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.demoActionText}>Training Protocols</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Elite Features */}
-        <View style={styles.featuresSection}>
-          <Text style={styles.featuresTitle}>Platform Capabilities</Text>
-          <View style={styles.featureGrid}>
-            <View style={styles.featureItem}>
-              <View style={styles.featureIcon} />
-              <Text style={styles.featureText}>Mental Performance</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <View style={styles.featureIcon} />
-              <Text style={styles.featureText}>Elite Protocols</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <View style={styles.featureIcon} />
-              <Text style={styles.featureText}>Performance Analytics</Text>
-            </View>
-            <View style={styles.featureItem}>
-              <View style={styles.featureIcon} />
-              <Text style={styles.featureText}>Secure Development</Text>
-            </View>
-          </View>
-        </View>
+        <Text style={styles.brandName}>BABY GOATS</Text>
+        <Text style={styles.tagline}>Built for Athletes Obsessed with Greatness.</Text>
+        
+        <TouchableOpacity
+          style={styles.beginButton}
+          onPress={() => setCurrentScreen('auth')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.beginText}>BEGIN</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
