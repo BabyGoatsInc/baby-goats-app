@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
   },
   eyebrowFuture: {
     fontSize: isTablet ? 18 : 16,
-    color: '#D23A3A',
+    color: '#FFFFFF',
     fontWeight: '400',
     letterSpacing: 2,
     fontFamily: 'System',
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
   eyebrowLegends: {
     fontSize: isTablet ? 18 : 16,
-    color: '#D23A3A',
+    color: '#FFFFFF',
     fontWeight: '400',
     letterSpacing: 2,
     fontStyle: 'italic',
