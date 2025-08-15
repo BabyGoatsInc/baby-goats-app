@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import SportSelection from './sport-selection';
+import ExperienceLevel from './experience-level';
+import GoalSetting from './goal-setting';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
