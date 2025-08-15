@@ -136,6 +136,20 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
     console.log(`Selected ${sport.name} with interest level ${interest}`);
   };
 
+  const handleExperienceSelected = (experienceLevel: ExperienceLevel) => {
+    setSelectedExperience(experienceLevel);
+    // Move to Goal Setting screen
+    setCurrentStep(4);
+    console.log(`Selected experience level: ${experienceLevel.title}`);
+  };
+
+  const handleGoalsComplete = (goals: Goal[]) => {
+    setSelectedGoals(goals);
+    // Move to completion screen
+    setCurrentStep(5);
+    console.log(`Selected goals:`, goals.map(g => g.title));
+  };
+
   // Show Sport Selection screen
   if (currentStep === 2) {
     return (
