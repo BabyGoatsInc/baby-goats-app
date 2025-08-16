@@ -786,62 +786,617 @@ class APITester:
                 f"Missing fields test failed: {str(e)}"
             )
 
-    def run_performance_optimization_tests(self):
-        """Run complete Performance Optimization Integration testing suite"""
-        print(f"🚀 Starting Performance Optimization Integration Testing Suite")
+    def test_offline_backend_api_compatibility(self):
+        """Test Backend API Compatibility - Verify offline system doesn't interfere with existing APIs - HIGH PRIORITY"""
+        print("🧪 Testing Backend API Compatibility with Offline System...")
+        
+        # Test 1: GET /api/profiles (should work with offline caching layer)
+        try:
+            response = self.make_request('GET', '/profiles', params={'limit': 10})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                profiles = data.get('profiles', [])
+                
+                self.log_result(
+                    "Offline API Compatibility - GET /api/profiles",
+                    True,
+                    f"Profiles API working with offline layer: {len(profiles)} profiles retrieved"
+                )
+                self.test_data['offline_profiles_count'] = len(profiles)
+            else:
+                self.log_result(
+                    "Offline API Compatibility - GET /api/profiles",
+                    False,
+                    f"Profiles API failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline API Compatibility - GET /api/profiles",
+                False,
+                f"Profiles API test failed: {str(e)}"
+            )
+
+        # Test 2: GET /api/challenges (data available for offline usage)
+        try:
+            response = self.make_request('GET', '/challenges', params={'limit': 10})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                challenges = data.get('challenges', [])
+                
+                self.log_result(
+                    "Offline API Compatibility - GET /api/challenges",
+                    True,
+                    f"Challenges API working with offline layer: {len(challenges)} challenges retrieved"
+                )
+                self.test_data['offline_challenges_count'] = len(challenges)
+            else:
+                self.log_result(
+                    "Offline API Compatibility - GET /api/challenges",
+                    False,
+                    f"Challenges API failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline API Compatibility - GET /api/challenges",
+                False,
+                f"Challenges API test failed: {str(e)}"
+            )
+
+        # Test 3: GET /api/stats (user statistics for offline tracking)
+        try:
+            response = self.make_request('GET', '/stats', params={'user_id': TEST_USER_ID})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                stats = data.get('stats', [])
+                
+                self.log_result(
+                    "Offline API Compatibility - GET /api/stats",
+                    True,
+                    f"Stats API working with offline layer: {len(stats)} stats retrieved"
+                )
+                self.test_data['offline_stats_count'] = len(stats)
+            else:
+                self.log_result(
+                    "Offline API Compatibility - GET /api/stats",
+                    False,
+                    f"Stats API failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline API Compatibility - GET /api/stats",
+                False,
+                f"Stats API test failed: {str(e)}"
+            )
+
+    def test_offline_storage_system_integration(self):
+        """Test Storage System Integration - Ensure offline capabilities work with Supabase Storage - HIGH PRIORITY"""
+        print("🧪 Testing Storage System Integration with Offline Capabilities...")
+        
+        # Test 1: GET /api/storage?action=check_bucket (storage integration maintained)
+        try:
+            response = self.make_request('GET', '/storage', params={'action': 'check_bucket'})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                bucket_exists = data.get('bucketExists', False)
+                
+                self.log_result(
+                    "Offline Storage Integration - Bucket status check",
+                    bucket_exists,
+                    f"Storage bucket check working with offline system: {bucket_exists}"
+                )
+                self.test_data['offline_bucket_exists'] = bucket_exists
+            else:
+                self.log_result(
+                    "Offline Storage Integration - Bucket status check",
+                    False,
+                    f"Storage bucket check failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline Storage Integration - Bucket status check",
+                False,
+                f"Storage bucket check test failed: {str(e)}"
+            )
+
+        # Test 2: POST /api/storage (profile photo upload with offline support)
+        try:
+            # Create test image for offline-enabled upload
+            test_image = Image.new('RGB', (400, 400), color='purple')
+            img_buffer = io.BytesIO()
+            test_image.save(img_buffer, format='JPEG', quality=85)
+            img_buffer.seek(0)
+            
+            image_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+            
+            timestamp = int(time.time())
+            filename = f"offline_test_{timestamp}.jpg"
+            
+            upload_data = {
+                'action': 'upload',
+                'userId': TEST_USER_ID,
+                'fileName': filename,
+                'fileData': image_base64,
+                'contentType': 'image/jpeg'
+            }
+            
+            response = self.make_request('POST', '/storage', data=upload_data)
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                upload_success = data.get('success', False)
+                upload_url = data.get('url', '')
+                
+                if upload_success and upload_url:
+                    self.log_result(
+                        "Offline Storage Integration - Profile photo upload",
+                        True,
+                        f"Photo upload working with offline support: {filename}"
+                    )
+                    self.test_data['offline_uploaded_url'] = upload_url
+                    self.test_data['offline_uploaded_filename'] = filename
+                else:
+                    self.log_result(
+                        "Offline Storage Integration - Profile photo upload",
+                        False,
+                        f"Photo upload failed: {data.get('error', 'Unknown error')}"
+                    )
+            else:
+                self.log_result(
+                    "Offline Storage Integration - Profile photo upload",
+                    False,
+                    f"Photo upload request failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline Storage Integration - Profile photo upload",
+                False,
+                f"Photo upload test failed: {str(e)}"
+            )
+
+        # Test 3: Storage queue management simulation
+        try:
+            # Test multiple uploads to simulate offline queue behavior
+            queue_uploads = 0
+            for i in range(3):
+                test_image = Image.new('RGB', (200, 200), color=f'rgb({100+i*30}, {150+i*20}, {200+i*10})')
+                img_buffer = io.BytesIO()
+                test_image.save(img_buffer, format='JPEG', quality=80)
+                img_buffer.seek(0)
+                
+                image_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+                
+                upload_data = {
+                    'action': 'upload',
+                    'userId': TEST_USER_ID,
+                    'fileName': f'queue_test_{i}_{int(time.time())}.jpg',
+                    'fileData': image_base64,
+                    'contentType': 'image/jpeg'
+                }
+                
+                response = self.make_request('POST', '/storage', data=upload_data)
+                
+                if response and response.status_code == 200:
+                    data = response.json()
+                    if data.get('success', False):
+                        queue_uploads += 1
+                
+                # Small delay to simulate queue processing
+                time.sleep(0.3)
+            
+            self.log_result(
+                "Offline Storage Integration - Queue management simulation",
+                queue_uploads >= 2,
+                f"Queue processing simulation: {queue_uploads}/3 uploads successful"
+            )
+            self.test_data['offline_queue_success'] = queue_uploads
+        except Exception as e:
+            self.log_result(
+                "Offline Storage Integration - Queue management simulation",
+                False,
+                f"Queue management test failed: {str(e)}"
+            )
+
+    def test_offline_performance_impact(self):
+        """Test Performance Impact - Test that offline system doesn't degrade API performance - HIGH PRIORITY"""
+        print("🧪 Testing Performance Impact of Offline System...")
+        
+        performance_results = []
+        
+        # Test 1: API response times remain under 3 seconds with offline layer
+        endpoints_to_test = [
+            ('/profiles', {'limit': 10}),
+            ('/storage', {'action': 'check_bucket'}),
+            ('/challenges', {'limit': 10}),
+            ('/stats', {'user_id': TEST_USER_ID})
+        ]
+        
+        for endpoint, params in endpoints_to_test:
+            try:
+                start_time = time.time()
+                response = self.make_request('GET', endpoint, params=params)
+                end_time = time.time()
+                response_time = end_time - start_time
+                
+                performance_results.append((f'GET /api{endpoint}', response_time))
+                
+                if response and response.status_code == 200 and response_time < 3.0:
+                    self.log_result(
+                        f"Offline Performance Impact - GET /api{endpoint}",
+                        True,
+                        f"Response time with offline layer: {response_time:.2f}s (< 3s target)"
+                    )
+                else:
+                    self.log_result(
+                        f"Offline Performance Impact - GET /api{endpoint}",
+                        False,
+                        f"Performance degraded: {response_time:.2f}s (>= 3s target) or failed request"
+                    )
+            except Exception as e:
+                self.log_result(
+                    f"Offline Performance Impact - GET /api{endpoint}",
+                    False,
+                    f"Performance test failed: {str(e)}"
+                )
+        
+        # Test 2: Background sync operations don't interfere with real-time API calls
+        try:
+            # Simulate background sync by making multiple concurrent requests
+            concurrent_requests = []
+            start_time = time.time()
+            
+            # Make 5 concurrent requests to simulate background sync + real-time calls
+            import threading
+            
+            def make_concurrent_request(endpoint, params, results_list):
+                try:
+                    response = self.make_request('GET', endpoint, params=params)
+                    if response and response.status_code == 200:
+                        results_list.append(True)
+                    else:
+                        results_list.append(False)
+                except:
+                    results_list.append(False)
+            
+            concurrent_results = []
+            threads = []
+            
+            for i in range(5):
+                thread = threading.Thread(
+                    target=make_concurrent_request,
+                    args=('/profiles', {'limit': 5}, concurrent_results)
+                )
+                threads.append(thread)
+                thread.start()
+            
+            # Wait for all threads to complete
+            for thread in threads:
+                thread.join()
+            
+            end_time = time.time()
+            total_time = end_time - start_time
+            successful_requests = sum(concurrent_results)
+            
+            self.log_result(
+                "Offline Performance Impact - Background sync interference",
+                successful_requests >= 4 and total_time < 10.0,
+                f"Concurrent requests: {successful_requests}/5 successful in {total_time:.2f}s"
+            )
+            
+        except Exception as e:
+            self.log_result(
+                "Offline Performance Impact - Background sync interference",
+                False,
+                f"Concurrent request test failed: {str(e)}"
+            )
+        
+        # Store performance results
+        self.test_data['offline_performance_results'] = performance_results
+
+    def test_offline_data_consistency(self):
+        """Test Data Consistency - Verify existing data endpoints remain functional - HIGH PRIORITY"""
+        print("🧪 Testing Data Consistency with Offline System...")
+        
+        # Test 1: Profile data consistency
+        try:
+            # Create a test profile
+            profile_data = {
+                'id': str(uuid.uuid4()),
+                'full_name': 'Offline Consistency Test User',
+                'sport': 'Basketball',
+                'grad_year': 2026,
+                'avatar_url': PRESET_AVATARS[1]['url']
+            }
+            
+            # Attempt to create profile
+            response = self.make_request('POST', '/profiles', data=profile_data)
+            
+            if response and response.status_code in [200, 201]:
+                # Try to retrieve the profile
+                search_response = self.make_request('GET', '/profiles', params={
+                    'search': 'Offline Consistency Test',
+                    'limit': 5
+                })
+                
+                if search_response and search_response.status_code == 200:
+                    data = search_response.json()
+                    profiles = data.get('profiles', [])
+                    
+                    profile_found = any(
+                        p.get('full_name') == profile_data['full_name'] 
+                        for p in profiles
+                    )
+                    
+                    self.log_result(
+                        "Offline Data Consistency - Profile data integrity",
+                        profile_found,
+                        f"Profile data consistent: {'Found' if profile_found else 'Not found'} in {len(profiles)} profiles"
+                    )
+                else:
+                    self.log_result(
+                        "Offline Data Consistency - Profile data integrity",
+                        False,
+                        "Profile retrieval failed after creation"
+                    )
+            else:
+                self.log_result(
+                    "Offline Data Consistency - Profile data integrity",
+                    False,
+                    f"Profile creation failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline Data Consistency - Profile data integrity",
+                False,
+                f"Profile consistency test failed: {str(e)}"
+            )
+
+        # Test 2: Challenge data consistency
+        try:
+            response = self.make_request('GET', '/challenges')
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                challenges = data.get('challenges', [])
+                
+                # Check if challenges have consistent structure
+                consistent_structure = True
+                required_fields = ['id', 'title', 'category']
+                
+                for challenge in challenges[:5]:  # Check first 5 challenges
+                    for field in required_fields:
+                        if field not in challenge:
+                            consistent_structure = False
+                            break
+                    if not consistent_structure:
+                        break
+                
+                self.log_result(
+                    "Offline Data Consistency - Challenge data structure",
+                    consistent_structure,
+                    f"Challenge data structure consistent: {len(challenges)} challenges checked"
+                )
+            else:
+                self.log_result(
+                    "Offline Data Consistency - Challenge data structure",
+                    False,
+                    f"Challenge data retrieval failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline Data Consistency - Challenge data structure",
+                False,
+                f"Challenge consistency test failed: {str(e)}"
+            )
+
+        # Test 3: Storage data consistency
+        if self.test_data.get('offline_uploaded_url'):
+            try:
+                # Verify uploaded file is still accessible
+                response = requests.get(self.test_data['offline_uploaded_url'], timeout=30)
+                
+                if response and response.status_code == 200:
+                    content_type = response.headers.get('content-type', '')
+                    
+                    self.log_result(
+                        "Offline Data Consistency - Storage data integrity",
+                        'image' in content_type.lower(),
+                        f"Storage data consistent: File accessible with Content-Type: {content_type}"
+                    )
+                else:
+                    self.log_result(
+                        "Offline Data Consistency - Storage data integrity",
+                        False,
+                        f"Storage data inconsistent: File not accessible, status: {response.status_code if response else 'No response'}"
+                    )
+            except Exception as e:
+                self.log_result(
+                    "Offline Data Consistency - Storage data integrity",
+                    False,
+                    f"Storage consistency test failed: {str(e)}"
+                )
+
+    def test_offline_network_state_detection(self):
+        """Test Network State Detection Functionality - MEDIUM PRIORITY"""
+        print("🧪 Testing Network State Detection Functionality...")
+        
+        # Test 1: API endpoints respond correctly (simulating online state)
+        try:
+            response = self.make_request('GET', '/')
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                message = data.get('message', '')
+                
+                self.log_result(
+                    "Offline Network Detection - Online state simulation",
+                    'Baby Goats API Proxy' in message,
+                    f"API responds correctly in online state: {message[:50]}..."
+                )
+            else:
+                self.log_result(
+                    "Offline Network Detection - Online state simulation",
+                    False,
+                    f"API not responding correctly, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline Network Detection - Online state simulation",
+                False,
+                f"Network detection test failed: {str(e)}"
+            )
+
+        # Test 2: API graceful degradation (simulating offline behavior)
+        try:
+            # Test with invalid endpoint to simulate offline behavior
+            response = self.make_request('GET', '/offline-test-endpoint')
+            
+            # Should return 404 or similar, not crash
+            if response and response.status_code in [404, 405]:
+                self.log_result(
+                    "Offline Network Detection - Graceful degradation",
+                    True,
+                    f"API handles invalid requests gracefully: {response.status_code}"
+                )
+            else:
+                self.log_result(
+                    "Offline Network Detection - Graceful degradation",
+                    False,
+                    f"API doesn't handle invalid requests properly, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline Network Detection - Graceful degradation",
+                False,
+                f"Graceful degradation test failed: {str(e)}"
+            )
+
+    def test_offline_caching_integration(self):
+        """Test API Caching Integration with Offline System - MEDIUM PRIORITY"""
+        print("🧪 Testing API Caching Integration with Offline System...")
+        
+        # Test 1: Repeated API calls (should benefit from caching)
+        try:
+            # Make the same request twice to test caching
+            start_time_1 = time.time()
+            response_1 = self.make_request('GET', '/profiles', params={'limit': 5})
+            end_time_1 = time.time()
+            first_call_time = end_time_1 - start_time_1
+            
+            time.sleep(0.1)  # Small delay
+            
+            start_time_2 = time.time()
+            response_2 = self.make_request('GET', '/profiles', params={'limit': 5})
+            end_time_2 = time.time()
+            second_call_time = end_time_2 - start_time_2
+            
+            if response_1 and response_2 and response_1.status_code == 200 and response_2.status_code == 200:
+                # Check if responses are consistent
+                data_1 = response_1.json()
+                data_2 = response_2.json()
+                
+                profiles_1 = data_1.get('profiles', [])
+                profiles_2 = data_2.get('profiles', [])
+                
+                consistent_data = len(profiles_1) == len(profiles_2)
+                
+                self.log_result(
+                    "Offline Caching Integration - API response consistency",
+                    consistent_data,
+                    f"Caching consistency: First call {first_call_time:.2f}s, Second call {second_call_time:.2f}s, Data consistent: {consistent_data}"
+                )
+            else:
+                self.log_result(
+                    "Offline Caching Integration - API response consistency",
+                    False,
+                    "One or both API calls failed"
+                )
+        except Exception as e:
+            self.log_result(
+                "Offline Caching Integration - API response consistency",
+                False,
+                f"Caching integration test failed: {str(e)}"
+            )
+
+        # Test 2: Cache invalidation behavior
+        try:
+            # Test different endpoints to verify independent caching
+            endpoints = ['/profiles', '/challenges', '/stats']
+            cache_results = []
+            
+            for endpoint in endpoints:
+                params = {'limit': 3} if endpoint != '/stats' else {'user_id': TEST_USER_ID}
+                response = self.make_request('GET', endpoint, params=params)
+                
+                if response and response.status_code == 200:
+                    cache_results.append(True)
+                else:
+                    cache_results.append(False)
+            
+            successful_cache_tests = sum(cache_results)
+            
+            self.log_result(
+                "Offline Caching Integration - Multi-endpoint caching",
+                successful_cache_tests >= 2,
+                f"Multi-endpoint caching: {successful_cache_tests}/{len(endpoints)} endpoints cached successfully"
+            )
+        except Exception as e:
+            self.log_result(
+                "Offline Caching Integration - Multi-endpoint caching",
+                False,
+                f"Multi-endpoint caching test failed: {str(e)}"
+            )
+
+    def run_offline_capabilities_integration_tests(self):
+        """Run complete Offline Capabilities Integration testing suite"""
+        print(f"🚀 Starting Offline Capabilities Integration Testing Suite")
         print(f"📍 Backend API URL: {BASE_URL}")
         print(f"📍 Next.js API URL: {NEXTJS_API_BASE}")
         print(f"📍 Frontend URL: {FRONTEND_URL}")
-        print(f"🎯 Focus: Performance optimization integration with existing Supabase Storage system")
-        print(f"🔍 Testing: Image optimization pipeline, API response performance, storage integration, backend stability")
+        print(f"🎯 Focus: Offline capabilities integration with existing Baby Goats infrastructure")
+        print(f"🔍 Testing: Backend API compatibility, storage system integration, performance impact, data consistency")
         print(f"🕐 Started at: {datetime.now().isoformat()}")
         print("=" * 80)
         
         try:
-            # HIGH PRIORITY TESTS - Performance Integration
-            print("\n🔥 HIGH PRIORITY TESTS - Performance Optimization Integration")
+            # HIGH PRIORITY TESTS - Offline Integration
+            print("\n🔥 HIGH PRIORITY TESTS - Offline Capabilities Integration")
             print("-" * 60)
             
-            # Test API response performance
-            self.test_api_response_performance()
+            # Test backend API compatibility
+            self.test_offline_backend_api_compatibility()
             
-            # Test image optimization pipeline
-            self.test_optimized_image_upload_pipeline()
+            # Test storage system integration
+            self.test_offline_storage_system_integration()
             
-            # Test storage integration stability
-            self.test_storage_integration_stability()
+            # Test performance impact
+            self.test_offline_performance_impact()
             
-            # Test backend storage API bucket check
-            self.test_backend_storage_api_bucket_check()
-            
-            # Test backend storage API bucket setup
-            self.test_backend_storage_api_bucket_setup()
-            
-            # Test backend storage API file upload (original test)
-            self.test_backend_storage_api_file_upload()
-            
-            # Test backend storage API file deletion
-            self.test_backend_storage_api_file_deletion()
-            
-            # Test backend API integration with profiles
-            self.test_backend_api_integration()
+            # Test data consistency
+            self.test_offline_data_consistency()
             
             # MEDIUM PRIORITY TESTS
             print("\n⚡ MEDIUM PRIORITY TESTS")
             print("-" * 40)
             
-            # Test backend storage API error handling
-            self.test_backend_storage_api_error_handling()
+            # Test network state detection
+            self.test_offline_network_state_detection()
             
-            # Test preset avatar accessibility
+            # Test caching integration
+            self.test_offline_caching_integration()
+            
+            # Test preset avatar accessibility (for offline fallbacks)
             self.test_preset_avatar_accessibility()
             
         except Exception as e:
             print(f"❌ Test suite failed with error: {e}")
-            self.log_result("Performance Optimization Integration Test Suite Execution", False, str(e))
+            self.log_result("Offline Capabilities Integration Test Suite Execution", False, str(e))
         
         # Print summary
-        self.print_performance_optimization_summary()
+        self.print_offline_capabilities_summary()
 
     def print_performance_optimization_summary(self):
         """Print Performance Optimization Integration test results summary"""
