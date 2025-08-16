@@ -173,6 +173,7 @@ export default function ConversationalAuth({ onBack }: ConversationalAuthProps) 
         full_name: formData.name,
         age: age,
         parent_email: formData.parentEmail || undefined,
+        sport: 'other', // Default sport, can be updated later
       });
 
       if (error) {
