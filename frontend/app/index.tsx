@@ -19,6 +19,13 @@ import UserProfileScreen from './profile/index';
 import GoalsTracker from './goals/index';
 import AchievementsGallery from './achievements/index';
 
+// Offline capabilities imports
+import { offlineManager } from '../lib/offlineManager';
+import { offlineDataLayer } from '../lib/offlineDataLayer';
+import { startCacheCleanup } from '../lib/apiCache';
+import { performanceMonitor } from '../lib/performanceMonitor';
+import OfflineIndicator from '../components/OfflineIndicator';
+
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isTablet = screenWidth >= 768;
