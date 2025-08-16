@@ -28,7 +28,39 @@ export default function ProfilePhotoSelector({
   const [selectedType, setSelectedType] = useState<'avatar' | 'photo'>('avatar');
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [storageReady, setStorageReady] = useState<boolean | null>(null);
   const { user } = useAuth();
+
+  // Initialize storage on component mount
+  useEffect(() => {
+    initializeStorage();
+  }, []);
+
+  const initializeStorage = async () => {
+    try {
+      console.log('🔄 Checking storage bucket status...');
+      const status = await checkStorageBucket();
+      
+      if (status.exists) {
+        console.log('✅ Storage bucket ready');
+        setStorageReady(true);
+      } else {
+        console.log('🔄 Setting up storage bucket...');
+        const setupResult = await setupStorageBucket();
+        
+        if (setupResult) {
+          console.log('✅ Storage bucket setup completed');
+          setStorageReady(true);
+        } else {
+          console.log('❌ Storage bucket setup failed');
+          setStorageReady(false);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Storage initialization error:', error);
+      setStorageReady(false);
+    }
+  };
 
   const handleTakePhoto = async () => {
     try {
