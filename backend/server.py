@@ -177,6 +177,32 @@ async def proxy_likes_post(request: Request):
         logging.error(f"Error proxying like toggle: {e}")
         return JSONResponse(content={"error": "Failed to toggle like"}, status_code=500)
 
+@api_router.get("/storage")
+async def proxy_storage_get(request: Request):
+    """Proxy storage GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/storage"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying storage GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch storage"}, status_code=500)
+
+@api_router.post("/storage")
+async def proxy_storage_post(request: Request):
+    """Proxy storage POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/storage", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying storage POST request: {e}")
+        return JSONResponse(content={"error": "Failed to process storage request"}, status_code=500)
+
 @api_router.get("/debug/schema")
 async def proxy_debug_schema(request: Request):
     """Proxy debug schema requests to Next.js API"""
