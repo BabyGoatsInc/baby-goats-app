@@ -339,10 +339,10 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: '#000000',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '500',
-    letterSpacing: 0.5,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
   backLink: {
     alignItems: 'center',
