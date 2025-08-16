@@ -786,20 +786,30 @@ class APITester:
                 f"Missing fields test failed: {str(e)}"
             )
 
-    def run_backend_storage_api_tests(self):
-        """Run complete Backend Storage API testing suite"""
-        print(f"🚀 Starting Backend Storage API Testing Suite")
+    def run_performance_optimization_tests(self):
+        """Run complete Performance Optimization Integration testing suite"""
+        print(f"🚀 Starting Performance Optimization Integration Testing Suite")
         print(f"📍 Backend API URL: {BASE_URL}")
         print(f"📍 Next.js API URL: {NEXTJS_API_BASE}")
         print(f"📍 Frontend URL: {FRONTEND_URL}")
-        print(f"🎯 Focus: Backend Storage API with service role key, bucket management, file upload pipeline")
+        print(f"🎯 Focus: Performance optimization integration with existing Supabase Storage system")
+        print(f"🔍 Testing: Image optimization pipeline, API response performance, storage integration, backend stability")
         print(f"🕐 Started at: {datetime.now().isoformat()}")
         print("=" * 80)
         
         try:
-            # HIGH PRIORITY TESTS - Backend Storage API
-            print("\n🔥 HIGH PRIORITY TESTS - Backend Storage API")
-            print("-" * 50)
+            # HIGH PRIORITY TESTS - Performance Integration
+            print("\n🔥 HIGH PRIORITY TESTS - Performance Optimization Integration")
+            print("-" * 60)
+            
+            # Test API response performance
+            self.test_api_response_performance()
+            
+            # Test image optimization pipeline
+            self.test_optimized_image_upload_pipeline()
+            
+            # Test storage integration stability
+            self.test_storage_integration_stability()
             
             # Test backend storage API bucket check
             self.test_backend_storage_api_bucket_check()
@@ -807,7 +817,7 @@ class APITester:
             # Test backend storage API bucket setup
             self.test_backend_storage_api_bucket_setup()
             
-            # Test backend storage API file upload
+            # Test backend storage API file upload (original test)
             self.test_backend_storage_api_file_upload()
             
             # Test backend storage API file deletion
@@ -828,10 +838,10 @@ class APITester:
             
         except Exception as e:
             print(f"❌ Test suite failed with error: {e}")
-            self.log_result("Backend Storage API Test Suite Execution", False, str(e))
+            self.log_result("Performance Optimization Integration Test Suite Execution", False, str(e))
         
         # Print summary
-        self.print_backend_storage_api_summary()
+        self.print_performance_optimization_summary()
 
     def print_backend_storage_api_summary(self):
         """Print Backend Storage API test results summary"""
