@@ -10,9 +10,9 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
 import { uploadProfilePhoto, PRESET_AVATARS, getAvatarById, setupStorageBucket, checkStorageBucket } from '../lib/storage';
 import { useAuth } from '../contexts/AuthContext';
+import { ImageOptimizer } from '../lib/imageOptimization';
 
 interface ProfilePhotoSelectorProps {
   currentAvatarUrl?: string;
