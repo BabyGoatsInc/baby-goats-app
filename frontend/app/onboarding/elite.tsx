@@ -15,6 +15,8 @@ import SportSelection from './sport-selection';
 import ExperienceLevel from './experience-level';
 import GoalSetting from './goal-setting';
 
+const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface Sport {
