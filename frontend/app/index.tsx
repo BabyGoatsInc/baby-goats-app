@@ -65,34 +65,25 @@ function MainApp() {
     Inter_500Medium,
   });
 
-  // Initialize offline capabilities
+  // Initialize offline capabilities and technical infrastructure
   useEffect(() => {
-    async function initializeOfflineSystem() {
+    async function initializeAppSystems() {
       try {
-        console.log('🚀 Initializing Baby Goats offline system...');
+        console.log('🚀 Initializing Baby Goats comprehensive systems...');
         
-        // Initialize offline manager
-        await offlineManager.initialize();
-        
-        // Initialize offline data layer
-        await offlineDataLayer.initialize();
-        
-        // Start performance monitoring
-        performanceMonitor.startMonitoring();
-        
-        // Start cache cleanup
-        startCacheCleanup();
+        // Initialize all technical infrastructure systems
+        await technicalInfrastructure.initializeAll();
         
         setOfflineSystemReady(true);
-        console.log('✅ Baby Goats offline system ready!');
+        console.log('✅ Baby Goats comprehensive systems ready!');
       } catch (error) {
-        console.error('❌ Failed to initialize offline system:', error);
-        // Continue without offline capabilities
+        console.error('❌ Failed to initialize app systems:', error);
+        // Continue without complete technical infrastructure but log the error
         setOfflineSystemReady(true);
       }
     }
 
-    initializeOfflineSystem();
+    initializeAppSystems();
   }, []);
 
   // Load fonts
