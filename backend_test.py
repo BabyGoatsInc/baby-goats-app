@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Backend Storage API Testing Suite for Baby Goats Application
-Tests the new backend storage API implementation with service role key for secure storage operations
-Focus: Verify backend storage API endpoints, bucket management, file upload pipeline, and integration testing
+Performance Optimization Integration Testing Suite for Baby Goats Application
+Tests the performance optimization integration with existing Supabase Storage system
+Focus: Image optimization pipeline, API response performance, storage integration, and backend stability
 """
 
 import requests
