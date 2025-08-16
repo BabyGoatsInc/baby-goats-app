@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Advanced Goal Tracking System Backend Testing Suite for Baby Goats Application
-Tests backend APIs that support goal tracking functionality including challenges, stats, and profiles
-Focus: Verify goal tracking backend infrastructure and data persistence capabilities
+Achievement System Backend Testing Suite for Baby Goats Application
+Tests Achievement System implementation including navigation, backend support, and frontend functionality
+Focus: Verify Achievement System components, character levels, and achievement gallery functionality
 """
 
 import requests
