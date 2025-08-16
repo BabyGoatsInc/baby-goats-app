@@ -258,9 +258,9 @@ export default function ConversationalAuth({ onAuthSuccess, onBack }: Conversati
             <View style={styles.inputContainer}>
               {currentStepData?.type === 'welcome' && (
                 <View style={styles.welcomeContent}>
-                  <Text style={styles.welcomeEmoji}>🏆</Text>
+                  <Text style={styles.welcomeEmoji}>⚡</Text>
                   <Text style={styles.welcomeText}>
-                    Join thousands of young athletes building champion mindsets every day!
+                    Join the next generation of elite athletes developing champion mindsets through proven methodologies.
                   </Text>
                 </View>
               )}
