@@ -105,6 +105,66 @@
 user_problem_statement: "Complete API implementations for Baby Goats MVP - profiles, highlights, challenges, stats, and likes endpoints"
 
 backend:
+  - task: "Profile Photo Infrastructure (Supabase Storage)"
+    implemented: true
+    working: false
+    file: "/app/frontend/lib/storage.ts"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL: Supabase Storage infrastructure not properly configured. Storage API returns 400 errors, profile-photos bucket missing, image upload functionality failing. Storage configuration needs setup in Supabase dashboard."
+
+  - task: "Avatar Component Integration"
+    implemented: true
+    working: true
+    file: "/app/frontend/components/Avatar.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Avatar component working correctly! Initials fallback logic (4/4 tests passed), size variations properly defined (small, medium, large, xlarge), component structure solid. 2/3 preset avatar URLs accessible (minor external URL issue)."
+
+  - task: "ProfilePhotoSelector Component"
+    implemented: true
+    working: false
+    file: "/app/frontend/components/ProfilePhotoSelector.tsx"
+    stuck_count: 1
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "Component implemented with camera/gallery integration, image processing, and upload logic, but depends on Supabase Storage which is not configured. Upload functionality will fail until storage bucket is properly set up."
+
+  - task: "Profile Integration with Avatar Updates"
+    implemented: true
+    working: false
+    file: "/app/frontend/app/profile/index.tsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "Profile screen has Avatar component integration with edit functionality and ProfilePhotoSelector modal. Database avatar_url field updates fail due to backend API issues. Authentication context updateProfile method implemented correctly."
+
+  - task: "Authentication Integration with Profile Photos"
+    implemented: true
+    working: true
+    file: "/app/frontend/contexts/AuthContext.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ Authentication context properly supports profile photo updates. Direct Supabase profile updates working (200 OK), session persistence structure valid, updateProfile method correctly implemented with avatar_url support."
+
   - task: "Profiles API (/api/profiles)"
     implemented: true
     working: true
