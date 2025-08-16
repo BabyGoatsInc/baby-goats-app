@@ -12,6 +12,7 @@ import { useFonts, SairaExtraCondensed_300Light } from '@expo-google-fonts/saira
 import { Inter_400Regular, Inter_500Medium } from '@expo-google-fonts/inter';
 
 import { AuthProvider } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import EliteOnboarding from './onboarding/elite';
 import DailyChallenges from './challenges/index';
 import Authentication from './auth/index';
