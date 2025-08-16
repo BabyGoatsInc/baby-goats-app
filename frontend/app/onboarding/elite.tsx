@@ -99,7 +99,10 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
   const currentStepData = steps[currentStep];
 
   const handleNext = () => {
+    console.log('🔘 handleNext called, currentStep:', currentStep, 'steps.length:', steps.length);
+    
     if (currentStep < steps.length - 1) {
+      console.log('📈 Advancing to next step:', currentStep + 1);
       setCurrentStep(currentStep + 1);
       // Reset animations for next step
       fadeAnim.setValue(0);
@@ -120,6 +123,7 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
       ]).start();
     } else {
       // Move to sport selection
+      console.log('🎯 Moving to sport selection (step 2)');
       setCurrentStep(2);
     }
   };
