@@ -227,21 +227,19 @@ const styles = StyleSheet.create({
   },
   brandingSection: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 40,
   },
   brandName: {
-    fontSize: 28,
-    fontWeight: '300',
     color: '#FFFFFF',
-    letterSpacing: 6,
+    fontSize: 24,
+    fontWeight: 'bold',
+    letterSpacing: 2,
     marginBottom: 8,
   },
   platformName: {
-    fontSize: 12,
-    color: '#666666',
-    fontWeight: '400',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
+    color: '#CCCCCC',
+    fontSize: 16,
+    letterSpacing: 1,
   },
   messageSection: {
     alignItems: 'center',
