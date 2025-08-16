@@ -15,9 +15,9 @@ import io
 from PIL import Image
 
 # Configuration - Testing Backend Storage API Implementation
-BASE_URL = "https://achievement-hub-4.preview.emergentagent.com/api"
-NEXTJS_API_BASE = "https://achievement-hub-4.preview.emergentagent.com/api"
-FRONTEND_URL = "https://achievement-hub-4.preview.emergentagent.com"
+BASE_URL = "https://champion-storage.preview.emergentagent.com/api"
+NEXTJS_API_BASE = "https://champion-storage.preview.emergentagent.com/api"
+FRONTEND_URL = "https://champion-storage.preview.emergentagent.com"
 
 HEADERS = {
     'Content-Type': 'application/json',
