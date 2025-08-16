@@ -63,6 +63,7 @@ interface UserProfile {
 }
 
 function MainApp() {
+  const { user } = useAuth();
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
   const [offlineSystemReady, setOfflineSystemReady] = useState(false);
 
