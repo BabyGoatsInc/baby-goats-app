@@ -505,9 +505,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Character Level System"
+    - "Offline Capabilities Integration with Baby Goats Infrastructure"
   stuck_tasks:
-    - "Character Level System"
+    []
   test_all: false
   test_priority: "high_first"
 
