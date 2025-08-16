@@ -892,9 +892,9 @@ class APITester:
 
     def run_all_tests(self):
         """Run all API tests"""
-        print(f"🚀 Starting Baby Goats API Proxy Testing Suite")
+        print(f"🚀 Starting Baby Goats MVP API Testing Suite")
         print(f"📍 FastAPI Proxy URL: {BASE_URL}")
-        print(f"🔄 Testing proxy forwarding to Next.js APIs")
+        print(f"🔄 Testing MVP functionality and proxy routing")
         print(f"🕐 Started at: {datetime.now().isoformat()}")
         print("=" * 60)
         
@@ -905,13 +905,21 @@ class APITester:
             # Test debug schema endpoint
             self.test_debug_schema_endpoint()
             
-            # Run all Baby Goats API proxy tests
+            # Test MVP endpoints directly
+            self.test_mvp_profiles_direct()
+            
+            # Test proxy routing to MVP endpoints
             self.test_profiles_api()
+            
+            # Test other API endpoints (should still work as before)
             self.test_highlights_api()
             self.test_challenges_api()
             self.test_stats_api()
             self.test_likes_api()
             self.test_error_handling()
+            
+            # Test various profile scenarios
+            self.test_profile_scenarios()
             
             # Cleanup
             self.cleanup_test_data()
@@ -922,6 +930,68 @@ class APITester:
         
         # Print summary
         self.print_summary()
+
+    def test_profile_scenarios(self):
+        """Test various profile data scenarios"""
+        print("🧪 Testing Various Profile Scenarios...")
+        
+        # Test different sports
+        sports_data = [
+            {'sport': 'Football', 'experience': 'Emerging Talent', 'goals': ['Body Optimization']},
+            {'sport': 'Tennis', 'experience': 'Developing Athlete', 'goals': ['Mental Resilience', 'Skill Mastery']},
+            {'sport': 'Swimming', 'experience': 'Rising Competitor', 'goals': ['Peak Performance']},
+            {'sport': 'Track', 'experience': 'Proven Champion', 'goals': ['Competitive Excellence', 'Team Leadership']}
+        ]
+        
+        for i, sport_data in enumerate(sports_data):
+            profile_data = {
+                'id': str(uuid.uuid4()),
+                'full_name': f'{sport_data["sport"]} Athlete {i+1}',
+                'sport': sport_data['sport'],
+                'experience_level': sport_data['experience'],
+                'passion_level': 7 + i,
+                'selected_goals': sport_data['goals'],
+                'grad_year': 2024 + i
+            }
+            
+            response = self.make_request('POST', '/profiles', data=profile_data)
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    f"Profile Scenario - {sport_data['sport']} athlete",
+                    True,
+                    f"Created {sport_data['experience']} level athlete"
+                )
+            else:
+                self.log_result(
+                    f"Profile Scenario - {sport_data['sport']} athlete",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'}",
+                    response.json() if response else None
+                )
+
+        # Test profile retrieval with filters
+        response = self.make_request('GET', '/profiles', params={'sport': 'Football'})
+        if response and response.status_code == 200:
+            data = response.json()
+            football_profiles = [p for p in data.get('profiles', []) if p.get('sport') == 'Football']
+            self.log_result(
+                "Profile Scenario - Football filter",
+                True,
+                f"Retrieved {len(football_profiles)} football profiles"
+            )
+        
+        # Test profile search
+        response = self.make_request('GET', '/profiles', params={'search': 'Tennis'})
+        if response and response.status_code == 200:
+            data = response.json()
+            tennis_profiles = [p for p in data.get('profiles', []) if 'Tennis' in p.get('full_name', '')]
+            self.log_result(
+                "Profile Scenario - Tennis search",
+                True,
+                f"Found {len(tennis_profiles)} tennis-related profiles"
+            )
 
     def print_summary(self):
         """Print test results summary"""
