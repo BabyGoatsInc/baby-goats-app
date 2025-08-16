@@ -483,9 +483,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Supabase Storage Integration for Profile Photos"
-    - "ProfilePhotoSelector Component"
-    - "Profile Integration with Avatar Updates"
+    - "Character Level System"
   stuck_tasks:
     - "Character Level System"
   test_all: false
