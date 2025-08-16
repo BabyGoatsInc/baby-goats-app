@@ -255,6 +255,19 @@ export default function UserProfileScreen({ onNavigateTo }: ProfileProps) {
           </View>
         </ScrollView>
       </Animated.View>
+
+      {/* Profile Photo Selector Modal */}
+      <Modal
+        visible={showPhotoSelector}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowPhotoSelector(false)}
+      >
+        <ProfilePhotoSelector
+          onPhotoSelected={handlePhotoSelected}
+          onClose={() => setShowPhotoSelector(false)}
+        />
+      </Modal>
     </SafeAreaView>
   );
 }
