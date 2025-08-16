@@ -248,6 +248,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 48,
   },
+  formSection: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
   title: {
     fontSize: 24,
     fontWeight: '400',
