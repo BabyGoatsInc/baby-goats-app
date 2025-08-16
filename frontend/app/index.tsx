@@ -249,6 +249,40 @@ function MainApp() {
     );
   }
 
+  if (currentScreen === 'social_profile') {
+    return (
+      <SocialProfileScreen 
+        onBack={handleBackToHome}
+        userId={undefined} // Shows current user's profile
+      />
+    );
+  }
+
+  if (currentScreen === 'social_friends') {
+    return (
+      <FriendsScreen 
+        onBack={handleBackToHome}
+        onViewProfile={(userId) => {
+          // In a real app, you'd navigate to profile with userId
+          // For now, just go to social profile
+          setCurrentScreen('social_profile');
+        }}
+      />
+    );
+  }
+
+  if (currentScreen === 'social_feed') {
+    return (
+      <ActivityFeedScreen 
+        onBack={handleBackToHome}
+        onViewProfile={(userId) => {
+          // In a real app, you'd navigate to profile with userId
+          setCurrentScreen('social_profile');
+        }}
+      />
+    );
+  }
+
   if (currentScreen === 'challenges') {
     return (
       <DailyChallenges 
