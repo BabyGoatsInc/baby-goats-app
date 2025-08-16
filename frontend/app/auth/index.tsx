@@ -217,12 +217,13 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   backButton: {
-    padding: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
   backText: {
-    color: '#CCCCCC',
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '400',
+    fontWeight: '600',
   },
   brandingSection: {
     alignItems: 'center',
