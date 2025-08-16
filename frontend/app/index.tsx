@@ -71,7 +71,7 @@ function MainApp() {
     Inter_500Medium,
   });
 
-  // Initialize offline capabilities and technical infrastructure
+  // Initialize offline capabilities and technical infrastructure including social system
   useEffect(() => {
     async function initializeAppSystems() {
       try {
@@ -80,8 +80,11 @@ function MainApp() {
         // Initialize all technical infrastructure systems
         await technicalInfrastructure.initializeAll();
         
+        // Initialize social system
+        await socialSystem.initialize();
+        
         setOfflineSystemReady(true);
-        console.log('✅ Baby Goats comprehensive systems ready!');
+        console.log('✅ Baby Goats comprehensive systems with social features ready!');
       } catch (error) {
         console.error('❌ Failed to initialize app systems:', error);
         // Continue without complete technical infrastructure but log the error
