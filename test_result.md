@@ -517,7 +517,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Offline Capabilities Integration with Baby Goats Infrastructure"
+    - "Technical Infrastructure Integration (Error Monitoring, Security, Performance, Testing Framework)"
   stuck_tasks:
     []
   test_all: false
