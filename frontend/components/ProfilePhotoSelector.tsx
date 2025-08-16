@@ -237,7 +237,25 @@ export default function ProfilePhotoSelector({
               Take a new photo or choose from your gallery
             </Text>
             
-            {uploadingPhoto ? (
+            {storageReady === null ? (
+              <View style={styles.uploadingContainer}>
+                <ActivityIndicator size="large" color="#FFFFFF" />
+                <Text style={styles.uploadingText}>Initializing storage...</Text>
+              </View>
+            ) : storageReady === false ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>⚠️ Storage not available</Text>
+                <Text style={styles.errorSubtext}>
+                  Please try again later or use preset avatars
+                </Text>
+                <TouchableOpacity
+                  style={styles.retryButton}
+                  onPress={initializeStorage}
+                >
+                  <Text style={styles.retryButtonText}>Retry Setup</Text>
+                </TouchableOpacity>
+              </View>
+            ) : uploadingPhoto ? (
               <View style={styles.uploadingContainer}>
                 <ActivityIndicator size="large" color="#FFFFFF" />
                 <Text style={styles.uploadingText}>Uploading photo...</Text>
