@@ -60,6 +60,11 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
   const [selectedExperience, setSelectedExperience] = useState<ExperienceLevel | null>(null);
   const [selectedGoals, setSelectedGoals] = useState<Goal[]>([]);
 
+  // Debug currentStep changes
+  useEffect(() => {
+    console.log('📍 Elite Onboarding currentStep changed to:', currentStep);
+  }, [currentStep]);
+
   useEffect(() => {
     // Entrance animation
     Animated.parallel([
