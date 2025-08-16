@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem from 'expo-file-system';
 
 export const STORAGE_BUCKET = 'profile-photos';
 
@@ -15,8 +16,7 @@ export const uploadProfilePhoto = async (
   imageType: 'photo' | 'avatar' = 'photo'
 ): Promise<UploadResult> => {
   try {
-    // For demo purposes, we'll process the image and return a base64 URL
-    // In production, this would upload to Supabase Storage
+    console.log('🔄 Starting photo upload process...');
     
     // Process the image (resize and compress)
     const manipulatedImage = await ImageManipulator.manipulateAsync(
@@ -25,41 +25,124 @@ export const uploadProfilePhoto = async (
       { 
         compress: 0.7, 
         format: ImageManipulator.SaveFormat.JPEG,
-        base64: true
       }
     );
 
-    if (manipulatedImage.base64) {
-      const base64Url = `data:image/jpeg;base64,${manipulatedImage.base64}`;
-      
-      // In a real implementation, you would upload to Supabase Storage here:
-      // const { data, error } = await supabase.storage
-      //   .from(STORAGE_BUCKET)
-      //   .upload(filename, blob, {
-      //     cacheControl: '3600',
-      //     upsert: true,
-      //     contentType: 'image/jpeg'
-      //   });
+    console.log('✅ Image processed successfully');
 
-      console.log('✅ Photo processed successfully (using base64 for demo)');
-      return { 
-        success: true, 
-        url: base64Url 
-      };
-    } else {
+    // Read the file as base64
+    const base64 = await FileSystem.readAsStringAsync(manipulatedImage.uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    // Create filename
+    const timestamp = new Date().getTime();
+    const fileName = `${userId}/${imageType}_${timestamp}.jpg`;
+    
+    console.log(`🔄 Uploading to bucket: ${STORAGE_BUCKET}, filename: ${fileName}`);
+
+    // Convert base64 to blob for upload
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(fileName, decode(base64), {
+        contentType: 'image/jpeg',
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error('❌ Upload error:', uploadError);
+      
+      // If bucket doesn't exist, try to create it and retry
+      if (uploadError.message.includes('Bucket not found') || uploadError.statusCode === '404') {
+        console.log('🔄 Bucket not found, attempting to create...');
+        
+        const { error: createBucketError } = await supabase.storage
+          .createBucket(STORAGE_BUCKET, { 
+            public: true,
+            allowedMimeTypes: ['image/jpeg', 'image/png'],
+            fileSizeLimit: 5242880, // 5MB
+          });
+
+        if (createBucketError) {
+          console.error('❌ Failed to create bucket:', createBucketError);
+          return { 
+            success: false, 
+            error: `Failed to create storage bucket: ${createBucketError.message}` 
+          };
+        }
+
+        console.log('✅ Bucket created, retrying upload...');
+        
+        // Retry upload after creating bucket
+        const { data: retryData, error: retryError } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .upload(fileName, decode(base64), {
+            contentType: 'image/jpeg',
+            cacheControl: '3600',
+            upsert: true,
+          });
+
+        if (retryError) {
+          console.error('❌ Retry upload error:', retryError);
+          return { 
+            success: false, 
+            error: `Upload failed after bucket creation: ${retryError.message}` 
+          };
+        }
+
+        console.log('✅ Upload successful on retry');
+        
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from(STORAGE_BUCKET)
+          .getPublicUrl(retryData.path);
+
+        console.log('✅ Public URL generated:', publicUrl);
+        
+        return { 
+          success: true, 
+          url: publicUrl 
+        };
+      }
+      
       return { 
         success: false, 
-        error: 'Failed to process image' 
+        error: uploadError.message 
       };
     }
 
+    console.log('✅ Upload successful');
+    
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(uploadData.path);
+
+    console.log('✅ Public URL generated:', publicUrl);
+    
+    return { 
+      success: true, 
+      url: publicUrl 
+    };
+
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('❌ Upload error:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Upload failed' 
     };
   }
+};
+
+// Helper function to decode base64 string to Uint8Array
+const decode = (base64: string): Uint8Array => {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
 };
 
 export const deleteProfilePhoto = async (url: string): Promise<boolean> => {
