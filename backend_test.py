@@ -1204,46 +1204,86 @@ class APITester:
                 response.json() if response else None
             )
 
-    def run_all_tests(self):
-        """Run all API tests"""
-        print(f"🚀 Starting Baby Goats MVP API Testing Suite")
-        print(f"📍 FastAPI Proxy URL: {BASE_URL}")
-        print(f"🔄 Testing MVP functionality and proxy routing")
+    def run_production_database_tests(self):
+        """Run production database tests with service role key"""
+        print(f"🚀 Starting Baby Goats Production Database Testing Suite")
+        print(f"📍 Production API URL: {BASE_URL}")
+        print(f"🔑 Testing Service Role Key Configuration")
+        print(f"🎯 Focus: Verify RLS policies are bypassed for write operations")
         print(f"🕐 Started at: {datetime.now().isoformat()}")
         print("=" * 60)
         
         try:
-            # Test original FastAPI endpoints first
+            # Test original FastAPI endpoints first (basic connectivity)
             self.test_original_fastapi_endpoints()
             
             # Test debug schema endpoint
             self.test_debug_schema_endpoint()
             
-            # Test MVP endpoints directly
-            self.test_mvp_profiles_direct()
+            # HIGH PRIORITY: Test production profiles API with service role key
+            self.test_production_profiles_api()
             
-            # Test proxy routing to MVP endpoints
-            self.test_profiles_api()
+            # HIGH PRIORITY: Test complete Elite Onboarding flow
+            self.test_elite_onboarding_flow()
             
-            # Test other API endpoints (should still work as before)
-            self.test_highlights_api()
-            self.test_challenges_api()
-            self.test_stats_api()
-            self.test_likes_api()
+            # MEDIUM PRIORITY: Test other write operations
+            self.test_production_highlights_api()
+            self.test_production_stats_api()
+            self.test_production_likes_api()
+            self.test_production_challenges_api()
+            
+            # Test error handling
             self.test_error_handling()
-            
-            # Test various profile scenarios
-            self.test_profile_scenarios()
-            
-            # Cleanup
-            self.cleanup_test_data()
             
         except Exception as e:
             print(f"❌ Test suite failed with error: {e}")
             self.log_result("Test Suite Execution", False, str(e))
         
         # Print summary
-        self.print_summary()
+        self.print_production_summary()
+
+    def print_production_summary(self):
+        """Print production database test results summary"""
+        print("=" * 60)
+        print("📊 PRODUCTION DATABASE TEST RESULTS SUMMARY")
+        print("=" * 60)
+        
+        total_tests = len(self.results)
+        passed_tests = len([r for r in self.results if r['success']])
+        failed_tests = total_tests - passed_tests
+        
+        print(f"Total Tests: {total_tests}")
+        print(f"✅ Passed: {passed_tests}")
+        print(f"❌ Failed: {failed_tests}")
+        print(f"Success Rate: {(passed_tests/total_tests*100):.1f}%" if total_tests > 0 else "0%")
+        
+        # Categorize results by priority
+        high_priority_tests = [r for r in self.results if 'Elite Onboarding' in r['test'] or 'Production' in r['test']]
+        high_priority_passed = len([r for r in high_priority_tests if r['success']])
+        
+        print(f"\n🎯 HIGH PRIORITY TESTS (Service Role Key):")
+        print(f"   Passed: {high_priority_passed}/{len(high_priority_tests)}")
+        
+        # Check for RLS bypass success
+        write_operations = [r for r in self.results if 'POST' in r['test'] or 'PUT' in r['test']]
+        successful_writes = len([r for r in write_operations if r['success']])
+        
+        print(f"\n✍️ WRITE OPERATIONS (RLS Bypass Check):")
+        print(f"   Successful: {successful_writes}/{len(write_operations)}")
+        
+        if successful_writes > 0:
+            print("   🎉 SERVICE ROLE KEY WORKING - RLS policies bypassed!")
+        else:
+            print("   ⚠️ SERVICE ROLE KEY ISSUES - Write operations still blocked")
+        
+        if failed_tests > 0:
+            print("\n🔍 FAILED TESTS:")
+            for result in self.results:
+                if not result['success']:
+                    print(f"  • {result['test']}: {result['details']}")
+        
+        print("\n🕐 Completed at:", datetime.now().isoformat())
+        print("=" * 60)
 
     def test_profile_scenarios(self):
         """Test various profile data scenarios"""
