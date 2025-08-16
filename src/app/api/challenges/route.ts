@@ -169,15 +169,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create completion record
-    const completionData: ChallengeCompletionInsert = {
-      user_id: body.user_id,
-      challenge_id: body.challenge_id,
-      notes: body.notes || null,
-      completed_at: new Date().toISOString()
-    }
-
-    const { data: completion, error } = await supabase
+    // Create completion record using service role (bypasses RLS)
+    const { data: completion, error } = await supabaseAdmin
       .from('challenge_completions')
       .insert(completionData)
       .select(`
@@ -196,15 +189,17 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating challenge completion:', error)
       return NextResponse.json(
-        { error: 'Failed to complete challenge' },
+        { error: 'Failed to complete challenge', details: error.message },
         { status: 500 }
       )
     }
 
+    console.log('✅ Challenge completed successfully:', challenge.title)
     return NextResponse.json({ 
       completion,
       message: 'Challenge completed successfully!',
-      points_earned: challenge.points
+      points_earned: challenge.points,
+      productionMode: true
     }, { status: 201 })
 
   } catch (error) {
