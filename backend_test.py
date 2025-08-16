@@ -75,11 +75,94 @@ class APITester:
             print(f"Request failed: {e}")
             return None
 
-    def test_profiles_api(self):
-        """Test Profiles API endpoints"""
-        print("🧪 Testing Profiles API...")
+    def test_mvp_profiles_direct(self):
+        """Test MVP Profiles API endpoints directly"""
+        print("🧪 Testing MVP Profiles API (Direct)...")
         
-        # Test 1: GET profiles with filters
+        # Test 1: GET MVP profiles
+        response = self.make_request('GET', '/mvp/profiles', params={
+            'limit': 10
+        })
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            mvp_mode = data.get('mvpMode', False)
+            source = data.get('source', {})
+            self.log_result(
+                "GET /api/mvp/profiles - Direct MVP fetch",
+                True,
+                f"MVP Mode: {mvp_mode}, DB: {source.get('database', 0)}, MVP: {source.get('mvpStorage', 0)} profiles"
+            )
+            self.test_data['mvp_profiles'] = data.get('profiles', [])
+        else:
+            self.log_result(
+                "GET /api/mvp/profiles - Direct MVP fetch",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 2: POST create profile directly to MVP endpoint
+        mvp_profile_data = {
+            'id': TEST_USER_ID,
+            'full_name': 'Elite Athlete MVP Test',
+            'sport': 'Soccer',
+            'experience_level': 'Rising Competitor',
+            'passion_level': 9,
+            'selected_goals': ['Skill Mastery', 'Mental Resilience', 'Peak Performance'],
+            'grad_year': 2026
+        }
+        
+        response = self.make_request('POST', '/mvp/profiles', data=mvp_profile_data)
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            mvp_mode = data.get('mvpMode', False)
+            self.log_result(
+                "POST /api/mvp/profiles - Direct MVP create",
+                True,
+                f"MVP Mode: {mvp_mode}, Created: {data.get('profile', {}).get('full_name', 'Unknown')}"
+            )
+            self.test_data['mvp_created_profile'] = data.get('profile')
+        else:
+            self.log_result(
+                "POST /api/mvp/profiles - Direct MVP create",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 3: PUT update profile directly to MVP endpoint
+        if self.test_data.get('mvp_created_profile'):
+            update_data = {
+                'id': TEST_USER_ID,
+                'full_name': 'Elite Athlete MVP Test - Updated',
+                'passion_level': 10,
+                'selected_goals': ['Skill Mastery', 'Mental Resilience', 'Peak Performance', 'Competitive Excellence']
+            }
+            
+            response = self.make_request('PUT', '/mvp/profiles', data=update_data)
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "PUT /api/mvp/profiles - Direct MVP update",
+                    True,
+                    f"Updated: {data.get('profile', {}).get('full_name', 'Unknown')}"
+                )
+            else:
+                self.log_result(
+                    "PUT /api/mvp/profiles - Direct MVP update",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'}",
+                    response.json() if response else None
+                )
+
+    def test_profiles_api(self):
+        """Test Profiles API endpoints through FastAPI proxy"""
+        print("🧪 Testing Profiles API (FastAPI Proxy)...")
+        
+        # Test 1: GET profiles with filters (should work as before)
         response = self.make_request('GET', '/profiles', params={
             'limit': 10,
             'offset': 0
@@ -88,14 +171,14 @@ class APITester:
         if response and response.status_code == 200:
             data = response.json()
             self.log_result(
-                "GET /api/profiles - Basic fetch",
+                "GET /api/profiles - Basic fetch via proxy",
                 True,
                 f"Retrieved {len(data.get('profiles', []))} profiles"
             )
             self.test_data['profiles'] = data.get('profiles', [])
         else:
             self.log_result(
-                "GET /api/profiles - Basic fetch",
+                "GET /api/profiles - Basic fetch via proxy",
                 False,
                 f"Status: {response.status_code if response else 'No response'}",
                 response.json() if response else None
@@ -103,20 +186,20 @@ class APITester:
 
         # Test 2: GET profiles with sport filter
         response = self.make_request('GET', '/profiles', params={
-            'sport': 'Basketball',
+            'sport': 'Soccer',
             'limit': 5
         })
         
         if response and response.status_code == 200:
             data = response.json()
             self.log_result(
-                "GET /api/profiles - Sport filter",
+                "GET /api/profiles - Sport filter via proxy",
                 True,
-                f"Retrieved {len(data.get('profiles', []))} basketball profiles"
+                f"Retrieved {len(data.get('profiles', []))} soccer profiles"
             )
         else:
             self.log_result(
-                "GET /api/profiles - Sport filter",
+                "GET /api/profiles - Sport filter via proxy",
                 False,
                 f"Status: {response.status_code if response else 'No response'}",
                 response.json() if response else None
@@ -124,51 +207,79 @@ class APITester:
 
         # Test 3: GET profiles with search
         response = self.make_request('GET', '/profiles', params={
-            'search': 'John',
+            'search': 'Elite',
             'limit': 5
         })
         
         if response and response.status_code == 200:
             data = response.json()
             self.log_result(
-                "GET /api/profiles - Name search",
+                "GET /api/profiles - Name search via proxy",
                 True,
                 f"Search returned {len(data.get('profiles', []))} results"
             )
         else:
             self.log_result(
-                "GET /api/profiles - Name search",
+                "GET /api/profiles - Name search via proxy",
                 False,
                 f"Status: {response.status_code if response else 'No response'}",
                 response.json() if response else None
             )
 
-        # Test 4: POST create profile (using simplified schema)
+        # Test 4: POST create profile (should route to MVP endpoint)
         profile_data = {
-            'id': TEST_USER_ID,
-            'full_name': 'Alex Rodriguez',
-            'sport': 'Soccer',
-            'grad_year': 2026,
-            'location': 'Los Angeles, CA'
+            'id': str(uuid.uuid4()),
+            'full_name': 'Basketball Star Proxy Test',
+            'sport': 'Basketball',
+            'experience_level': 'Proven Champion',
+            'passion_level': 8,
+            'selected_goals': ['Team Leadership', 'Competitive Excellence'],
+            'grad_year': 2025
         }
         
         response = self.make_request('POST', '/profiles', data=profile_data)
         
         if response and response.status_code == 200:
             data = response.json()
+            mvp_mode = data.get('mvpMode', False)
             self.log_result(
-                "POST /api/profiles - Create profile",
+                "POST /api/profiles - Create via proxy (MVP routing)",
                 True,
-                f"Created profile for {data.get('profile', {}).get('full_name', 'Unknown')}"
+                f"MVP Mode: {mvp_mode}, Created: {data.get('profile', {}).get('full_name', 'Unknown')}"
             )
-            self.test_data['created_profile'] = data.get('profile')
+            self.test_data['proxy_created_profile'] = data.get('profile')
         else:
             self.log_result(
-                "POST /api/profiles - Create profile",
+                "POST /api/profiles - Create via proxy (MVP routing)",
                 False,
                 f"Status: {response.status_code if response else 'No response'}",
                 response.json() if response else None
             )
+
+        # Test 5: PUT update profile (should route to MVP endpoint)
+        if self.test_data.get('proxy_created_profile'):
+            update_data = {
+                'id': profile_data['id'],
+                'full_name': 'Basketball Star Proxy Test - Updated',
+                'passion_level': 9
+            }
+            
+            response = self.make_request('PUT', '/profiles', data=update_data)
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "PUT /api/profiles - Update via proxy (MVP routing)",
+                    True,
+                    f"Updated: {data.get('profile', {}).get('full_name', 'Unknown')}"
+                )
+            else:
+                self.log_result(
+                    "PUT /api/profiles - Update via proxy (MVP routing)",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'}",
+                    response.json() if response else None
+                )
 
     def test_highlights_api(self):
         """Test Highlights API endpoints"""
