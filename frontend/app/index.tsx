@@ -40,7 +40,7 @@ const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isTablet = screenWidth >= 768;
 
-type Screen = 'home' | 'auth' | 'onboarding' | 'challenges' | 'profile' | 'goals' | 'achievements';
+type Screen = 'home' | 'auth' | 'onboarding' | 'challenges' | 'profile' | 'goals' | 'achievements' | 'social_feed' | 'social_friends' | 'social_profile';
 
 interface UserProfile {
   id: string;
