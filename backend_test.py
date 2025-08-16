@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Supabase Storage Integration Testing Suite for Baby Goats Application
-Tests Supabase Storage implementation for profile photos including bucket verification, upload process, authentication, and backend integration
-Focus: Verify Supabase Storage bucket configuration, file upload functionality, and profile photo integration
+Backend Storage API Testing Suite for Baby Goats Application
+Tests the new backend storage API implementation with service role key for secure storage operations
+Focus: Verify backend storage API endpoints, bucket management, file upload pipeline, and integration testing
 """
 
 import requests
@@ -14,8 +14,9 @@ import base64
 import io
 from PIL import Image
 
-# Configuration - Testing Supabase Storage Integration for Profile Photos
+# Configuration - Testing Backend Storage API Implementation
 BASE_URL = "https://achievement-hub-4.preview.emergentagent.com/api"
+NEXTJS_API_BASE = "https://achievement-hub-4.preview.emergentagent.com/api"
 FRONTEND_URL = "https://achievement-hub-4.preview.emergentagent.com"
 SUPABASE_URL = "https://ssdzlzlubzcknkoflgyf.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzZHpsemx1Ynpja25rb2ZsZ3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3Njc5OTYsImV4cCI6MjA3MDM0Mzk5Nn0.7ZpO5R64KS89k4We6jO9CbCevxwf1S5EOoqv6Xtv1Yk"
