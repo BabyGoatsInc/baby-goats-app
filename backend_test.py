@@ -11,7 +11,7 @@ from datetime import datetime
 import time
 
 # Configuration - Testing FastAPI proxy system
-BASE_URL = "https://goat-training-1.preview.emergentagent.com/api"
+BASE_URL = "https://goat-training-2.preview.emergentagent.com/api"
 NEXTJS_DIRECT_URL = "http://localhost:3001/api"  # For comparison testing
 HEADERS = {
     'Content-Type': 'application/json',
