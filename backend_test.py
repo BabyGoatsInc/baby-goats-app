@@ -23,9 +23,9 @@ import hashlib
 import re
 
 # Configuration - Testing Core Social Infrastructure Integration
-BASE_URL = "https://baby-goats-social.preview.emergentagent.com/api"
-NEXTJS_API_BASE = "https://baby-goats-social.preview.emergentagent.com/api"
-FRONTEND_URL = "https://baby-goats-social.preview.emergentagent.com"
+BASE_URL = "https://athlete-social.preview.emergentagent.com/api"
+NEXTJS_API_BASE = "https://athlete-social.preview.emergentagent.com/api"
+FRONTEND_URL = "https://athlete-social.preview.emergentagent.com"
 
 HEADERS = {
     'Content-Type': 'application/json',
