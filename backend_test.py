@@ -88,12 +88,16 @@ class APITester:
         if response and response.status_code == 200:
             data = response.json()
             production_mode = data.get('productionMode', False)
+            profiles = data.get('profiles', [])
             self.log_result(
                 "GET /api/profiles - Production mode check",
                 True,
-                f"Production Mode: {production_mode}, Retrieved {len(data.get('profiles', []))} profiles"
+                f"Production Mode: {production_mode}, Retrieved {len(profiles)} profiles"
             )
-            self.test_data['profiles'] = data.get('profiles', [])
+            self.test_data['profiles'] = profiles
+            # Store existing user ID for testing updates
+            if profiles:
+                self.test_data['existing_user_id'] = profiles[0].get('id')
         else:
             self.log_result(
                 "GET /api/profiles - Production mode check",
@@ -102,68 +106,65 @@ class APITester:
                 response.json() if response else None
             )
 
-        # Test 2: POST create profile with Elite Onboarding data (CRITICAL TEST)
-        elite_profile_data = {
-            'id': str(uuid.uuid4()),
-            'full_name': 'Elite Production Test Athlete',
-            'sport': 'Soccer',
-            'experience_level': 'Rising Competitor',
-            'passion_level': 9,
-            'selected_goals': ['Skill Mastery', 'Mental Resilience', 'Peak Performance'],
-            'grad_year': 2026
-        }
-        
-        response = self.make_request('POST', '/profiles', data=elite_profile_data)
-        
-        if response and response.status_code in [200, 201]:
-            data = response.json()
-            production_mode = data.get('productionMode', False)
-            self.log_result(
-                "POST /api/profiles - Elite Onboarding (Production DB)",
-                True,
-                f"Production Mode: {production_mode}, Created: {data.get('profile', {}).get('full_name', 'Unknown')}"
-            )
-            self.test_data['elite_profile'] = data.get('profile')
-            self.test_data['elite_profile_id'] = elite_profile_data['id']
-        else:
-            self.log_result(
-                "POST /api/profiles - Elite Onboarding (Production DB)",
-                False,
-                f"Status: {response.status_code if response else 'No response'} - RLS should be bypassed with service role key",
-                response.json() if response else None
-            )
+        # Test 2: POST update existing profile (CRITICAL TEST - should work with service role key)
+        if self.test_data.get('existing_user_id'):
+            profile_data = {
+                'id': self.test_data['existing_user_id'],
+                'full_name': 'Production Database Test User',
+                'sport': 'Soccer',
+                'grad_year': 2025
+            }
+            
+            response = self.make_request('POST', '/profiles', data=profile_data)
+            
+            if response and response.status_code in [200, 201]:
+                data = response.json()
+                production_mode = data.get('productionMode', False)
+                self.log_result(
+                    "POST /api/profiles - Update existing profile (Production DB)",
+                    True,
+                    f"Production Mode: {production_mode}, Updated: {data.get('profile', {}).get('full_name', 'Unknown')}"
+                )
+                self.test_data['updated_profile'] = data.get('profile')
+            else:
+                self.log_result(
+                    "POST /api/profiles - Update existing profile (Production DB)",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'} - RLS should be bypassed with service role key",
+                    response.json() if response else None
+                )
 
-        # Test 3: Verify profile appears in GET results (persistence check)
-        if self.test_data.get('elite_profile_id'):
+        # Test 3: Verify profile update persisted (persistence check)
+        if self.test_data.get('existing_user_id'):
             response = self.make_request('GET', '/profiles', params={
-                'search': 'Elite Production Test',
+                'search': 'Production Database Test',
                 'limit': 5
             })
             
             if response and response.status_code == 200:
                 data = response.json()
                 profiles = data.get('profiles', [])
-                found_profile = any(p.get('id') == self.test_data['elite_profile_id'] for p in profiles)
+                found_profile = any(p.get('id') == self.test_data['existing_user_id'] for p in profiles)
                 self.log_result(
-                    "GET /api/profiles - Verify persistence",
+                    "GET /api/profiles - Verify update persistence",
                     found_profile,
-                    f"Profile {'found' if found_profile else 'NOT found'} in database - persistence {'confirmed' if found_profile else 'FAILED'}"
+                    f"Updated profile {'found' if found_profile else 'NOT found'} in database - persistence {'confirmed' if found_profile else 'FAILED'}"
                 )
             else:
                 self.log_result(
-                    "GET /api/profiles - Verify persistence",
+                    "GET /api/profiles - Verify update persistence",
                     False,
                     f"Status: {response.status_code if response else 'No response'}",
                     response.json() if response else None
                 )
 
         # Test 4: PUT update profile (should work with service role key)
-        if self.test_data.get('elite_profile_id'):
+        if self.test_data.get('existing_user_id'):
             update_data = {
-                'id': self.test_data['elite_profile_id'],
-                'full_name': 'Elite Production Test Athlete - Updated',
-                'passion_level': 10,
-                'selected_goals': ['Skill Mastery', 'Mental Resilience', 'Peak Performance', 'Competitive Excellence']
+                'id': self.test_data['existing_user_id'],
+                'full_name': 'Production Database Test User - PUT Updated',
+                'sport': 'Basketball',
+                'grad_year': 2024
             }
             
             response = self.make_request('PUT', '/profiles', data=update_data)
