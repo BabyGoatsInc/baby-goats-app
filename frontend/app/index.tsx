@@ -41,11 +41,8 @@ interface UserProfile {
   };
 }
 
-export default function Index() {
-  console.log(EXPO_PUBLIC_BACKEND_URL, "EXPO_PUBLIC_BACKEND_URL");
-  
+function MainApp() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
-  const [user, setUser] = useState<UserProfile | null>(null);
 
   // Load fonts
   let [fontsLoaded] = useFonts({
@@ -54,50 +51,60 @@ export default function Index() {
     Inter_500Medium,
   });
 
-  // Animation values for luxury entrance
+  // Animation values
   const navOpacity = useSharedValue(0);
-  const navTranslateY = useSharedValue(-20);
   const heroOpacity = useSharedValue(0);
-  const heroTranslateY = useSharedValue(40);
+  const heroTranslateY = useSharedValue(30);
   const bodyOpacity = useSharedValue(0);
   const bodyTranslateY = useSharedValue(30);
   const ctaOpacity = useSharedValue(0);
-  const ctaTranslateY = useSharedValue(20);
+  const ctaTranslateY = useSharedValue(30);
   const quoteOpacity = useSharedValue(0);
-  const quoteTranslateY = useSharedValue(20);
+  const quoteTranslateY = useSharedValue(30);
   const statsOpacity = useSharedValue(0);
   const statsTranslateY = useSharedValue(30);
   const footerOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (fontsLoaded) {
-      // Orchestrated entrance animations
-      navOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) });
-      navTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.quad) });
-
-      heroOpacity.value = withDelay(300, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-      heroTranslateY.value = withDelay(300, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
-
-      bodyOpacity.value = withDelay(600, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-      bodyTranslateY.value = withDelay(600, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
-
-      ctaOpacity.value = withDelay(900, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-      ctaTranslateY.value = withDelay(900, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
-
-      quoteOpacity.value = withDelay(1200, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-      quoteTranslateY.value = withDelay(1200, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
-
-      statsOpacity.value = withDelay(1500, withTiming(1, { duration: 800, easing: Easing.out(Easing.quad) }));
-      statsTranslateY.value = withDelay(1500, withTiming(0, { duration: 800, easing: Easing.out(Easing.quad) }));
-
-      footerOpacity.value = withDelay(2000, withTiming(1, { duration: 600, easing: Easing.out(Easing.quad) }));
+      // Staggered animation sequence
+      setTimeout(() => {
+        navOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
+      }, 200);
+      
+      setTimeout(() => {
+        heroOpacity.value = withTiming(1, { duration: 800, easing: Easing.out(Easing.cubic) });
+        heroTranslateY.value = withTiming(0, { duration: 800, easing: Easing.out(Easing.cubic) });
+      }, 400);
+      
+      setTimeout(() => {
+        bodyOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
+        bodyTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
+      }, 800);
+      
+      setTimeout(() => {
+        ctaOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
+        ctaTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
+      }, 1200);
+      
+      setTimeout(() => {
+        quoteOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
+        quoteTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
+      }, 1600);
+      
+      setTimeout(() => {
+        statsOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
+        statsTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
+      }, 2000);
+      
+      setTimeout(() => {
+        footerOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
+      }, 2400);
     }
   }, [fontsLoaded]);
 
-  // Animated styles
   const navAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: navOpacity.value,
-    transform: [{ translateY: navTranslateY.value }]
+    opacity: navOpacity.value
   }));
 
   const heroAnimatedStyle = useAnimatedStyle(() => ({
@@ -129,16 +136,6 @@ export default function Index() {
     opacity: footerOpacity.value
   }));
 
-  const handleAuthSuccess = (authenticatedUser: UserProfile) => {
-    setUser(authenticatedUser);
-    setCurrentScreen('profile');
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    setCurrentScreen('home');
-  };
-
   const handleScreenNavigation = (screen: Screen) => {
     setCurrentScreen(screen);
   };
@@ -163,18 +160,15 @@ export default function Index() {
   if (currentScreen === 'auth') {
     return (
       <Authentication 
-        onAuthSuccess={handleAuthSuccess}
         onBack={handleBackToHome}
       />
     );
   }
 
-  if (currentScreen === 'profile' && user) {
+  if (currentScreen === 'profile') {
     return (
       <UserProfileScreen 
-        user={user}
         onNavigateTo={handleScreenNavigation}
-        onLogout={handleLogout}
       />
     );
   }
