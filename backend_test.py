@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite for Baby Goats Application - Production Database with Service Role Key
-Tests production database functionality after implementing service role key configuration
-Focus: Verify write operations work directly with Supabase database (bypassing RLS)
+Profile Photos & Avatars Testing Suite for Baby Goats Application
+Tests complete profile photo system with Supabase Storage integration
+Focus: Verify profile photo infrastructure, avatar components, and authentication integration
 """
 
 import requests
