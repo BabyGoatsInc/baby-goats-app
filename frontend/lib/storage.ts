@@ -152,13 +152,36 @@ export const deleteProfilePhoto = async (url: string): Promise<boolean> => {
       return true;
     }
 
-    // For Supabase Storage URLs (when implemented)
-    // Extract filename from URL and delete from storage
-    console.log('Photo deletion not implemented for demo');
+    // For Supabase Storage URLs
+    if (url.includes(STORAGE_BUCKET)) {
+      console.log('🔄 Deleting photo from storage...');
+      
+      // Extract the file path from the public URL
+      const urlParts = url.split('/');
+      const bucketIndex = urlParts.findIndex(part => part === STORAGE_BUCKET);
+      
+      if (bucketIndex !== -1 && bucketIndex < urlParts.length - 1) {
+        const filePath = urlParts.slice(bucketIndex + 1).join('/');
+        
+        const { error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .remove([filePath]);
+
+        if (error) {
+          console.error('❌ Delete error:', error);
+          return false;
+        }
+
+        console.log('✅ Photo deleted successfully');
+        return true;
+      }
+    }
+
+    console.log('⚠️ Photo deletion skipped - not a Supabase Storage URL');
     return true;
     
   } catch (error) {
-    console.error('Delete error:', error);
+    console.error('❌ Delete error:', error);
     return false;
   }
 };
