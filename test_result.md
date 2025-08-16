@@ -468,9 +468,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Achievement System Navigation & Display"
-    - "Achievement Badge & Unlock System" 
-    - "Achievement Gallery Backend Support"
+    - "Supabase Storage Integration for Profile Photos"
+    - "ProfilePhotoSelector Component"
+    - "Profile Integration with Avatar Updates"
   stuck_tasks:
     - "Character Level System"
   test_all: false
