@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Performance Optimization Integration Testing Suite for Baby Goats Application
-Tests the performance optimization integration with existing Supabase Storage system
-Focus: Image optimization pipeline, API response performance, storage integration, and backend stability
+Offline Capabilities Integration Testing Suite for Baby Goats Application
+Tests the offline capabilities integration with existing Baby Goats infrastructure
+Focus: Backend API compatibility, storage system integration, performance impact, and data consistency
 """
 
 import requests
