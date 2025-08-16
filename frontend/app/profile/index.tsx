@@ -9,34 +9,20 @@ import {
   ScrollView,
   Animated,
   Alert,
+  Modal,
 } from 'react-native';
-
-interface UserProfile {
-  id: string;
-  email: string;
-  name: string;
-  age: number;
-  parentEmail?: string;
-  isParentApproved: boolean;
-  sport?: string;
-  interestLevel?: number;
-  currentStreak?: number;
-  totalChallengesCompleted?: number;
-  pillarProgress?: {
-    resilient: number;
-    relentless: number;
-    fearless: number;
-  };
-}
+import { useAuth } from '../../contexts/AuthContext';
+import Avatar from '../../components/Avatar';
+import ProfilePhotoSelector from '../../components/ProfilePhotoSelector';
 
 interface ProfileProps {
-  user: UserProfile;
-  onNavigateTo: (screen: 'challenges' | 'onboarding' | 'home') => void;
-  onLogout: () => void;
+  onNavigateTo: (screen: 'challenges' | 'onboarding' | 'home' | 'auth') => void;
 }
 
-export default function UserProfileScreen({ user, onNavigateTo, onLogout }: ProfileProps) {
+export default function UserProfileScreen({ onNavigateTo }: ProfileProps) {
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [showPhotoSelector, setShowPhotoSelector] = useState(false);
+  const { user, updateProfile, signOut } = useAuth();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -46,7 +32,19 @@ export default function UserProfileScreen({ user, onNavigateTo, onLogout }: Prof
     }).start();
   }, []);
 
-  const getPerformanceLevel = (age: number) => {
+  // Redirect to auth if no user
+  useEffect(() => {
+    if (!user) {
+      onNavigateTo('auth');
+    }
+  }, [user]);
+
+  if (!user) {
+    return null; // Loading or redirecting
+  }
+
+  const getPerformanceLevel = (age?: number) => {
+    if (!age) return 'DEVELOPING';
     if (age <= 10) return 'DEVELOPING';
     if (age <= 13) return 'ADVANCING';
     return 'ELITE';
@@ -58,14 +56,27 @@ export default function UserProfileScreen({ user, onNavigateTo, onLogout }: Prof
       'Are you sure you want to sign out?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Sign Out', style: 'destructive', onPress: onLogout }
+        { text: 'Sign Out', style: 'destructive', onPress: async () => {
+          await signOut();
+          onNavigateTo('home');
+        }}
       ]
     );
   };
 
-  const totalProgress = user.pillarProgress 
-    ? user.pillarProgress.resilient + user.pillarProgress.relentless + user.pillarProgress.fearless
-    : 0;
+  const handlePhotoSelected = async (photoUrl: string) => {
+    try {
+      const { profile, error } = await updateProfile({
+        avatar_url: photoUrl
+      });
+
+      if (error) {
+        Alert.alert('Error', 'Failed to update profile photo');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update profile photo');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
