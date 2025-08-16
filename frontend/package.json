@@ -6,9 +6,11 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
-    "ios": "expo start --ios",
+    "ios": "expo start --ios", 
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "analyze": "node scripts/analyze-bundle.js",
+    "perf:report": "node scripts/analyze-bundle.js && echo '\n🚀 Performance optimizations implemented!'"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.1",
