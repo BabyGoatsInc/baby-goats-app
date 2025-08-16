@@ -1125,10 +1125,10 @@ class APITester:
         # Print summary
         self.print_supabase_storage_summary()
 
-    def print_supabase_storage_summary(self):
-        """Print Supabase Storage test results summary"""
+    def print_backend_storage_api_summary(self):
+        """Print Backend Storage API test results summary"""
         print("=" * 80)
-        print("📊 SUPABASE STORAGE INTEGRATION TEST RESULTS SUMMARY")
+        print("📊 BACKEND STORAGE API TEST RESULTS SUMMARY")
         print("=" * 80)
         
         total_tests = len(self.results)
@@ -1142,47 +1142,47 @@ class APITester:
         
         # Categorize results by priority
         high_priority_tests = [r for r in self.results if any(keyword in r['test'] for keyword in 
-            ['Storage Bucket', 'Upload Process', 'Storage Authentication', 'Backend Integration'])]
+            ['Backend Storage API', 'Backend Integration'])]
         high_priority_passed = len([r for r in high_priority_tests if r['success']])
         
-        print(f"\n🔥 HIGH PRIORITY TESTS (Storage Core Functionality):")
+        print(f"\n🔥 HIGH PRIORITY TESTS (Backend Storage API Core):")
         print(f"   Passed: {high_priority_passed}/{len(high_priority_tests)}")
         
-        # Check for bucket functionality
-        bucket_tests = [r for r in self.results if 'Storage Bucket' in r['test']]
+        # Check for backend storage API functionality
+        storage_api_tests = [r for r in self.results if 'Backend Storage API' in r['test']]
+        storage_api_passed = len([r for r in storage_api_tests if r['success']])
+        
+        print(f"\n🔧 BACKEND STORAGE API:")
+        print(f"   Successful: {storage_api_passed}/{len(storage_api_tests)}")
+        
+        if storage_api_passed > 0:
+            print("   🎉 BACKEND API WORKING - Storage operations via service role key functional!")
+        else:
+            print("   ⚠️ BACKEND API ISSUES - Storage API may not be configured properly")
+        
+        # Check for bucket management
+        bucket_tests = [r for r in self.results if any(keyword in r['test'] for keyword in ['Bucket', 'bucket'])]
         bucket_passed = len([r for r in bucket_tests if r['success']])
         
-        print(f"\n🪣 STORAGE BUCKET:")
+        print(f"\n🪣 BUCKET MANAGEMENT:")
         print(f"   Successful: {bucket_passed}/{len(bucket_tests)}")
         
         if bucket_passed > 0:
-            print("   🎉 BUCKET WORKING - profile-photos bucket accessible with proper policies!")
+            print("   🎉 BUCKET MANAGEMENT WORKING - Bucket creation and status check functional!")
         else:
-            print("   ⚠️ BUCKET ISSUES - Storage bucket may not be configured properly")
+            print("   ⚠️ BUCKET ISSUES - Bucket management may need configuration")
         
-        # Check for upload functionality
-        upload_tests = [r for r in self.results if 'Upload Process' in r['test']]
-        upload_passed = len([r for r in upload_tests if r['success']])
+        # Check for file operations
+        file_tests = [r for r in self.results if any(keyword in r['test'] for keyword in ['upload', 'deletion', 'File'])]
+        file_passed = len([r for r in file_tests if r['success']])
         
-        print(f"\n📤 UPLOAD PROCESS:")
-        print(f"   Successful: {upload_passed}/{len(upload_tests)}")
+        print(f"\n📁 FILE OPERATIONS:")
+        print(f"   Successful: {file_passed}/{len(file_tests)}")
         
-        if upload_passed > 0:
-            print("   🎉 UPLOAD WORKING - File upload and public URL generation functional!")
+        if file_passed > 0:
+            print("   🎉 FILE OPERATIONS WORKING - Upload and deletion via backend API functional!")
         else:
-            print("   ⚠️ UPLOAD ISSUES - File upload process may have configuration problems")
-        
-        # Check for authentication
-        auth_tests = [r for r in self.results if 'Authentication' in r['test']]
-        auth_passed = len([r for r in auth_tests if r['success']])
-        
-        print(f"\n🔐 AUTHENTICATION:")
-        print(f"   Successful: {auth_passed}/{len(auth_tests)}")
-        
-        if auth_passed > 0:
-            print("   🎉 AUTH WORKING - Storage operations work with authenticated users!")
-        else:
-            print("   ⚠️ AUTH ISSUES - Storage authentication may need configuration")
+            print("   ⚠️ FILE OPERATION ISSUES - File upload/deletion may have problems")
         
         # Check for backend integration
         backend_tests = [r for r in self.results if 'Backend Integration' in r['test']]
@@ -1197,7 +1197,7 @@ class APITester:
             print("   ⚠️ INTEGRATION ISSUES - Backend API may not handle storage URLs properly")
         
         # Check for error handling
-        error_tests = [r for r in self.results if 'Error Handling' in r['test']]
+        error_tests = [r for r in self.results if 'Error' in r['test'] or 'error' in r['test']]
         error_passed = len([r for r in error_tests if r['success']])
         
         print(f"\n⚠️ ERROR HANDLING:")
@@ -1214,27 +1214,28 @@ class APITester:
                 if not result['success']:
                     print(f"  • {result['test']}: {result['details']}")
         
-        print(f"\n💡 SUPABASE STORAGE STATUS:")
+        print(f"\n💡 BACKEND STORAGE API STATUS:")
         if passed_tests >= total_tests * 0.8:  # 80% success rate
-            print("   ✅ STORAGE READY - Complete Supabase Storage integration operational!")
+            print("   ✅ STORAGE API READY - Complete backend storage integration operational!")
         elif passed_tests >= total_tests * 0.6:  # 60% success rate
-            print("   ⚠️ PARTIAL SUPPORT - Storage partially working, some features may need configuration")
+            print("   ⚠️ PARTIAL SUPPORT - Storage API partially working, some features may need configuration")
         else:
-            print("   ❌ LIMITED SUPPORT - Storage appears to have significant configuration issues")
+            print("   ❌ LIMITED SUPPORT - Storage API appears to have significant configuration issues")
         
-        print(f"\n🎯 STORAGE INTEGRATION FEATURES:")
-        print("   • Profile Photos Storage Bucket (profile-photos)")
-        print("   • File Upload with Image Processing (400x400, JPEG compression)")
-        print("   • Public URL Generation for Uploaded Photos")
-        print("   • Authentication-based Write Permissions")
-        print("   • Automatic Bucket Creation with Retry Logic")
-        print("   • File Deletion Functionality")
-        print("   • Preset Avatar System (6 high-quality athlete avatars)")
-        print("   • Backend API Integration for Profile Updates")
+        print(f"\n🎯 BACKEND STORAGE API FEATURES:")
+        print("   • Service Role Key Authentication for Admin Operations")
+        print("   • Automatic Bucket Creation and Management (profile-photos)")
+        print("   • File Upload with Base64 Processing and Compression")
+        print("   • Public URL Generation for Uploaded Files")
+        print("   • File Deletion with Path Extraction")
+        print("   • Bucket Status Checking and Validation")
+        print("   • Error Handling for Invalid Requests and Data")
+        print("   • Integration with Profile Management System")
+        print("   • Preset Avatar System Support")
         
         print("\n🕐 Completed at:", datetime.now().isoformat())
         print("=" * 80)
 
 if __name__ == "__main__":
     tester = APITester()
-    tester.run_supabase_storage_tests()
+    tester.run_backend_storage_api_tests()
