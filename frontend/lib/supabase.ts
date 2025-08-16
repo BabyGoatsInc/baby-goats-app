@@ -13,22 +13,20 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 })
 
-// Database types for TypeScript
+// Database types matching the actual Supabase schema
 export interface UserProfile {
   id: string;
-  email: string;
   full_name: string;
-  username?: string;
-  age?: number;
   sport?: string;
-  experience_level?: string;
-  passion_level?: number;
-  selected_goals?: string[];
   grad_year?: number;
+  hero_name?: string;
+  hero_reason?: string;
+  avatar_url?: string;
+  age?: number;
+  team_name?: string;
+  jersey_number?: string;
   parent_email?: string;
   is_parent_approved?: boolean;
-  onboarding_completed?: boolean;
-  onboarding_date?: string;
   created_at?: string;
   updated_at?: string;
 }
