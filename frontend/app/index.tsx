@@ -30,6 +30,12 @@ import OfflineIndicator from '../components/OfflineIndicator';
 import { technicalInfrastructure } from '../lib/technicalInfrastructure';
 import { ErrorBoundary } from '../lib/errorMonitoring';
 
+// Social system imports
+import { socialSystem } from '../lib/socialSystem';
+import SocialProfileScreen from './social/profile';
+import FriendsScreen from './social/friends';
+import ActivityFeedScreen from './social/feed';
+
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isTablet = screenWidth >= 768;
