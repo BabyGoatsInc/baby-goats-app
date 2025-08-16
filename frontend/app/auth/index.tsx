@@ -346,8 +346,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   backLinkText: {
-    color: '#999999',
+    color: '#CCCCCC',
     fontSize: 14,
-    fontWeight: '300',
   },
 });
