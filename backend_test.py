@@ -1874,4 +1874,4 @@ class APITester:
 
 if __name__ == "__main__":
     tester = APITester()
-    tester.run_profile_photo_tests()
+    tester.run_goal_tracking_tests()
