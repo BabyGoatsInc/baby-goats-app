@@ -1940,4 +1940,4 @@ class APITester:
 
 if __name__ == "__main__":
     tester = APITester()
-    tester.run_goal_tracking_tests()
+    tester.run_achievement_system_tests()
