@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Achievement System Backend Testing Suite for Baby Goats Application
-Tests Achievement System implementation including navigation, backend support, and frontend functionality
-Focus: Verify Achievement System components, character levels, and achievement gallery functionality
+Supabase Storage Integration Testing Suite for Baby Goats Application
+Tests Supabase Storage implementation for profile photos including bucket verification, upload process, authentication, and backend integration
+Focus: Verify Supabase Storage bucket configuration, file upload functionality, and profile photo integration
 """
 
 import requests
@@ -14,7 +14,7 @@ import base64
 import io
 from PIL import Image
 
-# Configuration - Testing profile photo system with Supabase Storage
+# Configuration - Testing Supabase Storage Integration for Profile Photos
 BASE_URL = "https://achievement-hub-4.preview.emergentagent.com/api"
 FRONTEND_URL = "https://achievement-hub-4.preview.emergentagent.com"
 SUPABASE_URL = "https://ssdzlzlubzcknkoflgyf.supabase.co"
