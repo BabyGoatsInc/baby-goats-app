@@ -1530,4 +1530,4 @@ class APITester:
 
 if __name__ == "__main__":
     tester = APITester()
-    tester.run_performance_optimization_tests()
+    tester.run_offline_capabilities_integration_tests()
