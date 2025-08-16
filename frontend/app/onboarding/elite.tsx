@@ -237,8 +237,17 @@ export default function EliteOnboarding({ onComplete, onBack }: EliteOnboardingP
                   console.log('🚀 Saving Elite Onboarding Profile...');
                   
                   // Prepare profile data
+                  // Generate a simple UUID for React Native compatibility
+                  const generateUUID = () => {
+                    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                      const r = Math.random() * 16 | 0;
+                      const v = c == 'x' ? r : (r & 0x3 | 0x8);
+                      return v.toString(16);
+                    });
+                  };
+
                   const profileData = {
-                    id: crypto.randomUUID(), // Generate unique ID for MVP
+                    id: generateUUID(), // Generate unique ID for React Native
                     full_name: 'Elite Onboarding User', // In real app, this would come from auth
                     sport: selectedSport?.name.toLowerCase(),
                     experience_level: selectedExperience?.title,
