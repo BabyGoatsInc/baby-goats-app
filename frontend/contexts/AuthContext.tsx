@@ -100,11 +100,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.user && data.user.email_confirmed_at) {
         const profileData: Partial<UserProfile> = {
           id: data.user.id,
-          email: data.user.email!,
           full_name: userData.full_name || '',
           age: userData.age,
           parent_email: userData.parent_email,
           is_parent_approved: userData.age ? (userData.age >= 13) : true,
+          sport: userData.sport || undefined,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         };
