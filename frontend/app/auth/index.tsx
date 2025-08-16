@@ -72,50 +72,71 @@ export default function Authentication({ onBack }: AuthenticationProps) {
     }
   };
 
-  // Show simple login (can be enhanced later)
+  // Show login screen
   if (mode === 'login') {
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor="#000000" />
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => setMode('choice')} style={styles.backButton}>
-              <Text style={styles.backText}>← Back</Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardContainer}
+        >
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => setMode('choice')} style={styles.backButton}>
+                <Text style={styles.backText}>← Back</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.brandingSection}>
+              <Text style={styles.brandName}>BABY GOATS</Text>
+              <Text style={styles.platformName}>Access Your Development</Text>
+            </View>
+            
+            <View style={styles.formSection}>
+              <Text style={styles.title}>Welcome Back</Text>
+              <Text style={styles.subtitle}>Continue your elite development</Text>
+              
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.input}
+                  value={loginData.email}
+                  onChangeText={(text) => setLoginData(prev => ({ ...prev, email: text }))}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#666666"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                
+                <TextInput
+                  style={styles.input}
+                  value={loginData.password}
+                  onChangeText={(text) => setLoginData(prev => ({ ...prev, password: text }))}
+                  placeholder="Enter your password"
+                  placeholderTextColor="#666666"
+                  secureTextEntry
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+            
+            <TouchableOpacity
+              style={[styles.actionButton, loginLoading && styles.loadingButton]}
+              onPress={handleLogin}
+              disabled={loginLoading}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>
+                {loginLoading ? 'Signing In...' : 'Access Development Platform'}
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={() => setMode('choice')} style={styles.backLink}>
+              <Text style={styles.backLinkText}>← Return to options</Text>
             </TouchableOpacity>
           </View>
-          
-          <View style={styles.brandingSection}>
-            <Text style={styles.brandName}>ATHLETES</Text>
-            <Text style={styles.platformName}>Access Account</Text>
-          </View>
-          
-          <View style={styles.messageSection}>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Continue your elite development</Text>
-          </View>
-          
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => {
-              // For now, create a mock user for demo
-              const mockUser: UserProfile = {
-                id: 'returning_user',
-                email: 'champion@athletes.com',
-                name: 'Returning Athlete',
-                age: 16,
-                isParentApproved: true,
-              };
-              onAuthSuccess(mockUser);
-            }}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.buttonText}>Access Development Platform</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity onPress={() => setMode('choice')} style={styles.backLink}>
-            <Text style={styles.backLinkText}>← Return to options</Text>
-          </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }
