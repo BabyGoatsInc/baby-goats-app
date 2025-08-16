@@ -302,6 +302,18 @@ function MainApp() {
       {/* Offline Indicator */}
       <OfflineIndicator position="top" showDetails={false} />
       
+      {/* Social Notifications */}
+      {user?.id && (
+        <SocialNotifications 
+          userId={user.id}
+          onNotificationPress={(type, data) => {
+            if (type === 'friend_request') {
+              setCurrentScreen('social_friends');
+            }
+          }}
+        />
+      )}
+      
       {/* Navigation */}
       <Animated.View style={[styles.navigation, navAnimatedStyle]}>
         <Text style={styles.brandName}>BABY GOATS</Text>
