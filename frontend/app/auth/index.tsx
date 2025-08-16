@@ -6,10 +6,15 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  TextInput,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
   Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import ConversationalAuth from './conversational';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface AuthProps {
   onAuthSuccess: (user: UserProfile) => void;
