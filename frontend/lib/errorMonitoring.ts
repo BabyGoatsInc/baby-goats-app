@@ -489,21 +489,25 @@ export class ErrorBoundary extends React.Component<
  */
 function DefaultErrorFallback({ error }: { error: Error }) {
   const React = require('react');
-  const { View, Text, TouchableOpacity, StyleSheet } = require('react-native');
+  const { View, Text, TouchableOpacity } = require('react-native');
 
-  return (
-    <View style={styles.errorContainer}>
-      <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
-      <Text style={styles.errorMessage}>
-        We've recorded this error and will fix it in the next update.
-      </Text>
-      <TouchableOpacity
-        style={styles.retryButton}
-        onPress={() => window.location?.reload?.() || console.log('Restart app')}
-      >
-        <Text style={styles.retryButtonText}>Try Again</Text>
-      </TouchableOpacity>
-    </View>
+  return React.createElement(
+    View,
+    { style: styles.errorContainer },
+    React.createElement(Text, { style: styles.errorTitle }, 'Oops! Something went wrong'),
+    React.createElement(
+      Text,
+      { style: styles.errorMessage },
+      "We've recorded this error and will fix it in the next update."
+    ),
+    React.createElement(
+      TouchableOpacity,
+      {
+        style: styles.retryButton,
+        onPress: () => console.log('Restart app - error boundary')
+      },
+      React.createElement(Text, { style: styles.retryButtonText }, 'Try Again')
+    )
   );
 }
 
