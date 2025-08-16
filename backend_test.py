@@ -947,4 +947,4 @@ class APITester:
 
 if __name__ == "__main__":
     tester = APITester()
-    tester.run_backend_storage_api_tests()
+    tester.run_performance_optimization_tests()
