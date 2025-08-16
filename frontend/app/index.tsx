@@ -365,6 +365,39 @@ function MainApp() {
               — FOR THE NEXT GENERATION OF GOATS
             </Text>
           </Animated.View>
+
+          {/* Social Features Section */}
+          <Animated.View style={[styles.socialSection, quoteAnimatedStyle]}>
+            <Text style={styles.socialTitle}>Connect With Champions</Text>
+            <View style={styles.socialButtons}>
+              <TouchableOpacity 
+                style={styles.socialButton}
+                onPress={() => setCurrentScreen('social_feed')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.socialButtonEmoji}>📢</Text>
+                <Text style={styles.socialButtonText}>ACTIVITY FEED</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.socialButton}
+                onPress={() => setCurrentScreen('social_friends')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.socialButtonEmoji}>👥</Text>
+                <Text style={styles.socialButtonText}>FRIENDS</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.socialButton}
+                onPress={() => setCurrentScreen('social_profile')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.socialButtonEmoji}>🏆</Text>
+                <Text style={styles.socialButtonText}>MY PROFILE</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
         </View>
       </View>
 
