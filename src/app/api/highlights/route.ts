@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
 import { Database } from '@/lib/supabaseClient'
+import { createClient } from '@supabase/supabase-js'
+
+// Create a service role client for write operations (bypasses RLS)
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)
 
 type Highlight = Database['public']['Tables']['highlights']['Row']
 type HighlightInsert = Database['public']['Tables']['highlights']['Insert']
@@ -104,7 +117,8 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString()
     }
 
-    const { data: highlight, error } = await supabase
+    // Use service role client for write operations (bypasses RLS)
+    const { data: highlight, error } = await supabaseAdmin
       .from('highlights')
       .insert(highlightData)
       .select(`
@@ -121,12 +135,17 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating highlight:', error)
       return NextResponse.json(
-        { error: 'Failed to create highlight' },
+        { error: 'Failed to create highlight', details: error.message },
         { status: 500 }
       )
     }
 
-    return NextResponse.json({ highlight }, { status: 201 })
+    console.log('✅ Highlight created successfully:', highlight.title)
+    return NextResponse.json({ 
+      highlight,
+      message: 'Highlight created successfully',
+      productionMode: true 
+    }, { status: 201 })
 
   } catch (error) {
     console.error('Highlight POST API error:', error)
@@ -150,7 +169,8 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const { data: highlight, error } = await supabase
+    // Use service role client for write operations (bypasses RLS)
+    const { data: highlight, error } = await supabaseAdmin
       .from('highlights')
       .update(updateData)
       .eq('id', id)
@@ -168,7 +188,7 @@ export async function PUT(request: NextRequest) {
     if (error) {
       console.error('Error updating highlight:', error)
       return NextResponse.json(
-        { error: 'Failed to update highlight' },
+        { error: 'Failed to update highlight', details: error.message },
         { status: 500 }
       )
     }
@@ -180,7 +200,12 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ highlight })
+    console.log('✅ Highlight updated successfully:', highlight.title)
+    return NextResponse.json({ 
+      highlight,
+      message: 'Highlight updated successfully',
+      productionMode: true 
+    })
 
   } catch (error) {
     console.error('Highlight PUT API error:', error)
@@ -204,7 +229,8 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const { error } = await supabase
+    // Use service role client for write operations (bypasses RLS)
+    const { error } = await supabaseAdmin
       .from('highlights')
       .delete()
       .eq('id', id)
@@ -212,12 +238,16 @@ export async function DELETE(request: NextRequest) {
     if (error) {
       console.error('Error deleting highlight:', error)
       return NextResponse.json(
-        { error: 'Failed to delete highlight' },
+        { error: 'Failed to delete highlight', details: error.message },
         { status: 500 }
       )
     }
 
-    return NextResponse.json({ message: 'Highlight deleted successfully' })
+    console.log('✅ Highlight deleted successfully:', id)
+    return NextResponse.json({ 
+      message: 'Highlight deleted successfully',
+      productionMode: true 
+    })
 
   } catch (error) {
     console.error('Highlight DELETE API error:', error)

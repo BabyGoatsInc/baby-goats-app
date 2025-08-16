@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
 import { Database } from '@/lib/supabaseClient'
+import { createClient } from '@supabase/supabase-js'
+
+// Create a service role client for write operations (bypasses RLS)
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)
 
 type Like = Database['public']['Tables']['likes']['Row']
 type LikeInsert = Database['public']['Tables']['likes']['Insert']
@@ -55,8 +68,8 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (existingLike) {
-      // Unlike: Remove the like
-      const { error: deleteError } = await supabase
+      // Unlike: Remove the like using service role (bypasses RLS)
+      const { error: deleteError } = await supabaseAdmin
         .from('likes')
         .delete()
         .eq('user_id', body.user_id)
@@ -65,24 +78,26 @@ export async function POST(request: NextRequest) {
       if (deleteError) {
         console.error('Error removing like:', deleteError)
         return NextResponse.json(
-          { error: 'Failed to remove like' },
+          { error: 'Failed to remove like', details: deleteError.message },
           { status: 500 }
         )
       }
 
+      console.log('✅ Like removed successfully for highlight:', body.highlight_id)
       return NextResponse.json({ 
         liked: false,
-        message: 'Like removed'
+        message: 'Like removed',
+        productionMode: true
       })
     } else {
-      // Like: Add the like
+      // Like: Add the like using service role (bypasses RLS)
       const likeData: LikeInsert = {
         user_id: body.user_id,
         highlight_id: body.highlight_id,
         created_at: new Date().toISOString()
       }
 
-      const { data: newLike, error: insertError } = await supabase
+      const { data: newLike, error: insertError } = await supabaseAdmin
         .from('likes')
         .insert(likeData)
         .select()
@@ -91,15 +106,17 @@ export async function POST(request: NextRequest) {
       if (insertError) {
         console.error('Error creating like:', insertError)
         return NextResponse.json(
-          { error: 'Failed to create like' },
+          { error: 'Failed to create like', details: insertError.message },
           { status: 500 }
         )
       }
 
+      console.log('✅ Like added successfully for highlight:', body.highlight_id)
       return NextResponse.json({ 
         liked: true,
         like: newLike,
-        message: 'Like added'
+        message: 'Like added',
+        productionMode: true
       })
     }
 

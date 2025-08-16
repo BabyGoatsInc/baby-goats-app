@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabaseClient'
 import { Database } from '@/lib/supabaseClient'
+import { createClient } from '@supabase/supabase-js'
+
+// Create a service role client for write operations (bypasses RLS)
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+)
 
 type Stat = Database['public']['Tables']['stats']['Row']
 type StatInsert = Database['public']['Tables']['stats']['Insert']
@@ -113,8 +126,8 @@ export async function POST(request: NextRequest) {
     let result
     
     if (existingStat) {
-      // Update existing stat
-      const { data, error } = await supabase
+      // Update existing stat using service role (bypasses RLS)
+      const { data, error } = await supabaseAdmin
         .from('stats')
         .update({
           value: body.value,
@@ -135,19 +148,19 @@ export async function POST(request: NextRequest) {
       if (error) {
         console.error('Error updating stat:', error)
         return NextResponse.json(
-          { error: 'Failed to update stat' },
+          { error: 'Failed to update stat', details: error.message },
           { status: 500 }
         )
       }
       result = data
     } else {
-      // Create new stat
+      // Create new stat using service role (bypasses RLS)
       const statData: StatInsert = {
         ...body,
         created_at: new Date().toISOString()
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('stats')
         .insert(statData)
         .select(`
@@ -164,14 +177,19 @@ export async function POST(request: NextRequest) {
       if (error) {
         console.error('Error creating stat:', error)
         return NextResponse.json(
-          { error: 'Failed to create stat' },
+          { error: 'Failed to create stat', details: error.message },
           { status: 500 }
         )
       }
       result = data
     }
 
-    return NextResponse.json({ stat: result })
+    console.log('✅ Stat operation successful:', result.stat_name)
+    return NextResponse.json({ 
+      stat: result,
+      message: 'Stat saved successfully',
+      productionMode: true 
+    })
 
   } catch (error) {
     console.error('Stat POST API error:', error)
