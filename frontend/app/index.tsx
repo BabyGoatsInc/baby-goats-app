@@ -98,13 +98,6 @@ function MainApp() {
     initializeAppSystems();
   }, []);
 
-  // Load fonts
-  let [fontsLoaded] = useFonts({
-    SairaExtraCondensed_300Light,
-    Inter_400Regular,
-    Inter_500Medium,
-  });
-
   // Animation values
   const navOpacity = useSharedValue(0);
   const heroOpacity = useSharedValue(0);
