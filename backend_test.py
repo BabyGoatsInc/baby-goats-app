@@ -843,10 +843,10 @@ class APITester:
         # Print summary
         self.print_performance_optimization_summary()
 
-    def print_backend_storage_api_summary(self):
-        """Print Backend Storage API test results summary"""
+    def print_performance_optimization_summary(self):
+        """Print Performance Optimization Integration test results summary"""
         print("=" * 80)
-        print("📊 BACKEND STORAGE API TEST RESULTS SUMMARY")
+        print("📊 PERFORMANCE OPTIMIZATION INTEGRATION TEST RESULTS SUMMARY")
         print("=" * 80)
         
         total_tests = len(self.results)
@@ -858,15 +858,42 @@ class APITester:
         print(f"❌ Failed: {failed_tests}")
         print(f"Success Rate: {(passed_tests/total_tests*100):.1f}%" if total_tests > 0 else "0%")
         
-        # Categorize results by priority
-        high_priority_tests = [r for r in self.results if any(keyword in r['test'] for keyword in 
-            ['Backend Storage API', 'Backend Integration'])]
-        high_priority_passed = len([r for r in high_priority_tests if r['success']])
+        # Performance metrics analysis
+        if 'performance_results' in self.test_data:
+            print(f"\n⚡ API PERFORMANCE METRICS:")
+            for endpoint, response_time in self.test_data['performance_results']:
+                status = "✅ FAST" if response_time < 3.0 else "⚠️ SLOW"
+                print(f"   {endpoint}: {response_time:.2f}s {status}")
         
-        print(f"\n🔥 HIGH PRIORITY TESTS (Backend Storage API Core):")
-        print(f"   Passed: {high_priority_passed}/{len(high_priority_tests)}")
+        # Image optimization analysis
+        optimization_tests = [r for r in self.results if 'Image Optimization Pipeline' in r['test']]
+        optimization_passed = len([r for r in optimization_tests if r['success']])
         
-        # Check for backend storage API functionality
+        print(f"\n🖼️ IMAGE OPTIMIZATION PIPELINE:")
+        print(f"   Successful: {optimization_passed}/{len(optimization_tests)}")
+        
+        if optimization_passed > 0:
+            print("   🎉 IMAGE OPTIMIZATION WORKING - ImageOptimizer integration functional!")
+            if 'optimized_image_size' in self.test_data:
+                print(f"   📏 Optimized image size: {self.test_data['optimized_image_size']} bytes")
+            if 'optimized_upload_time' in self.test_data:
+                print(f"   ⏱️ Upload time: {self.test_data['optimized_upload_time']:.2f}s")
+        else:
+            print("   ⚠️ IMAGE OPTIMIZATION ISSUES - ImageOptimizer may not be working properly")
+        
+        # Storage integration stability analysis
+        stability_tests = [r for r in self.results if 'Storage Integration Stability' in r['test']]
+        stability_passed = len([r for r in stability_tests if r['success']])
+        
+        print(f"\n🔧 STORAGE INTEGRATION STABILITY:")
+        print(f"   Successful: {stability_passed}/{len(stability_tests)}")
+        
+        if stability_passed >= len(stability_tests) * 0.8:  # 80% success rate
+            print("   🎉 STORAGE INTEGRATION STABLE - Optimizations don't affect core functionality!")
+        else:
+            print("   ⚠️ STABILITY ISSUES - Optimizations may be affecting core storage functionality")
+        
+        # Backend storage API analysis
         storage_api_tests = [r for r in self.results if 'Backend Storage API' in r['test']]
         storage_api_passed = len([r for r in storage_api_tests if r['success']])
         
@@ -878,53 +905,17 @@ class APITester:
         else:
             print("   ⚠️ BACKEND API ISSUES - Storage API may not be configured properly")
         
-        # Check for bucket management
-        bucket_tests = [r for r in self.results if any(keyword in r['test'] for keyword in ['Bucket', 'bucket'])]
-        bucket_passed = len([r for r in bucket_tests if r['success']])
+        # Performance validation summary
+        performance_tests = [r for r in self.results if 'API Performance' in r['test']]
+        performance_passed = len([r for r in performance_tests if r['success']])
         
-        print(f"\n🪣 BUCKET MANAGEMENT:")
-        print(f"   Successful: {bucket_passed}/{len(bucket_tests)}")
+        print(f"\n⚡ API RESPONSE PERFORMANCE:")
+        print(f"   Under 3s target: {performance_passed}/{len(performance_tests)}")
         
-        if bucket_passed > 0:
-            print("   🎉 BUCKET MANAGEMENT WORKING - Bucket creation and status check functional!")
+        if performance_passed >= len(performance_tests) * 0.8:  # 80% success rate
+            print("   🎉 PERFORMANCE TARGET MET - APIs maintain response times under 3 seconds!")
         else:
-            print("   ⚠️ BUCKET ISSUES - Bucket management may need configuration")
-        
-        # Check for file operations
-        file_tests = [r for r in self.results if any(keyword in r['test'] for keyword in ['upload', 'deletion', 'File'])]
-        file_passed = len([r for r in file_tests if r['success']])
-        
-        print(f"\n📁 FILE OPERATIONS:")
-        print(f"   Successful: {file_passed}/{len(file_tests)}")
-        
-        if file_passed > 0:
-            print("   🎉 FILE OPERATIONS WORKING - Upload and deletion via backend API functional!")
-        else:
-            print("   ⚠️ FILE OPERATION ISSUES - File upload/deletion may have problems")
-        
-        # Check for backend integration
-        backend_tests = [r for r in self.results if 'Backend Integration' in r['test']]
-        backend_passed = len([r for r in backend_tests if r['success']])
-        
-        print(f"\n🔗 BACKEND INTEGRATION:")
-        print(f"   Successful: {backend_passed}/{len(backend_tests)}")
-        
-        if backend_passed > 0:
-            print("   🎉 INTEGRATION WORKING - Profile updates work with storage URLs!")
-        else:
-            print("   ⚠️ INTEGRATION ISSUES - Backend API may not handle storage URLs properly")
-        
-        # Check for error handling
-        error_tests = [r for r in self.results if 'Error' in r['test'] or 'error' in r['test']]
-        error_passed = len([r for r in error_tests if r['success']])
-        
-        print(f"\n⚠️ ERROR HANDLING:")
-        print(f"   Successful: {error_passed}/{len(error_tests)}")
-        
-        if error_passed > 0:
-            print("   🎉 ERROR HANDLING WORKING - Proper validation and error responses!")
-        else:
-            print("   ⚠️ ERROR HANDLING ISSUES - Error scenarios may not be handled properly")
+            print("   ⚠️ PERFORMANCE ISSUES - Some APIs exceed 3-second response time target")
         
         if failed_tests > 0:
             print("\n🔍 FAILED TESTS:")
@@ -932,24 +923,24 @@ class APITester:
                 if not result['success']:
                     print(f"  • {result['test']}: {result['details']}")
         
-        print(f"\n💡 BACKEND STORAGE API STATUS:")
+        print(f"\n💡 PERFORMANCE OPTIMIZATION STATUS:")
         if passed_tests >= total_tests * 0.8:  # 80% success rate
-            print("   ✅ STORAGE API READY - Complete backend storage integration operational!")
+            print("   ✅ OPTIMIZATION INTEGRATION SUCCESSFUL - Performance optimizations work with existing storage!")
         elif passed_tests >= total_tests * 0.6:  # 60% success rate
-            print("   ⚠️ PARTIAL SUPPORT - Storage API partially working, some features may need configuration")
+            print("   ⚠️ PARTIAL INTEGRATION - Some optimization features working, others need attention")
         else:
-            print("   ❌ LIMITED SUPPORT - Storage API appears to have significant configuration issues")
+            print("   ❌ INTEGRATION ISSUES - Performance optimizations may be conflicting with storage system")
         
-        print(f"\n🎯 BACKEND STORAGE API FEATURES:")
-        print("   • Service Role Key Authentication for Admin Operations")
-        print("   • Automatic Bucket Creation and Management (profile-photos)")
-        print("   • File Upload with Base64 Processing and Compression")
-        print("   • Public URL Generation for Uploaded Files")
-        print("   • File Deletion with Path Extraction")
-        print("   • Bucket Status Checking and Validation")
-        print("   • Error Handling for Invalid Requests and Data")
-        print("   • Integration with Profile Management System")
-        print("   • Preset Avatar System Support")
+        print(f"\n🎯 PERFORMANCE OPTIMIZATION FEATURES TESTED:")
+        print("   • ImageOptimizer integration with profile photo uploads")
+        print("   • API response time validation (< 3 seconds target)")
+        print("   • Storage operation performance with optimized images")
+        print("   • Backend stability with optimization features")
+        print("   • End-to-end profile photo management pipeline")
+        print("   • Bucket management with performance optimizations")
+        print("   • Error handling with optimized image processing")
+        print("   • Consecutive upload stability testing")
+        print("   • Backend proxy functionality preservation")
         
         print("\n🕐 Completed at:", datetime.now().isoformat())
         print("=" * 80)
