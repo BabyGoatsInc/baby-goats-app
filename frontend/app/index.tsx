@@ -52,6 +52,44 @@ interface UserProfile {
 
 function MainApp() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
+  const [offlineSystemReady, setOfflineSystemReady] = useState(false);
+
+  // Load fonts
+  let [fontsLoaded] = useFonts({
+    SairaExtraCondensed_300Light,
+    Inter_400Regular,
+    Inter_500Medium,
+  });
+
+  // Initialize offline capabilities
+  useEffect(() => {
+    async function initializeOfflineSystem() {
+      try {
+        console.log('🚀 Initializing Baby Goats offline system...');
+        
+        // Initialize offline manager
+        await offlineManager.initialize();
+        
+        // Initialize offline data layer
+        await offlineDataLayer.initialize();
+        
+        // Start performance monitoring
+        performanceMonitor.startMonitoring();
+        
+        // Start cache cleanup
+        startCacheCleanup();
+        
+        setOfflineSystemReady(true);
+        console.log('✅ Baby Goats offline system ready!');
+      } catch (error) {
+        console.error('❌ Failed to initialize offline system:', error);
+        // Continue without offline capabilities
+        setOfflineSystemReady(true);
+      }
+    }
+
+    initializeOfflineSystem();
+  }, []);
 
   // Load fonts
   let [fontsLoaded] = useFonts({
