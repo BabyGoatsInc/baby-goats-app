@@ -75,37 +75,37 @@ class APITester:
             print(f"Request failed: {e}")
             return None
 
-    def test_mvp_profiles_direct(self):
-        """Test MVP Profiles API endpoints directly"""
-        print("🧪 Testing MVP Profiles API (Direct)...")
+    def test_production_profiles_api(self):
+        """Test Production Profiles API with Service Role Key - HIGH PRIORITY"""
+        print("🧪 Testing Production Profiles API (Service Role Key)...")
         
-        # Test 1: GET MVP profiles
-        response = self.make_request('GET', '/mvp/profiles', params={
-            'limit': 10
+        # Test 1: GET profiles (should still work)
+        response = self.make_request('GET', '/profiles', params={
+            'limit': 10,
+            'offset': 0
         })
         
         if response and response.status_code == 200:
             data = response.json()
-            mvp_mode = data.get('mvpMode', False)
-            source = data.get('source', {})
+            production_mode = data.get('productionMode', False)
             self.log_result(
-                "GET /api/mvp/profiles - Direct MVP fetch",
+                "GET /api/profiles - Production mode check",
                 True,
-                f"MVP Mode: {mvp_mode}, DB: {source.get('database', 0)}, MVP: {source.get('mvpStorage', 0)} profiles"
+                f"Production Mode: {production_mode}, Retrieved {len(data.get('profiles', []))} profiles"
             )
-            self.test_data['mvp_profiles'] = data.get('profiles', [])
+            self.test_data['profiles'] = data.get('profiles', [])
         else:
             self.log_result(
-                "GET /api/mvp/profiles - Direct MVP fetch",
+                "GET /api/profiles - Production mode check",
                 False,
                 f"Status: {response.status_code if response else 'No response'}",
                 response.json() if response else None
             )
 
-        # Test 2: POST create profile directly to MVP endpoint
-        mvp_profile_data = {
-            'id': TEST_USER_ID,
-            'full_name': 'Elite Athlete MVP Test',
+        # Test 2: POST create profile with Elite Onboarding data (CRITICAL TEST)
+        elite_profile_data = {
+            'id': str(uuid.uuid4()),
+            'full_name': 'Elite Production Test Athlete',
             'sport': 'Soccer',
             'experience_level': 'Rising Competitor',
             'passion_level': 9,
@@ -113,50 +113,364 @@ class APITester:
             'grad_year': 2026
         }
         
-        response = self.make_request('POST', '/mvp/profiles', data=mvp_profile_data)
+        response = self.make_request('POST', '/profiles', data=elite_profile_data)
+        
+        if response and response.status_code in [200, 201]:
+            data = response.json()
+            production_mode = data.get('productionMode', False)
+            self.log_result(
+                "POST /api/profiles - Elite Onboarding (Production DB)",
+                True,
+                f"Production Mode: {production_mode}, Created: {data.get('profile', {}).get('full_name', 'Unknown')}"
+            )
+            self.test_data['elite_profile'] = data.get('profile')
+            self.test_data['elite_profile_id'] = elite_profile_data['id']
+        else:
+            self.log_result(
+                "POST /api/profiles - Elite Onboarding (Production DB)",
+                False,
+                f"Status: {response.status_code if response else 'No response'} - RLS should be bypassed with service role key",
+                response.json() if response else None
+            )
+
+        # Test 3: Verify profile appears in GET results (persistence check)
+        if self.test_data.get('elite_profile_id'):
+            response = self.make_request('GET', '/profiles', params={
+                'search': 'Elite Production Test',
+                'limit': 5
+            })
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                profiles = data.get('profiles', [])
+                found_profile = any(p.get('id') == self.test_data['elite_profile_id'] for p in profiles)
+                self.log_result(
+                    "GET /api/profiles - Verify persistence",
+                    found_profile,
+                    f"Profile {'found' if found_profile else 'NOT found'} in database - persistence {'confirmed' if found_profile else 'FAILED'}"
+                )
+            else:
+                self.log_result(
+                    "GET /api/profiles - Verify persistence",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'}",
+                    response.json() if response else None
+                )
+
+        # Test 4: PUT update profile (should work with service role key)
+        if self.test_data.get('elite_profile_id'):
+            update_data = {
+                'id': self.test_data['elite_profile_id'],
+                'full_name': 'Elite Production Test Athlete - Updated',
+                'passion_level': 10,
+                'selected_goals': ['Skill Mastery', 'Mental Resilience', 'Peak Performance', 'Competitive Excellence']
+            }
+            
+            response = self.make_request('PUT', '/profiles', data=update_data)
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                production_mode = data.get('productionMode', False)
+                self.log_result(
+                    "PUT /api/profiles - Update (Production DB)",
+                    True,
+                    f"Production Mode: {production_mode}, Updated: {data.get('profile', {}).get('full_name', 'Unknown')}"
+                )
+            else:
+                self.log_result(
+                    "PUT /api/profiles - Update (Production DB)",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'} - RLS should be bypassed with service role key",
+                    response.json() if response else None
+                )
+
+    def test_production_highlights_api(self):
+        """Test Production Highlights API with Service Role Key - MEDIUM PRIORITY"""
+        print("🧪 Testing Production Highlights API (Service Role Key)...")
+        
+        # Test 1: GET highlights (should still work)
+        response = self.make_request('GET', '/highlights', params={
+            'limit': 10,
+            'offset': 0
+        })
         
         if response and response.status_code == 200:
             data = response.json()
-            mvp_mode = data.get('mvpMode', False)
+            production_mode = data.get('productionMode', False)
             self.log_result(
-                "POST /api/mvp/profiles - Direct MVP create",
+                "GET /api/highlights - Production mode check",
                 True,
-                f"MVP Mode: {mvp_mode}, Created: {data.get('profile', {}).get('full_name', 'Unknown')}"
+                f"Production Mode: {production_mode}, Retrieved {len(data.get('highlights', []))} highlights"
             )
-            self.test_data['mvp_created_profile'] = data.get('profile')
+            self.test_data['highlights'] = data.get('highlights', [])
         else:
             self.log_result(
-                "POST /api/mvp/profiles - Direct MVP create",
+                "GET /api/highlights - Production mode check",
                 False,
                 f"Status: {response.status_code if response else 'No response'}",
                 response.json() if response else None
             )
 
-        # Test 3: PUT update profile directly to MVP endpoint
-        if self.test_data.get('mvp_created_profile'):
-            update_data = {
-                'id': TEST_USER_ID,
-                'full_name': 'Elite Athlete MVP Test - Updated',
-                'passion_level': 10,
-                'selected_goals': ['Skill Mastery', 'Mental Resilience', 'Peak Performance', 'Competitive Excellence']
+        # Test 2: POST create highlight (should work with service role key)
+        if self.test_data.get('elite_profile_id'):
+            highlight_data = {
+                'user_id': self.test_data['elite_profile_id'],
+                'title': 'Production Test Highlight',
+                'video_url': 'https://example.com/production-test-video.mp4',
+                'description': 'Test highlight for production database',
+                'is_featured': False
             }
             
-            response = self.make_request('PUT', '/mvp/profiles', data=update_data)
+            response = self.make_request('POST', '/highlights', data=highlight_data)
             
-            if response and response.status_code == 200:
+            if response and response.status_code in [200, 201]:
                 data = response.json()
+                production_mode = data.get('productionMode', False)
                 self.log_result(
-                    "PUT /api/mvp/profiles - Direct MVP update",
+                    "POST /api/highlights - Create (Production DB)",
                     True,
-                    f"Updated: {data.get('profile', {}).get('full_name', 'Unknown')}"
+                    f"Production Mode: {production_mode}, Created: {data.get('highlight', {}).get('title', 'Unknown')}"
+                )
+                self.test_data['created_highlight'] = data.get('highlight')
+            else:
+                self.log_result(
+                    "POST /api/highlights - Create (Production DB)",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'} - RLS should be bypassed with service role key",
+                    response.json() if response else None
+                )
+
+    def test_production_stats_api(self):
+        """Test Production Stats API with Service Role Key - MEDIUM PRIORITY"""
+        print("🧪 Testing Production Stats API (Service Role Key)...")
+        
+        # Test 1: GET stats (should still work)
+        response = self.make_request('GET', '/stats', params={
+            'limit': 10,
+            'offset': 0
+        })
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            production_mode = data.get('productionMode', False)
+            self.log_result(
+                "GET /api/stats - Production mode check",
+                True,
+                f"Production Mode: {production_mode}, Retrieved {len(data.get('stats', []))} stats"
+            )
+        else:
+            self.log_result(
+                "GET /api/stats - Production mode check",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 2: POST create stat (should work with service role key)
+        if self.test_data.get('elite_profile_id'):
+            stat_data = {
+                'user_id': self.test_data['elite_profile_id'],
+                'stat_name': 'Production Test Goals',
+                'value': 25,
+                'unit': 'goals',
+                'category': 'performance'
+            }
+            
+            response = self.make_request('POST', '/stats', data=stat_data)
+            
+            if response and response.status_code in [200, 201]:
+                data = response.json()
+                production_mode = data.get('productionMode', False)
+                self.log_result(
+                    "POST /api/stats - Create (Production DB)",
+                    True,
+                    f"Production Mode: {production_mode}, Created: {data.get('stat', {}).get('stat_name', 'Unknown')}"
+                )
+                self.test_data['created_stat'] = data.get('stat')
+            else:
+                self.log_result(
+                    "POST /api/stats - Create (Production DB)",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'} - RLS should be bypassed with service role key",
+                    response.json() if response else None
+                )
+
+    def test_production_likes_api(self):
+        """Test Production Likes API with Service Role Key - MEDIUM PRIORITY"""
+        print("🧪 Testing Production Likes API (Service Role Key)...")
+        
+        # Test 1: GET likes (should still work)
+        response = self.make_request('GET', '/likes', params={
+            'limit': 10,
+            'offset': 0
+        })
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            production_mode = data.get('productionMode', False)
+            self.log_result(
+                "GET /api/likes - Production mode check",
+                True,
+                f"Production Mode: {production_mode}, Retrieved {len(data.get('likes', []))} likes"
+            )
+        else:
+            self.log_result(
+                "GET /api/likes - Production mode check",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 2: POST toggle like (should work with service role key)
+        if self.test_data.get('created_highlight') and self.test_data.get('elite_profile_id'):
+            like_data = {
+                'user_id': self.test_data['elite_profile_id'],
+                'highlight_id': self.test_data['created_highlight'].get('id')
+            }
+            
+            response = self.make_request('POST', '/likes', data=like_data)
+            
+            if response and response.status_code in [200, 201]:
+                data = response.json()
+                production_mode = data.get('productionMode', False)
+                liked = data.get('liked', False)
+                self.log_result(
+                    "POST /api/likes - Toggle like (Production DB)",
+                    True,
+                    f"Production Mode: {production_mode}, Like {'added' if liked else 'removed'}"
                 )
             else:
                 self.log_result(
-                    "PUT /api/mvp/profiles - Direct MVP update",
+                    "POST /api/likes - Toggle like (Production DB)",
                     False,
-                    f"Status: {response.status_code if response else 'No response'}",
+                    f"Status: {response.status_code if response else 'No response'} - RLS should be bypassed with service role key",
                     response.json() if response else None
                 )
+
+    def test_production_challenges_api(self):
+        """Test Production Challenges API with Service Role Key - MEDIUM PRIORITY"""
+        print("🧪 Testing Production Challenges API (Service Role Key)...")
+        
+        # Test 1: GET challenges (should still work)
+        response = self.make_request('GET', '/challenges', params={
+            'limit': 10,
+            'offset': 0
+        })
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            production_mode = data.get('productionMode', False)
+            self.log_result(
+                "GET /api/challenges - Production mode check",
+                True,
+                f"Production Mode: {production_mode}, Retrieved {len(data.get('challenges', []))} challenges"
+            )
+            self.test_data['challenges'] = data.get('challenges', [])
+        else:
+            self.log_result(
+                "GET /api/challenges - Production mode check",
+                False,
+                f"Status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 2: POST complete challenge (should work with service role key)
+        if self.test_data.get('challenges') and self.test_data.get('elite_profile_id'):
+            challenge_id = self.test_data['challenges'][0].get('id')
+            completion_data = {
+                'user_id': self.test_data['elite_profile_id'],
+                'challenge_id': challenge_id,
+                'notes': 'Production database test completion'
+            }
+            
+            response = self.make_request('POST', '/challenges', data=completion_data)
+            
+            if response and response.status_code in [200, 201]:
+                data = response.json()
+                production_mode = data.get('productionMode', False)
+                self.log_result(
+                    "POST /api/challenges - Complete challenge (Production DB)",
+                    True,
+                    f"Production Mode: {production_mode}, Earned {data.get('points_earned', 0)} points"
+                )
+            else:
+                self.log_result(
+                    "POST /api/challenges - Complete challenge (Production DB)",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'} - RLS should be bypassed with service role key",
+                    response.json() if response else None
+                )
+
+    def test_elite_onboarding_flow(self):
+        """Test Complete Elite Onboarding Flow - HIGH PRIORITY"""
+        print("🧪 Testing Complete Elite Onboarding Flow (Production DB)...")
+        
+        # Simulate complete Elite Onboarding data
+        onboarding_profiles = [
+            {
+                'id': str(uuid.uuid4()),
+                'full_name': 'Sarah Elite Soccer Player',
+                'sport': 'Soccer',
+                'experience_level': 'Rising Competitor',
+                'passion_level': 9,
+                'selected_goals': ['Skill Mastery', 'Mental Resilience', 'Peak Performance'],
+                'grad_year': 2025
+            },
+            {
+                'id': str(uuid.uuid4()),
+                'full_name': 'Marcus Elite Basketball Player',
+                'sport': 'Basketball',
+                'experience_level': 'Proven Champion',
+                'passion_level': 10,
+                'selected_goals': ['Team Leadership', 'Competitive Excellence', 'Body Optimization'],
+                'grad_year': 2024
+            },
+            {
+                'id': str(uuid.uuid4()),
+                'full_name': 'Emma Elite Tennis Player',
+                'sport': 'Tennis',
+                'experience_level': 'Developing Athlete',
+                'passion_level': 8,
+                'selected_goals': ['Mental Resilience', 'Skill Mastery'],
+                'grad_year': 2026
+            }
+        ]
+        
+        created_profiles = []
+        
+        for profile_data in onboarding_profiles:
+            response = self.make_request('POST', '/profiles', data=profile_data)
+            
+            if response and response.status_code in [200, 201]:
+                data = response.json()
+                production_mode = data.get('productionMode', False)
+                created_profiles.append(data.get('profile'))
+                self.log_result(
+                    f"Elite Onboarding - {profile_data['sport']} athlete",
+                    True,
+                    f"Production Mode: {production_mode}, Created: {profile_data['full_name']}"
+                )
+            else:
+                self.log_result(
+                    f"Elite Onboarding - {profile_data['sport']} athlete",
+                    False,
+                    f"Status: {response.status_code if response else 'No response'} - Service role key should bypass RLS",
+                    response.json() if response else None
+                )
+        
+        # Verify all profiles can be retrieved
+        response = self.make_request('GET', '/profiles', params={'limit': 20})
+        if response and response.status_code == 200:
+            data = response.json()
+            all_profiles = data.get('profiles', [])
+            elite_profiles = [p for p in all_profiles if 'Elite' in p.get('full_name', '')]
+            self.log_result(
+                "Elite Onboarding - Verify all profiles retrievable",
+                len(elite_profiles) >= len(created_profiles),
+                f"Found {len(elite_profiles)} elite profiles in database"
+            )
+        
+        self.test_data['elite_onboarding_profiles'] = created_profiles
 
     def test_profiles_api(self):
         """Test Profiles API endpoints through FastAPI proxy"""
