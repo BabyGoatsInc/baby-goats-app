@@ -529,7 +529,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Core Social Infrastructure Integration"
+    - "Social Infrastructure Assessment & Enhancement"
+    - "Security Input Sanitization Improvements"
+    - "Cross-system Error Handling Coordination"
   stuck_tasks:
     []
   test_all: false
