@@ -26,6 +26,10 @@ import { startCacheCleanup } from '../lib/apiCache';
 import { performanceMonitor } from '../lib/performanceMonitor';
 import OfflineIndicator from '../components/OfflineIndicator';
 
+// Technical infrastructure imports
+import { technicalInfrastructure } from '../lib/technicalInfrastructure';
+import { ErrorBoundary } from '../lib/errorMonitoring';
+
 const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isTablet = screenWidth >= 768;
