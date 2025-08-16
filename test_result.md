@@ -177,6 +177,18 @@ backend:
           agent: "testing"
           comment: "✅ Avatar component working correctly! Initials fallback logic (4/4 tests passed), size variations properly defined (small, medium, large, xlarge), component structure solid. 2/3 preset avatar URLs accessible (minor external URL issue)."
 
+  - task: "Supabase Storage Integration for Profile Photos"
+    implemented: true
+    working: false
+    file: "/app/frontend/lib/storage.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "🔧 IMPLEMENTATION COMPLETE: Replaced base64 fallback with full Supabase Storage integration. Updated uploadProfilePhoto() to use real Supabase Storage with automatic bucket creation, proper file upload using FileSystem, and public URL generation. Added deleteProfilePhoto() with file path extraction. Storage bucket 'profile-photos' created with proper policies. Ready for testing."
+
   - task: "ProfilePhotoSelector Component"
     implemented: true
     working: false
