@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { uploadProfilePhoto, PRESET_AVATARS, getAvatarById } from '../lib/storage';
+import { uploadProfilePhoto, PRESET_AVATARS, getAvatarById, setupStorageBucket, checkStorageBucket } from '../lib/storage';
 import { useAuth } from '../contexts/AuthContext';
 
 interface ProfilePhotoSelectorProps {
