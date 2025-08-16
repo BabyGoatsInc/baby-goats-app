@@ -23,6 +23,10 @@ interface AuthenticationProps {
 export default function Authentication({ onBack }: AuthenticationProps) {
   const [mode, setMode] = useState<'choice' | 'signup' | 'login'>('choice');
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [loginLoading, setLoginLoading] = useState(false);
+  
+  const { signIn } = useAuth();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
