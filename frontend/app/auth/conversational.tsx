@@ -31,6 +31,8 @@ export default function ConversationalAuth({ onBack }: ConversationalAuthProps) 
   const [loading, setLoading] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
+  
+  const { signUp } = useAuth();
 
   const steps = [
     {
