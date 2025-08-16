@@ -220,6 +220,9 @@ function MainApp() {
           <TouchableOpacity onPress={() => setCurrentScreen('goals')}>
             <Text style={styles.navLink}>PROGRESS</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => setCurrentScreen('achievements')}>
+            <Text style={styles.navLink}>ACHIEVEMENTS</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => setCurrentScreen('onboarding')}>
             <Text style={styles.navLink}>ACADEMY</Text>
           </TouchableOpacity>
