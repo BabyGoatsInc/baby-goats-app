@@ -606,6 +606,53 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
   },
 
+  // Social Section
+  socialSection: {
+    alignItems: 'center',
+    paddingTop: 32,
+    borderTopWidth: 1,
+    borderTopColor: '#222222',
+    marginBottom: isTablet ? 64 : 48,
+  },
+  socialTitle: {
+    fontSize: isTablet ? 20 : 18,
+    color: '#FFFFFF',
+    fontWeight: '500',
+    textAlign: 'center',
+    fontFamily: 'Inter_500Medium',
+    marginBottom: 24,
+    letterSpacing: 1,
+  },
+  socialButtons: {
+    flexDirection: isTablet ? 'row' : 'column',
+    gap: 16,
+    alignItems: 'center',
+    width: '100%',
+  },
+  socialButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: '#333333',
+    paddingVertical: 16,
+    paddingHorizontal: isTablet ? 32 : 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    minWidth: isTablet ? 180 : 200,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  socialButtonEmoji: {
+    fontSize: 16,
+  },
+  socialButtonText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '400',
+    letterSpacing: 1,
+    fontFamily: 'Inter_400Regular',
+  },
+
   // Stats Section
   statsContainer: {
     position: 'absolute',
