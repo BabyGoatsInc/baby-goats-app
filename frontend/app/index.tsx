@@ -183,6 +183,14 @@ function MainApp() {
     );
   }
 
+  if (currentScreen === 'goals') {
+    return (
+      <GoalsTracker 
+        onBack={handleBackToHome}
+      />
+    );
+  }
+
   if (currentScreen === 'challenges') {
     return (
       <DailyChallenges 
