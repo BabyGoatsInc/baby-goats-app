@@ -108,16 +108,22 @@ export default function UserProfileScreen({ onNavigateTo }: ProfileProps) {
           {/* Athlete Identity */}
           <View style={styles.identitySection}>
             <View style={styles.avatarContainer}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>
-                  {user.name.substring(0, 2).toUpperCase()}
-                </Text>
-              </View>
+              <Avatar
+                imageUrl={user.profile?.avatar_url}
+                name={user.profile?.full_name || user.email}
+                size="xlarge"
+                showEditIcon={true}
+                onPress={() => setShowPhotoSelector(true)}
+              />
             </View>
             
-            <Text style={styles.athleteName}>{user.name.toUpperCase()}</Text>
-            <Text style={styles.performanceLevel}>{getPerformanceLevel(user.age)} BABY GOAT</Text>
-            <Text style={styles.ageInfo}>Age {user.age}</Text>
+            <Text style={styles.athleteName}>
+              {user.profile?.full_name || 'Elite Athlete'}
+            </Text>
+            <Text style={styles.performanceLevel}>
+              {getPerformanceLevel(user.profile?.age)} BABY GOAT
+            </Text>
+            <Text style={styles.ageInfo}>Age {user.profile?.age}</Text>
             
             {user.sport && (
               <View style={styles.sportBadge}>
