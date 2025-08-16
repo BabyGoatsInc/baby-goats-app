@@ -166,23 +166,54 @@ export default function ConversationalAuth({ onBack }: ConversationalAuthProps) 
     setLoading(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
       const age = parseInt(formData.age);
-      const mockUser: UserProfile = {
-        id: 'user_' + Date.now(),
-        email: formData.email,
-        name: formData.name,
-        age: age,
-        parentEmail: formData.parentEmail || undefined,
-        isParentApproved: age >= 13 || !!formData.parentEmail,
-      };
       
-      onAuthSuccess(mockUser);
+      // Sign up with real Supabase Auth
+      const { user, error } = await signUp(formData.email, formData.password, {
+        full_name: formData.name,
+        age: age,
+        parent_email: formData.parentEmail || undefined,
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        Alert.alert(
+          'Signup Error',
+          error.message || 'Failed to create account. Please try again.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
+      if (user) {
+        if (!user.email_confirmed_at) {
+          // Email confirmation required
+          Alert.alert(
+            'Check Your Email',
+            'We sent you a confirmation email. Please check your inbox and click the link to activate your account.',
+            [
+              { text: 'OK', onPress: () => onBack() }
+            ]
+          );
+        } else {
+          // Account created and confirmed
+          Alert.alert(
+            'Account Created!',
+            'Your elite development account has been created successfully.',
+            [
+              { text: 'Continue', onPress: () => onBack() }
+            ]
+          );
+        }
+      }
       
     } catch (error) {
       console.error('Signup error:', error);
+      Alert.alert(
+        'Signup Error',
+        'Something went wrong. Please try again.',
+        [{ text: 'OK' }]
+      );
     } finally {
       setLoading(false);
     }
