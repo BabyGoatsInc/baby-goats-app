@@ -43,8 +43,8 @@ export default function ConversationalAuth({ onAuthSuccess, onBack }: Conversati
   const steps = [
     {
       id: 'welcome',
-      question: "Welcome to Baby Goats! 🐐",
-      subtitle: "Let's get you started on your champion journey",
+      question: "Elite Development Platform",
+      subtitle: "Begin your transformation into tomorrow's champion",
       placeholder: "",
       type: 'welcome'
     },
