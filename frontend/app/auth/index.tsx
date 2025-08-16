@@ -40,11 +40,37 @@ export default function Authentication({ onBack }: AuthenticationProps) {
   if (mode === 'signup') {
     return (
       <ConversationalAuth 
-        onAuthSuccess={onAuthSuccess}
         onBack={() => setMode('choice')}
       />
     );
   }
+
+  const handleLogin = async () => {
+    if (!loginData.email || !loginData.password) {
+      Alert.alert('Error', 'Please enter both email and password.');
+      return;
+    }
+
+    setLoginLoading(true);
+    
+    try {
+      const { user, error } = await signIn(loginData.email, loginData.password);
+      
+      if (error) {
+        Alert.alert('Login Error', error.message || 'Failed to sign in. Please try again.');
+        return;
+      }
+
+      if (user) {
+        // Successfully signed in, AuthContext will handle the state update
+        onBack(); // Navigate back to home
+      }
+    } catch (error) {
+      Alert.alert('Login Error', 'Something went wrong. Please try again.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
 
   // Show simple login (can be enhanced later)
   if (mode === 'login') {
