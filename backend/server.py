@@ -47,11 +47,11 @@ class StatusCheckCreate(BaseModel):
 # Baby Goats API Proxy Routes (existing endpoints)
 @api_router.get("/profiles")
 async def proxy_profiles(request: Request):
-    """Proxy profiles requests to Next.js API"""
+    """Proxy profiles requests to MVP endpoint for combined DB + MVP data"""
     try:
         # Forward query parameters
         query_params = str(request.url.query) if request.url.query else ""
-        url = f"{NEXTJS_API_BASE}/profiles"
+        url = f"{NEXTJS_API_BASE}/mvp/profiles"
         if query_params:
             url += f"?{query_params}"
         
