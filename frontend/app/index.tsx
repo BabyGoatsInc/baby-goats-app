@@ -258,6 +258,9 @@ function MainApp() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
       
+      {/* Offline Indicator */}
+      <OfflineIndicator position="top" showDetails={false} />
+      
       {/* Navigation */}
       <Animated.View style={[styles.navigation, navAnimatedStyle]}>
         <Text style={styles.brandName}>BABY GOATS</Text>
