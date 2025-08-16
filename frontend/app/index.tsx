@@ -208,6 +208,9 @@ function MainApp() {
       <Animated.View style={[styles.navigation, navAnimatedStyle]}>
         <Text style={styles.brandName}>BABY GOATS</Text>
         <View style={styles.navLinks}>
+          <TouchableOpacity onPress={() => setCurrentScreen('goals')}>
+            <Text style={styles.navLink}>PROGRESS</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => setCurrentScreen('onboarding')}>
             <Text style={styles.navLink}>ACADEMY</Text>
           </TouchableOpacity>
