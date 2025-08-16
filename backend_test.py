@@ -10,19 +10,50 @@ import json
 import uuid
 from datetime import datetime
 import time
+import base64
+import io
+from PIL import Image
 
-# Configuration - Testing production database with service role key
+# Configuration - Testing profile photo system with Supabase Storage
 BASE_URL = "https://goat-training-2.preview.emergentagent.com/api"
+FRONTEND_URL = "https://goat-training-2.preview.emergentagent.com"
+SUPABASE_URL = "https://ssdzlzlubzcknkoflgyf.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzZHpsemx1Ynpja25rb2ZsZ3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3Njc5OTYsImV4cCI6MjA3MDM0Mzk5Nn0.7ZpO5R64KS89k4We6jO9CbCevxwf1S5EOoqv6Xtv1Yk"
+
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
 
-# Test data - using realistic data for Baby Goats app
+SUPABASE_HEADERS = {
+    'apikey': SUPABASE_ANON_KEY,
+    'Authorization': f'Bearer {SUPABASE_ANON_KEY}',
+    'Content-Type': 'application/json'
+}
+
+# Test data - using realistic data for profile photo testing
 TEST_USER_ID = str(uuid.uuid4())
-TEST_HIGHLIGHT_ID = str(uuid.uuid4())
-TEST_CHALLENGE_ID = str(uuid.uuid4())
-TEST_STAT_ID = str(uuid.uuid4())
+TEST_PROFILE_ID = str(uuid.uuid4())
+STORAGE_BUCKET = 'profile-photos'
+
+# Preset avatar URLs for testing
+PRESET_AVATARS = [
+    {
+        'id': 'athlete_1',
+        'name': 'Champion',
+        'url': 'https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=200&h=200&fit=crop&crop=face',
+    },
+    {
+        'id': 'athlete_2', 
+        'name': 'Rising Star',
+        'url': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face',
+    },
+    {
+        'id': 'athlete_3',
+        'name': 'Elite Performer',
+        'url': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face',
+    }
+]
 
 class APITester:
     def __init__(self):
