@@ -3,11 +3,10 @@ import { supabase } from '@/lib/supabaseClient'
 import { Database } from '@/lib/supabaseClient'
 import { createClient } from '@supabase/supabase-js'
 
-// Create an admin client for MVP development
+// Create a service role client for write operations (bypasses RLS)
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  // Use service role key for admin operations - in production this should be from env vars
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, // Using anon key for now
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
   {
     auth: {
       autoRefreshToken: false,
