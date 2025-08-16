@@ -127,7 +127,321 @@ class APITester:
             print(f"Request failed: {e}")
             return None
 
-    def test_supabase_storage_bucket_verification(self):
+    def test_backend_storage_api_bucket_check(self):
+        """Test Backend Storage API - Bucket Status Check - HIGH PRIORITY"""
+        print("🧪 Testing Backend Storage API - Bucket Status Check...")
+        
+        # Test 1: Check bucket status via backend API
+        try:
+            response = self.make_request('GET', '/storage', params={'action': 'check_bucket'})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                bucket_exists = data.get('bucketExists', False)
+                bucket_info = data.get('bucket', {})
+                
+                self.log_result(
+                    "Backend Storage API - Bucket status check",
+                    True,
+                    f"Bucket exists: {bucket_exists}, Bucket info: {bucket_info}"
+                )
+                self.test_data['backend_bucket_exists'] = bucket_exists
+                self.test_data['bucket_info'] = bucket_info
+            else:
+                self.log_result(
+                    "Backend Storage API - Bucket status check",
+                    False,
+                    f"Bucket check failed, status: {response.status_code if response else 'No response'}"
+                )
+                self.test_data['backend_bucket_exists'] = False
+        except Exception as e:
+            self.log_result(
+                "Backend Storage API - Bucket status check",
+                False,
+                f"Bucket check test failed: {str(e)}"
+            )
+            self.test_data['backend_bucket_exists'] = False
+
+    def test_backend_storage_api_bucket_setup(self):
+        """Test Backend Storage API - Bucket Setup - HIGH PRIORITY"""
+        print("🧪 Testing Backend Storage API - Bucket Setup...")
+        
+        # Test 1: Setup bucket via backend API
+        try:
+            setup_data = {
+                'action': 'setup_bucket'
+            }
+            
+            response = self.make_request('POST', '/storage', data=setup_data)
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                setup_success = data.get('success', False)
+                bucket_exists = data.get('bucketExists', False)
+                message = data.get('message', '')
+                
+                self.log_result(
+                    "Backend Storage API - Bucket setup",
+                    setup_success,
+                    f"Setup success: {setup_success}, Bucket exists: {bucket_exists}, Message: {message}"
+                )
+                self.test_data['backend_bucket_setup'] = setup_success
+            else:
+                self.log_result(
+                    "Backend Storage API - Bucket setup",
+                    False,
+                    f"Bucket setup failed, status: {response.status_code if response else 'No response'}"
+                )
+                self.test_data['backend_bucket_setup'] = False
+        except Exception as e:
+            self.log_result(
+                "Backend Storage API - Bucket setup",
+                False,
+                f"Bucket setup test failed: {str(e)}"
+            )
+            self.test_data['backend_bucket_setup'] = False
+
+    def test_backend_storage_api_file_upload(self):
+        """Test Backend Storage API - File Upload Process - HIGH PRIORITY"""
+        print("🧪 Testing Backend Storage API - File Upload Process...")
+        
+        # Test 1: Create test image for upload
+        try:
+            # Create a simple test image (400x400 JPEG)
+            test_image = Image.new('RGB', (400, 400), color='blue')
+            img_buffer = io.BytesIO()
+            test_image.save(img_buffer, format='JPEG', quality=70)
+            img_buffer.seek(0)
+            
+            # Convert to base64 for backend API
+            image_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+            
+            self.log_result(
+                "Backend Storage API - Test image creation",
+                True,
+                f"Created 400x400 JPEG test image ({len(image_base64)} chars base64)"
+            )
+            self.test_data['backend_test_image_base64'] = image_base64
+        except Exception as e:
+            self.log_result(
+                "Backend Storage API - Test image creation",
+                False,
+                f"Test image creation failed: {str(e)}"
+            )
+            return
+
+        # Test 2: Upload file via backend API
+        try:
+            timestamp = int(time.time())
+            filename = f"backend_test_{timestamp}.jpg"
+            
+            upload_data = {
+                'action': 'upload',
+                'userId': TEST_USER_ID,
+                'fileName': filename,
+                'fileData': self.test_data['backend_test_image_base64'],
+                'contentType': 'image/jpeg'
+            }
+            
+            response = self.make_request('POST', '/storage', data=upload_data)
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                upload_success = data.get('success', False)
+                upload_url = data.get('url', '')
+                upload_path = data.get('path', '')
+                
+                if upload_success and upload_url:
+                    self.log_result(
+                        "Backend Storage API - File upload",
+                        True,
+                        f"Upload successful: {filename}, URL: {upload_url[:50]}..."
+                    )
+                    self.test_data['backend_uploaded_url'] = upload_url
+                    self.test_data['backend_uploaded_path'] = upload_path
+                else:
+                    self.log_result(
+                        "Backend Storage API - File upload",
+                        False,
+                        f"Upload failed: {data.get('error', 'Unknown error')}"
+                    )
+            else:
+                self.log_result(
+                    "Backend Storage API - File upload",
+                    False,
+                    f"Upload request failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Backend Storage API - File upload",
+                False,
+                f"Upload test failed: {str(e)}"
+            )
+
+        # Test 3: Verify uploaded file accessibility
+        if self.test_data.get('backend_uploaded_url'):
+            try:
+                response = requests.get(self.test_data['backend_uploaded_url'], timeout=30)
+                
+                if response and response.status_code == 200:
+                    content_type = response.headers.get('content-type', '')
+                    self.log_result(
+                        "Backend Storage API - Uploaded file accessibility",
+                        True,
+                        f"Uploaded file accessible, Content-Type: {content_type}"
+                    )
+                else:
+                    self.log_result(
+                        "Backend Storage API - Uploaded file accessibility",
+                        False,
+                        f"Uploaded file not accessible, status: {response.status_code if response else 'No response'}"
+                    )
+            except Exception as e:
+                self.log_result(
+                    "Backend Storage API - Uploaded file accessibility",
+                    False,
+                    f"File accessibility test failed: {str(e)}"
+                )
+
+    def test_backend_storage_api_file_deletion(self):
+        """Test Backend Storage API - File Deletion - HIGH PRIORITY"""
+        print("🧪 Testing Backend Storage API - File Deletion...")
+        
+        # Test 1: Delete uploaded file via backend API
+        if self.test_data.get('backend_uploaded_path'):
+            try:
+                delete_data = {
+                    'action': 'delete',
+                    'filePath': self.test_data['backend_uploaded_path']
+                }
+                
+                response = self.make_request('POST', '/storage', data=delete_data)
+                
+                if response and response.status_code == 200:
+                    data = response.json()
+                    delete_success = data.get('success', False)
+                    
+                    if delete_success:
+                        self.log_result(
+                            "Backend Storage API - File deletion",
+                            True,
+                            f"File deleted successfully: {self.test_data['backend_uploaded_path']}"
+                        )
+                    else:
+                        self.log_result(
+                            "Backend Storage API - File deletion",
+                            False,
+                            f"Delete failed: {data.get('error', 'Unknown error')}"
+                        )
+                else:
+                    self.log_result(
+                        "Backend Storage API - File deletion",
+                        False,
+                        f"Delete request failed, status: {response.status_code if response else 'No response'}"
+                    )
+            except Exception as e:
+                self.log_result(
+                    "Backend Storage API - File deletion",
+                    False,
+                    f"Delete test failed: {str(e)}"
+                )
+        else:
+            self.log_result(
+                "Backend Storage API - File deletion",
+                False,
+                "No uploaded file path available for deletion test"
+            )
+
+    def test_backend_storage_api_error_handling(self):
+        """Test Backend Storage API - Error Handling - MEDIUM PRIORITY"""
+        print("🧪 Testing Backend Storage API - Error Handling...")
+        
+        # Test 1: Invalid action
+        try:
+            invalid_data = {
+                'action': 'invalid_action'
+            }
+            
+            response = self.make_request('POST', '/storage', data=invalid_data)
+            
+            if response and response.status_code == 400:
+                self.log_result(
+                    "Backend Storage API - Invalid action handling",
+                    True,
+                    f"Invalid action properly rejected, status: {response.status_code}"
+                )
+            else:
+                self.log_result(
+                    "Backend Storage API - Invalid action handling",
+                    False,
+                    f"Invalid action should be rejected, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Backend Storage API - Invalid action handling",
+                False,
+                f"Invalid action test failed: {str(e)}"
+            )
+
+        # Test 2: Missing required fields for upload
+        try:
+            incomplete_data = {
+                'action': 'upload',
+                'userId': TEST_USER_ID
+                # Missing fileName, fileData, contentType
+            }
+            
+            response = self.make_request('POST', '/storage', data=incomplete_data)
+            
+            if response and response.status_code >= 400:
+                self.log_result(
+                    "Backend Storage API - Missing fields handling",
+                    True,
+                    f"Missing fields properly rejected, status: {response.status_code}"
+                )
+            else:
+                self.log_result(
+                    "Backend Storage API - Missing fields handling",
+                    False,
+                    f"Missing fields should be rejected, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Backend Storage API - Missing fields handling",
+                False,
+                f"Missing fields test failed: {str(e)}"
+            )
+
+        # Test 3: Invalid base64 data
+        try:
+            invalid_upload_data = {
+                'action': 'upload',
+                'userId': TEST_USER_ID,
+                'fileName': 'invalid_test.jpg',
+                'fileData': 'invalid_base64_data',
+                'contentType': 'image/jpeg'
+            }
+            
+            response = self.make_request('POST', '/storage', data=invalid_upload_data)
+            
+            if response and response.status_code >= 400:
+                self.log_result(
+                    "Backend Storage API - Invalid base64 handling",
+                    True,
+                    f"Invalid base64 properly rejected, status: {response.status_code}"
+                )
+            else:
+                self.log_result(
+                    "Backend Storage API - Invalid base64 handling",
+                    False,
+                    f"Invalid base64 should be rejected, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Backend Storage API - Invalid base64 handling",
+                False,
+                f"Invalid base64 test failed: {str(e)}"
+            )
         """Test Supabase Storage Bucket Verification - HIGH PRIORITY"""
         print("🧪 Testing Supabase Storage Bucket Verification...")
         
