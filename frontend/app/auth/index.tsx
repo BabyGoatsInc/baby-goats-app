@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
   messageSection: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 60,
   },
   formSection: {
     alignItems: 'center',
