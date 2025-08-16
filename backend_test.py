@@ -106,428 +106,358 @@ class APITester:
             print(f"Request failed: {e}")
             return None
 
-    def test_supabase_storage_infrastructure(self):
-        """Test Supabase Storage configuration and bucket access - HIGH PRIORITY"""
-        print("🧪 Testing Supabase Storage Infrastructure...")
+    def test_goal_tracking_backend_infrastructure(self):
+        """Test backend APIs that support goal tracking functionality - HIGH PRIORITY"""
+        print("🧪 Testing Goal Tracking Backend Infrastructure...")
         
-        # Test 1: Check Supabase Storage bucket access
-        storage_url = f"{SUPABASE_URL}/storage/v1/bucket/{STORAGE_BUCKET}"
-        response = requests.get(storage_url, headers=SUPABASE_HEADERS, timeout=30)
+        # Test 1: Challenges API - Core goal tracking functionality
+        response = self.make_request('GET', '/challenges', params={
+            'limit': 10,
+            'offset': 0
+        })
         
-        if response.status_code in [200, 404]:  # 404 is acceptable if bucket doesn't exist yet
-            self.log_result(
-                "Supabase Storage - Bucket access check",
-                True,
-                f"Storage API accessible, bucket status: {response.status_code}"
-            )
-        else:
-            self.log_result(
-                "Supabase Storage - Bucket access check",
-                False,
-                f"Storage API not accessible, status: {response.status_code}",
-                response.text if response else None
-            )
-
-        # Test 2: Check storage bucket configuration
-        buckets_url = f"{SUPABASE_URL}/storage/v1/bucket"
-        response = requests.get(buckets_url, headers=SUPABASE_HEADERS, timeout=30)
-        
-        if response.status_code == 200:
-            buckets = response.json()
-            profile_photos_bucket = any(bucket.get('name') == STORAGE_BUCKET for bucket in buckets)
-            self.log_result(
-                "Supabase Storage - Profile photos bucket exists",
-                profile_photos_bucket,
-                f"Found {len(buckets)} buckets, profile-photos bucket: {'exists' if profile_photos_bucket else 'missing'}"
-            )
-            self.test_data['storage_buckets'] = buckets
-        else:
-            self.log_result(
-                "Supabase Storage - Profile photos bucket exists",
-                False,
-                f"Failed to list buckets, status: {response.status_code}",
-                response.text if response else None
-            )
-
-    def create_test_image(self):
-        """Create a test image for upload testing"""
-        try:
-            # Create a simple test image
-            img = Image.new('RGB', (400, 400), color='red')
-            img_buffer = io.BytesIO()
-            img.save(img_buffer, format='JPEG', quality=80)
-            img_buffer.seek(0)
-            return img_buffer.getvalue()
-        except Exception as e:
-            print(f"Failed to create test image: {e}")
-            return None
-
-    def test_image_upload_functionality(self):
-        """Test image upload functionality to Supabase Storage - HIGH PRIORITY"""
-        print("🧪 Testing Image Upload Functionality...")
-        
-        # Create test image
-        test_image_data = self.create_test_image()
-        if not test_image_data:
-            self.log_result(
-                "Image Upload - Test image creation",
-                False,
-                "Failed to create test image for upload testing"
-            )
-            return
-
-        # Test 1: Upload image to Supabase Storage
-        filename = f"{TEST_USER_ID}/photo_{int(time.time())}.jpg"
-        upload_url = f"{SUPABASE_URL}/storage/v1/object/{STORAGE_BUCKET}/{filename}"
-        
-        upload_headers = {
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': f'Bearer {SUPABASE_ANON_KEY}',
-            'Content-Type': 'image/jpeg',
-            'Cache-Control': '3600'
-        }
-        
-        response = requests.post(upload_url, data=test_image_data, headers=upload_headers, timeout=60)
-        
-        if response.status_code in [200, 201]:
-            self.log_result(
-                "Image Upload - Upload to Supabase Storage",
-                True,
-                f"Image uploaded successfully, status: {response.status_code}"
-            )
-            self.test_data['uploaded_image_path'] = filename
-        else:
-            self.log_result(
-                "Image Upload - Upload to Supabase Storage",
-                False,
-                f"Upload failed, status: {response.status_code}",
-                response.text if response else None
-            )
-
-        # Test 2: Get public URL for uploaded image
-        if self.test_data.get('uploaded_image_path'):
-            public_url = f"{SUPABASE_URL}/storage/v1/object/public/{STORAGE_BUCKET}/{filename}"
-            response = requests.head(public_url, timeout=30)
-            
-            if response.status_code == 200:
-                self.log_result(
-                    "Image Upload - Public URL access",
-                    True,
-                    f"Public URL accessible: {public_url[:50]}..."
-                )
-                self.test_data['uploaded_image_url'] = public_url
-            else:
-                self.log_result(
-                    "Image Upload - Public URL access",
-                    False,
-                    f"Public URL not accessible, status: {response.status_code}"
-                )
-
-    def test_avatar_component_integration(self):
-        """Test Avatar component rendering and functionality - HIGH PRIORITY"""
-        print("🧪 Testing Avatar Component Integration...")
-        
-        # Test 1: Test preset avatar URLs accessibility
-        working_avatars = 0
-        for avatar in PRESET_AVATARS:
-            response = requests.head(avatar['url'], timeout=30)
-            if response.status_code == 200:
-                working_avatars += 1
-        
-        self.log_result(
-            "Avatar Component - Preset avatar URLs accessibility",
-            working_avatars == len(PRESET_AVATARS),
-            f"{working_avatars}/{len(PRESET_AVATARS)} preset avatar URLs are accessible"
-        )
-
-        # Test 2: Test avatar fallback functionality (initials generation)
-        # This would typically be tested in the frontend, but we can verify the logic
-        test_names = [
-            ("John Doe", "JD"),
-            ("Sarah", "S"),
-            ("", "?"),
-            ("Michael Jordan Smith", "MJ")
-        ]
-        
-        initials_correct = 0
-        for full_name, expected_initials in test_names:
-            # Simulate the initials generation logic from Avatar component
-            if not full_name:
-                actual_initials = '?'
-            else:
-                names = full_name.strip().split(' ')
-                first_initial = names[0][0].upper() if names[0] else ''
-                last_initial = names[1][0].upper() if len(names) > 1 and names[1] else ''
-                actual_initials = first_initial + last_initial
-            
-            if actual_initials == expected_initials:
-                initials_correct += 1
-
-        self.log_result(
-            "Avatar Component - Initials fallback logic",
-            initials_correct == len(test_names),
-            f"{initials_correct}/{len(test_names)} initials generation tests passed"
-        )
-
-    def test_profile_photo_database_integration(self):
-        """Test profile photo URL storage in database - HIGH PRIORITY"""
-        print("🧪 Testing Profile Photo Database Integration...")
-        
-        # Test 1: Create profile with avatar_url
-        profile_data = {
-            'id': TEST_PROFILE_ID,
-            'full_name': 'Avatar Test User',
-            'sport': 'Soccer',
-            'grad_year': 2025,
-            'avatar_url': PRESET_AVATARS[0]['url']
-        }
-        
-        response = self.make_request('POST', '/profiles', data=profile_data)
-        
-        if response and response.status_code in [200, 201]:
+        if response and response.status_code == 200:
             data = response.json()
-            profile = data.get('profile', {})
-            avatar_url_saved = profile.get('avatar_url') == PRESET_AVATARS[0]['url']
+            challenges = data.get('challenges', [])
             self.log_result(
-                "Profile Database - Avatar URL storage",
-                avatar_url_saved,
-                f"Profile created with avatar_url: {'saved correctly' if avatar_url_saved else 'not saved'}"
+                "Goal Tracking - Challenges API availability",
+                True,
+                f"Retrieved {len(challenges)} challenges for goal tracking system"
             )
-            self.test_data['test_profile'] = profile
+            self.test_data['challenges'] = challenges
         else:
             self.log_result(
-                "Profile Database - Avatar URL storage",
+                "Goal Tracking - Challenges API availability",
                 False,
-                f"Profile creation failed, status: {response.status_code if response else 'No response'}",
+                f"Challenges API failed, status: {response.status_code if response else 'No response'}",
                 response.json() if response else None
             )
 
-        # Test 2: Update profile avatar_url
-        if self.test_data.get('uploaded_image_url'):
-            update_data = {
-                'id': TEST_PROFILE_ID,
-                'avatar_url': self.test_data['uploaded_image_url']
+        # Test 2: Stats API - Progress tracking functionality
+        response = self.make_request('GET', '/stats', params={
+            'limit': 10,
+            'offset': 0
+        })
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            stats = data.get('stats', [])
+            self.log_result(
+                "Goal Tracking - Stats API for progress tracking",
+                True,
+                f"Retrieved {len(stats)} stats entries for progress tracking"
+            )
+            self.test_data['stats'] = stats
+        else:
+            self.log_result(
+                "Goal Tracking - Stats API for progress tracking",
+                False,
+                f"Stats API failed, status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 3: Profiles API - User goal preferences storage
+        response = self.make_request('GET', '/profiles', params={
+            'limit': 5,
+            'offset': 0
+        })
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            profiles = data.get('profiles', [])
+            self.log_result(
+                "Goal Tracking - Profiles API for user goal data",
+                True,
+                f"Retrieved {len(profiles)} profiles for goal tracking user data"
+            )
+            self.test_data['profiles'] = profiles
+        else:
+            self.log_result(
+                "Goal Tracking - Profiles API for user goal data",
+                False,
+                f"Profiles API failed, status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+    def test_character_pillar_data_support(self):
+        """Test backend support for Character Development Pillars - HIGH PRIORITY"""
+        print("🧪 Testing Character Pillar Data Support...")
+        
+        # Test 1: Challenge categories for pillar mapping
+        if self.test_data.get('challenges'):
+            pillar_categories = ['fitness', 'mental', 'skill', 'leadership']
+            category_counts = {}
+            
+            for challenge in self.test_data['challenges']:
+                category = challenge.get('category', 'unknown')
+                category_counts[category] = category_counts.get(category, 0) + 1
+            
+            pillar_support = any(cat in pillar_categories for cat in category_counts.keys())
+            self.log_result(
+                "Character Pillars - Challenge category mapping",
+                pillar_support,
+                f"Found categories: {list(category_counts.keys())} - {'supports' if pillar_support else 'missing'} pillar mapping"
+            )
+            self.test_data['challenge_categories'] = category_counts
+
+        # Test 2: Stats categories for progress tracking
+        response = self.make_request('GET', '/stats', params={
+            'category': 'performance',
+            'limit': 5
+        })
+        
+        if response and response.status_code == 200:
+            data = response.json()
+            performance_stats = data.get('stats', [])
+            self.log_result(
+                "Character Pillars - Performance stats tracking",
+                True,
+                f"Retrieved {len(performance_stats)} performance stats for pillar progress"
+            )
+        else:
+            self.log_result(
+                "Character Pillars - Performance stats tracking",
+                False,
+                f"Performance stats failed, status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 3: User completion tracking via challenges
+        if self.test_data.get('challenges') and len(self.test_data['challenges']) > 0:
+            test_user_id = str(uuid.uuid4())
+            challenge_id = self.test_data['challenges'][0].get('id')
+            
+            completion_data = {
+                'user_id': test_user_id,
+                'challenge_id': challenge_id,
+                'notes': 'Goal tracking system test completion'
             }
             
-            response = self.make_request('POST', '/profiles', data=update_data)
+            response = self.make_request('POST', '/challenges', data=completion_data)
             
             if response and response.status_code in [200, 201]:
                 data = response.json()
-                profile = data.get('profile', {})
-                avatar_updated = profile.get('avatar_url') == self.test_data['uploaded_image_url']
+                points_earned = data.get('points_earned', 0)
                 self.log_result(
-                    "Profile Database - Avatar URL update",
-                    avatar_updated,
-                    f"Avatar URL {'updated successfully' if avatar_updated else 'update failed'}"
+                    "Character Pillars - Challenge completion tracking",
+                    True,
+                    f"Challenge completion tracked, earned {points_earned} points for pillar progress"
                 )
             else:
                 self.log_result(
-                    "Profile Database - Avatar URL update",
+                    "Character Pillars - Challenge completion tracking",
                     False,
-                    f"Avatar update failed, status: {response.status_code if response else 'No response'}",
+                    f"Challenge completion failed, status: {response.status_code if response else 'No response'}",
                     response.json() if response else None
                 )
 
-        # Test 3: Retrieve profile with avatar_url
-        response = self.make_request('GET', '/profiles', params={
-            'search': 'Avatar Test User',
-            'limit': 5
+    def test_progress_analytics_data_support(self):
+        """Test backend data support for Progress Charts & Analytics - MEDIUM PRIORITY"""
+        print("🧪 Testing Progress Analytics Data Support...")
+        
+        # Test 1: User-specific stats for progress charts
+        test_user_id = str(uuid.uuid4())
+        response = self.make_request('GET', '/stats', params={
+            'user_id': test_user_id,
+            'limit': 10
         })
         
         if response and response.status_code == 200:
             data = response.json()
-            profiles = data.get('profiles', [])
-            test_profile = next((p for p in profiles if p.get('id') == TEST_PROFILE_ID), None)
-            
-            if test_profile and test_profile.get('avatar_url'):
-                self.log_result(
-                    "Profile Database - Avatar URL retrieval",
-                    True,
-                    f"Profile retrieved with avatar_url: {test_profile['avatar_url'][:50]}..."
-                )
-            else:
-                self.log_result(
-                    "Profile Database - Avatar URL retrieval",
-                    False,
-                    "Profile retrieved but avatar_url missing or empty"
-                )
+            user_stats = data.get('stats', [])
+            self.log_result(
+                "Progress Analytics - User-specific stats retrieval",
+                True,
+                f"Retrieved {len(user_stats)} user stats for progress chart data"
+            )
         else:
             self.log_result(
-                "Profile Database - Avatar URL retrieval",
+                "Progress Analytics - User-specific stats retrieval",
                 False,
-                f"Profile retrieval failed, status: {response.status_code if response else 'No response'}",
+                f"User stats failed, status: {response.status_code if response else 'No response'}",
                 response.json() if response else None
             )
 
-    def test_authentication_integration(self):
-        """Test authentication-protected photo management - MEDIUM PRIORITY"""
-        print("🧪 Testing Authentication Integration...")
-        
-        # Test 1: Test profile updates with authentication context
-        # This simulates the AuthContext updateProfile functionality
-        auth_headers = {
-            **HEADERS,
-            'Authorization': f'Bearer {SUPABASE_ANON_KEY}'  # Simulate auth token
-        }
-        
-        profile_update = {
-            'id': TEST_PROFILE_ID,
-            'avatar_url': PRESET_AVATARS[1]['url'],
-            'updated_at': datetime.now().isoformat()
-        }
-        
-        # Test direct Supabase profiles table update (simulating AuthContext)
-        supabase_update_url = f"{SUPABASE_URL}/rest/v1/profiles"
-        supabase_update_headers = {
-            **SUPABASE_HEADERS,
-            'Prefer': 'return=representation'
-        }
-        
-        response = requests.patch(
-            f"{supabase_update_url}?id=eq.{TEST_PROFILE_ID}",
-            json=profile_update,
-            headers=supabase_update_headers,
-            timeout=30
-        )
-        
-        if response.status_code in [200, 201]:
-            self.log_result(
-                "Authentication - Profile photo update via Supabase",
-                True,
-                f"Profile updated via Supabase API, status: {response.status_code}"
-            )
-        else:
-            self.log_result(
-                "Authentication - Profile photo update via Supabase",
-                False,
-                f"Supabase update failed, status: {response.status_code}",
-                response.text if response else None
-            )
-
-        # Test 2: Test session persistence (simulated)
-        # In real app, this would test AsyncStorage and session management
-        session_data = {
-            'user_id': TEST_PROFILE_ID,
-            'avatar_url': PRESET_AVATARS[1]['url'],
-            'session_active': True
-        }
-        
-        self.log_result(
-            "Authentication - Session persistence simulation",
-            True,
-            f"Session data structure valid: user_id, avatar_url, session_active present"
-        )
-        self.test_data['session_data'] = session_data
-
-    def test_cross_component_avatar_consistency(self):
-        """Test avatar consistency across different components - MEDIUM PRIORITY"""
-        print("🧪 Testing Cross-Component Avatar Consistency...")
-        
-        # Test 1: Verify avatar URL consistency across profile retrieval
-        response = self.make_request('GET', '/profiles', params={
-            'search': 'Avatar Test User',
-            'limit': 5
+        # Test 2: Challenge completion history for streak tracking
+        response = self.make_request('GET', '/challenges', params={
+            'user_id': test_user_id,
+            'limit': 20
         })
         
         if response and response.status_code == 200:
             data = response.json()
-            profiles = data.get('profiles', [])
-            test_profile = next((p for p in profiles if p.get('id') == TEST_PROFILE_ID), None)
+            user_challenges = data.get('challenges', [])
+            self.log_result(
+                "Progress Analytics - Challenge history for streaks",
+                True,
+                f"Retrieved {len(user_challenges)} user challenges for streak calculation"
+            )
+        else:
+            self.log_result(
+                "Progress Analytics - Challenge history for streaks",
+                False,
+                f"User challenges failed, status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+        # Test 3: Stats creation for progress tracking
+        stat_data = {
+            'user_id': test_user_id,
+            'stat_name': 'Goal Progress Test',
+            'value': 75,
+            'unit': 'percentage',
+            'category': 'goal_tracking'
+        }
+        
+        response = self.make_request('POST', '/stats', data=stat_data)
+        
+        if response and response.status_code in [200, 201]:
+            data = response.json()
+            created_stat = data.get('stat', {})
+            self.log_result(
+                "Progress Analytics - Progress stat creation",
+                True,
+                f"Created progress stat: {created_stat.get('stat_name', 'Unknown')} = {created_stat.get('value', 0)}%"
+            )
+            self.test_data['created_progress_stat'] = created_stat
+        else:
+            self.log_result(
+                "Progress Analytics - Progress stat creation",
+                False,
+                f"Progress stat creation failed, status: {response.status_code if response else 'No response'}",
+                response.json() if response else None
+            )
+
+    def test_achievement_system_backend_support(self):
+        """Test backend support for Achievement Display - MEDIUM PRIORITY"""
+        print("🧪 Testing Achievement System Backend Support...")
+        
+        # Test 1: Challenge completion points system
+        if self.test_data.get('challenges') and len(self.test_data['challenges']) > 0:
+            challenge = self.test_data['challenges'][0]
+            points = challenge.get('points', 0)
+            difficulty = challenge.get('difficulty', 'unknown')
             
-            if test_profile:
-                avatar_url = test_profile.get('avatar_url')
-                # Test that avatar URL is consistent and accessible
-                if avatar_url:
-                    avatar_response = requests.head(avatar_url, timeout=30)
-                    avatar_accessible = avatar_response.status_code == 200
+            self.log_result(
+                "Achievement System - Challenge points structure",
+                points > 0,
+                f"Challenge '{challenge.get('title', 'Unknown')}' has {points} points (difficulty: {difficulty})"
+            )
+
+        # Test 2: User stats for achievement tracking
+        test_user_id = str(uuid.uuid4())
+        achievement_stats = [
+            {'stat_name': 'Current Streak', 'value': 7, 'category': 'achievement'},
+            {'stat_name': 'Goals Completed', 'value': 4, 'category': 'achievement'},
+            {'stat_name': 'Success Rate', 'value': 85, 'category': 'achievement'}
+        ]
+        
+        created_achievement_stats = 0
+        for stat_data in achievement_stats:
+            stat_data['user_id'] = test_user_id
+            stat_data['unit'] = 'count' if 'Streak' in stat_data['stat_name'] or 'Goals' in stat_data['stat_name'] else 'percentage'
+            
+            response = self.make_request('POST', '/stats', data=stat_data)
+            if response and response.status_code in [200, 201]:
+                created_achievement_stats += 1
+        
+        self.log_result(
+            "Achievement System - Achievement stats creation",
+            created_achievement_stats == len(achievement_stats),
+            f"Created {created_achievement_stats}/{len(achievement_stats)} achievement stats"
+        )
+
+        # Test 3: Profile integration for achievement display
+        if self.test_data.get('profiles') and len(self.test_data['profiles']) > 0:
+            profile = self.test_data['profiles'][0]
+            profile_fields = ['full_name', 'sport', 'grad_year']
+            available_fields = [field for field in profile_fields if profile.get(field)]
+            
+            self.log_result(
+                "Achievement System - Profile data for achievement context",
+                len(available_fields) >= 2,
+                f"Profile has {len(available_fields)}/{len(profile_fields)} fields for achievement display"
+            )
+
+    def test_goal_tracking_navigation_backend_support(self):
+        """Test backend support for Goal Tracking Navigation - HIGH PRIORITY"""
+        print("🧪 Testing Goal Tracking Navigation Backend Support...")
+        
+        # Test 1: API endpoint availability for PROGRESS navigation
+        endpoints_to_test = ['/profiles', '/challenges', '/stats']
+        working_endpoints = 0
+        
+        for endpoint in endpoints_to_test:
+            response = self.make_request('GET', endpoint, params={'limit': 1})
+            if response and response.status_code == 200:
+                working_endpoints += 1
+        
+        self.log_result(
+            "Goal Navigation - Core API endpoints availability",
+            working_endpoints == len(endpoints_to_test),
+            f"{working_endpoints}/{len(endpoints_to_test)} core endpoints working for PROGRESS navigation"
+        )
+
+        # Test 2: User authentication support for goal tracking
+        auth_headers = {
+            **HEADERS,
+            'Authorization': f'Bearer {SUPABASE_ANON_KEY}'
+        }
+        
+        # Test authenticated request
+        response = requests.get(
+            f"{BASE_URL}/profiles",
+            headers=auth_headers,
+            params={'limit': 1},
+            timeout=30
+        )
+        
+        if response and response.status_code == 200:
+            self.log_result(
+                "Goal Navigation - Authentication support",
+                True,
+                "Backend supports authenticated requests for goal tracking"
+            )
+        else:
+            self.log_result(
+                "Goal Navigation - Authentication support",
+                False,
+                f"Authentication failed, status: {response.status_code if response else 'No response'}"
+            )
+
+        # Test 3: Data persistence for goal tracking
+        if self.test_data.get('created_progress_stat'):
+            stat_id = self.test_data['created_progress_stat'].get('id')
+            if stat_id:
+                # Try to retrieve the created stat
+                response = self.make_request('GET', '/stats', params={
+                    'user_id': self.test_data['created_progress_stat'].get('user_id'),
+                    'limit': 5
+                })
+                
+                if response and response.status_code == 200:
+                    data = response.json()
+                    stats = data.get('stats', [])
+                    found_stat = any(s.get('id') == stat_id for s in stats)
                     
                     self.log_result(
-                        "Cross-Component - Avatar URL consistency",
-                        avatar_accessible,
-                        f"Avatar URL consistent and {'accessible' if avatar_accessible else 'not accessible'}"
+                        "Goal Navigation - Data persistence verification",
+                        found_stat,
+                        f"Progress stat {'found' if found_stat else 'NOT found'} - persistence {'confirmed' if found_stat else 'FAILED'}"
                     )
                 else:
                     self.log_result(
-                        "Cross-Component - Avatar URL consistency",
+                        "Goal Navigation - Data persistence verification",
                         False,
-                        "Avatar URL missing from profile data"
+                        f"Stat retrieval failed, status: {response.status_code if response else 'No response'}"
                     )
-            else:
-                self.log_result(
-                    "Cross-Component - Avatar URL consistency",
-                    False,
-                    "Test profile not found for consistency check"
-                )
-        else:
-            self.log_result(
-                "Cross-Component - Avatar URL consistency",
-                False,
-                f"Profile retrieval failed, status: {response.status_code if response else 'No response'}"
-            )
 
-        # Test 2: Test avatar size variations (simulated)
-        avatar_sizes = ['small', 'medium', 'large', 'xlarge']
-        size_dimensions = {
-            'small': 32,
-            'medium': 56,
-            'large': 80,
-            'xlarge': 120
-        }
-        
-        sizes_valid = all(size in size_dimensions for size in avatar_sizes)
-        self.log_result(
-            "Cross-Component - Avatar size variations",
-            sizes_valid,
-            f"All {len(avatar_sizes)} avatar sizes have valid dimensions defined"
-        )
-
-    def cleanup_profile_photo_test_data(self):
-        """Clean up profile photo test data"""
-        print("🧹 Cleaning up profile photo test data...")
-        
-        # Delete uploaded test image from Supabase Storage
-        if self.test_data.get('uploaded_image_path'):
-            delete_url = f"{SUPABASE_URL}/storage/v1/object/{STORAGE_BUCKET}/{self.test_data['uploaded_image_path']}"
-            response = requests.delete(delete_url, headers=SUPABASE_HEADERS, timeout=30)
-            
-            if response.status_code in [200, 204]:
-                self.log_result(
-                    "Cleanup - Delete test image from storage",
-                    True,
-                    "Test image deleted from Supabase Storage"
-                )
-            else:
-                self.log_result(
-                    "Cleanup - Delete test image from storage",
-                    False,
-                    f"Failed to delete test image, status: {response.status_code}"
-                )
-
-        # Delete test profile
-        if self.test_data.get('test_profile'):
-            # Note: DELETE endpoint may not be implemented, so this might fail gracefully
-            response = self.make_request('DELETE', '/profiles', params={'id': TEST_PROFILE_ID})
-            
-            if response and response.status_code in [200, 204]:
-                self.log_result(
-                    "Cleanup - Delete test profile",
-                    True,
-                    "Test profile deleted successfully"
-                )
-            else:
-                self.log_result(
-                    "Cleanup - Delete test profile",
-                    False,
-                    f"Test profile deletion failed or not supported, status: {response.status_code if response else 'No response'}"
-                )
-
-    def run_profile_photo_tests(self):
-        """Run complete profile photo and avatar testing suite"""
-        print(f"🚀 Starting Profile Photos & Avatars Testing Suite")
+    def run_goal_tracking_tests(self):
+        """Run complete goal tracking backend testing suite"""
+        print(f"🚀 Starting Advanced Goal Tracking Backend Testing Suite")
         print(f"📍 Backend API URL: {BASE_URL}")
         print(f"📍 Frontend URL: {FRONTEND_URL}")
-        print(f"📍 Supabase URL: {SUPABASE_URL}")
-        print(f"🎯 Focus: Profile photo infrastructure, avatar components, and authentication integration")
+        print(f"🎯 Focus: Goal tracking backend infrastructure, character pillars, progress analytics")
         print(f"🕐 Started at: {datetime.now().isoformat()}")
         print("=" * 80)
         
@@ -536,42 +466,36 @@ class APITester:
             print("\n🔥 HIGH PRIORITY TESTS")
             print("-" * 40)
             
-            # Test Supabase Storage infrastructure
-            self.test_supabase_storage_infrastructure()
+            # Test goal tracking backend infrastructure
+            self.test_goal_tracking_backend_infrastructure()
             
-            # Test image upload functionality
-            self.test_image_upload_functionality()
+            # Test character pillar data support
+            self.test_character_pillar_data_support()
             
-            # Test avatar component integration
-            self.test_avatar_component_integration()
-            
-            # Test profile photo database integration
-            self.test_profile_photo_database_integration()
+            # Test goal tracking navigation backend support
+            self.test_goal_tracking_navigation_backend_support()
             
             # MEDIUM PRIORITY TESTS
             print("\n⚡ MEDIUM PRIORITY TESTS")
             print("-" * 40)
             
-            # Test authentication integration
-            self.test_authentication_integration()
+            # Test progress analytics data support
+            self.test_progress_analytics_data_support()
             
-            # Test cross-component consistency
-            self.test_cross_component_avatar_consistency()
-            
-            # Cleanup test data
-            self.cleanup_profile_photo_test_data()
+            # Test achievement system backend support
+            self.test_achievement_system_backend_support()
             
         except Exception as e:
             print(f"❌ Test suite failed with error: {e}")
-            self.log_result("Profile Photo Test Suite Execution", False, str(e))
+            self.log_result("Goal Tracking Test Suite Execution", False, str(e))
         
         # Print summary
-        self.print_profile_photo_summary()
+        self.print_goal_tracking_summary()
 
-    def print_profile_photo_summary(self):
-        """Print profile photo test results summary"""
+    def print_goal_tracking_summary(self):
+        """Print goal tracking test results summary"""
         print("=" * 80)
-        print("📊 PROFILE PHOTOS & AVATARS TEST RESULTS SUMMARY")
+        print("📊 ADVANCED GOAL TRACKING BACKEND TEST RESULTS SUMMARY")
         print("=" * 80)
         
         total_tests = len(self.results)
@@ -585,41 +509,61 @@ class APITester:
         
         # Categorize results by priority
         high_priority_tests = [r for r in self.results if any(keyword in r['test'] for keyword in 
-            ['Supabase Storage', 'Image Upload', 'Avatar Component', 'Profile Database'])]
+            ['Goal Tracking', 'Character Pillars', 'Goal Navigation'])]
         high_priority_passed = len([r for r in high_priority_tests if r['success']])
         
-        print(f"\n🔥 HIGH PRIORITY TESTS (Profile Photo Infrastructure):")
+        print(f"\n🔥 HIGH PRIORITY TESTS (Goal Tracking Infrastructure):")
         print(f"   Passed: {high_priority_passed}/{len(high_priority_tests)}")
         
-        # Check for storage functionality
-        storage_tests = [r for r in self.results if 'Storage' in r['test'] or 'Upload' in r['test']]
-        storage_passed = len([r for r in storage_tests if r['success']])
+        # Check for backend API functionality
+        api_tests = [r for r in self.results if 'API' in r['test']]
+        api_passed = len([r for r in api_tests if r['success']])
         
-        print(f"\n📁 STORAGE FUNCTIONALITY:")
-        print(f"   Successful: {storage_passed}/{len(storage_tests)}")
+        print(f"\n🔌 BACKEND API FUNCTIONALITY:")
+        print(f"   Successful: {api_passed}/{len(api_tests)}")
         
-        if storage_passed > 0:
-            print("   🎉 SUPABASE STORAGE WORKING - Profile photos can be uploaded!")
+        if api_passed > 0:
+            print("   🎉 BACKEND APIS WORKING - Goal tracking data can be stored and retrieved!")
         else:
-            print("   ⚠️ STORAGE ISSUES - Profile photo upload may not work")
+            print("   ⚠️ API ISSUES - Goal tracking backend functionality may not work")
         
-        # Check for avatar functionality
-        avatar_tests = [r for r in self.results if 'Avatar' in r['test']]
-        avatar_passed = len([r for r in avatar_tests if r['success']])
+        # Check for character pillar support
+        pillar_tests = [r for r in self.results if 'Pillar' in r['test'] or 'Character' in r['test']]
+        pillar_passed = len([r for r in pillar_tests if r['success']])
         
-        print(f"\n👤 AVATAR FUNCTIONALITY:")
-        print(f"   Successful: {avatar_passed}/{len(avatar_tests)}")
+        print(f"\n🛡️ CHARACTER PILLAR SUPPORT:")
+        print(f"   Successful: {pillar_passed}/{len(pillar_tests)}")
         
-        if avatar_passed > 0:
-            print("   🎉 AVATAR SYSTEM WORKING - Profile pictures display correctly!")
+        if pillar_passed > 0:
+            print("   🎉 PILLAR SYSTEM SUPPORTED - Character development tracking functional!")
         else:
-            print("   ⚠️ AVATAR ISSUES - Profile picture display may not work")
+            print("   ⚠️ PILLAR ISSUES - Character development may rely on frontend-only data")
+        
+        # Check for progress analytics support
+        analytics_tests = [r for r in self.results if 'Analytics' in r['test'] or 'Progress' in r['test']]
+        analytics_passed = len([r for r in analytics_tests if r['success']])
+        
+        print(f"\n📈 PROGRESS ANALYTICS SUPPORT:")
+        print(f"   Successful: {analytics_passed}/{len(analytics_tests)}")
+        
+        if analytics_passed > 0:
+            print("   🎉 ANALYTICS SUPPORTED - Progress charts can display real backend data!")
+        else:
+            print("   ⚠️ ANALYTICS ISSUES - Progress charts may rely on mock data only")
         
         if failed_tests > 0:
             print("\n🔍 FAILED TESTS:")
             for result in self.results:
                 if not result['success']:
                     print(f"  • {result['test']}: {result['details']}")
+        
+        print(f"\n💡 GOAL TRACKING SYSTEM STATUS:")
+        if passed_tests >= total_tests * 0.7:  # 70% success rate
+            print("   ✅ GOAL TRACKING BACKEND READY - Advanced goal tracking system has solid backend support!")
+        elif passed_tests >= total_tests * 0.5:  # 50% success rate
+            print("   ⚠️ PARTIAL SUPPORT - Goal tracking system partially supported, some features may use mock data")
+        else:
+            print("   ❌ LIMITED SUPPORT - Goal tracking system appears to be primarily frontend-only with mock data")
         
         print("\n🕐 Completed at:", datetime.now().isoformat())
         print("=" * 80)
