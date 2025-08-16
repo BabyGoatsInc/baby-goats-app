@@ -10,6 +10,9 @@ export interface UploadResult {
   error?: string;
 }
 
+// Get backend URL from environment
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+
 export const uploadProfilePhoto = async (
   userId: string, 
   imageUri: string,
@@ -37,94 +40,49 @@ export const uploadProfilePhoto = async (
 
     // Create filename
     const timestamp = new Date().getTime();
-    const fileName = `${userId}/${imageType}_${timestamp}.jpg`;
+    const fileName = `${imageType}_${timestamp}.jpg`;
     
-    console.log(`🔄 Uploading to bucket: ${STORAGE_BUCKET}, filename: ${fileName}`);
+    console.log(`🔄 Uploading via backend API: ${fileName}`);
 
-    // Convert base64 to blob for upload
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .upload(fileName, decode(base64), {
+    // Use backend storage API
+    const uploadResponse = await fetch(`${BACKEND_URL}/api/storage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'upload',
+        userId: userId,
+        fileName: fileName,
+        fileData: base64,
         contentType: 'image/jpeg',
-        cacheControl: '3600',
-        upsert: true,
-      });
+      }),
+    });
 
-    if (uploadError) {
-      console.error('❌ Upload error:', uploadError);
-      
-      // If bucket doesn't exist, try to create it and retry
-      if (uploadError.message.includes('Bucket not found') || uploadError.statusCode === '404') {
-        console.log('🔄 Bucket not found, attempting to create...');
-        
-        const { error: createBucketError } = await supabase.storage
-          .createBucket(STORAGE_BUCKET, { 
-            public: true,
-            allowedMimeTypes: ['image/jpeg', 'image/png'],
-            fileSizeLimit: 5242880, // 5MB
-          });
-
-        if (createBucketError) {
-          console.error('❌ Failed to create bucket:', createBucketError);
-          return { 
-            success: false, 
-            error: `Failed to create storage bucket: ${createBucketError.message}` 
-          };
-        }
-
-        console.log('✅ Bucket created, retrying upload...');
-        
-        // Retry upload after creating bucket
-        const { data: retryData, error: retryError } = await supabase.storage
-          .from(STORAGE_BUCKET)
-          .upload(fileName, decode(base64), {
-            contentType: 'image/jpeg',
-            cacheControl: '3600',
-            upsert: true,
-          });
-
-        if (retryError) {
-          console.error('❌ Retry upload error:', retryError);
-          return { 
-            success: false, 
-            error: `Upload failed after bucket creation: ${retryError.message}` 
-          };
-        }
-
-        console.log('✅ Upload successful on retry');
-        
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from(STORAGE_BUCKET)
-          .getPublicUrl(retryData.path);
-
-        console.log('✅ Public URL generated:', publicUrl);
-        
-        return { 
-          success: true, 
-          url: publicUrl 
-        };
-      }
-      
+    if (!uploadResponse.ok) {
+      const errorData = await uploadResponse.json();
+      console.error('❌ Backend upload error:', errorData);
       return { 
         success: false, 
-        error: uploadError.message 
+        error: errorData.error || 'Upload failed' 
       };
     }
 
-    console.log('✅ Upload successful');
-    
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from(STORAGE_BUCKET)
-      .getPublicUrl(uploadData.path);
+    const result = await uploadResponse.json();
 
-    console.log('✅ Public URL generated:', publicUrl);
-    
-    return { 
-      success: true, 
-      url: publicUrl 
-    };
+    if (result.success && result.url) {
+      console.log('✅ Upload successful via backend API:', result.url);
+      return { 
+        success: true, 
+        url: result.url 
+      };
+    } else {
+      console.error('❌ Backend API returned error:', result.error);
+      return { 
+        success: false, 
+        error: result.error || 'Upload failed' 
+      };
+    }
 
   } catch (error) {
     console.error('❌ Upload error:', error);
@@ -133,16 +91,6 @@ export const uploadProfilePhoto = async (
       error: error instanceof Error ? error.message : 'Upload failed' 
     };
   }
-};
-
-// Helper function to decode base64 string to Uint8Array
-const decode = (base64: string): Uint8Array => {
-  const binaryString = atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
 };
 
 export const deleteProfilePhoto = async (url: string): Promise<boolean> => {
@@ -154,7 +102,7 @@ export const deleteProfilePhoto = async (url: string): Promise<boolean> => {
 
     // For Supabase Storage URLs
     if (url.includes(STORAGE_BUCKET)) {
-      console.log('🔄 Deleting photo from storage...');
+      console.log('🔄 Deleting photo from storage via backend...');
       
       // Extract the file path from the public URL
       const urlParts = url.split('/');
@@ -163,17 +111,32 @@ export const deleteProfilePhoto = async (url: string): Promise<boolean> => {
       if (bucketIndex !== -1 && bucketIndex < urlParts.length - 1) {
         const filePath = urlParts.slice(bucketIndex + 1).join('/');
         
-        const { error } = await supabase.storage
-          .from(STORAGE_BUCKET)
-          .remove([filePath]);
+        // Use backend storage API for deletion
+        const deleteResponse = await fetch(`${BACKEND_URL}/api/storage`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'delete',
+            filePath: filePath,
+          }),
+        });
 
-        if (error) {
-          console.error('❌ Delete error:', error);
+        if (!deleteResponse.ok) {
+          console.error('❌ Backend delete error:', deleteResponse.status);
           return false;
         }
 
-        console.log('✅ Photo deleted successfully');
-        return true;
+        const result = await deleteResponse.json();
+        
+        if (result.success) {
+          console.log('✅ Photo deleted successfully via backend API');
+          return true;
+        } else {
+          console.error('❌ Backend API delete failed:', result.error);
+          return false;
+        }
       }
     }
 
@@ -183,6 +146,60 @@ export const deleteProfilePhoto = async (url: string): Promise<boolean> => {
   } catch (error) {
     console.error('❌ Delete error:', error);
     return false;
+  }
+};
+
+// Setup storage bucket via backend API
+export const setupStorageBucket = async (): Promise<boolean> => {
+  try {
+    console.log('🔄 Setting up storage bucket via backend...');
+    
+    const setupResponse = await fetch(`${BACKEND_URL}/api/storage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'setup_bucket',
+      }),
+    });
+
+    if (!setupResponse.ok) {
+      console.error('❌ Backend setup error:', setupResponse.status);
+      return false;
+    }
+
+    const result = await setupResponse.json();
+    
+    if (result.success) {
+      console.log('✅ Storage bucket setup completed via backend API');
+      return true;
+    } else {
+      console.error('❌ Backend API setup failed:', result.error);
+      return false;
+    }
+    
+  } catch (error) {
+    console.error('❌ Setup error:', error);
+    return false;
+  }
+};
+
+// Check storage bucket status via backend API
+export const checkStorageBucket = async (): Promise<{ exists: boolean; error?: string }> => {
+  try {
+    const checkResponse = await fetch(`${BACKEND_URL}/api/storage?action=check_bucket`);
+
+    if (!checkResponse.ok) {
+      return { exists: false, error: 'Failed to check bucket status' };
+    }
+
+    const result = await checkResponse.json();
+    return { exists: result.bucketExists };
+    
+  } catch (error) {
+    console.error('❌ Bucket check error:', error);
+    return { exists: false, error: error instanceof Error ? error.message : 'Check failed' };
   }
 };
 
