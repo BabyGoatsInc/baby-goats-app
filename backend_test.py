@@ -1002,7 +1002,89 @@ class APITester:
                 f"Invalid auth properly failed: {str(e)[:50]}..."
             )
 
-    def run_supabase_storage_tests(self):
+    def run_backend_storage_api_tests(self):
+        """Run complete Backend Storage API testing suite"""
+        print(f"🚀 Starting Backend Storage API Testing Suite")
+        print(f"📍 Backend API URL: {BASE_URL}")
+        print(f"📍 Next.js API URL: {NEXTJS_API_BASE}")
+        print(f"📍 Frontend URL: {FRONTEND_URL}")
+        print(f"🎯 Focus: Backend Storage API with service role key, bucket management, file upload pipeline")
+        print(f"🕐 Started at: {datetime.now().isoformat()}")
+        print("=" * 80)
+        
+        try:
+            # HIGH PRIORITY TESTS - Backend Storage API
+            print("\n🔥 HIGH PRIORITY TESTS - Backend Storage API")
+            print("-" * 50)
+            
+            # Test backend storage API bucket check
+            self.test_backend_storage_api_bucket_check()
+            
+            # Test backend storage API bucket setup
+            self.test_backend_storage_api_bucket_setup()
+            
+            # Test backend storage API file upload
+            self.test_backend_storage_api_file_upload()
+            
+            # Test backend storage API file deletion
+            self.test_backend_storage_api_file_deletion()
+            
+            # Test backend API integration with profiles
+            self.test_backend_api_integration()
+            
+            # MEDIUM PRIORITY TESTS
+            print("\n⚡ MEDIUM PRIORITY TESTS")
+            print("-" * 40)
+            
+            # Test backend storage API error handling
+            self.test_backend_storage_api_error_handling()
+            
+            # Test preset avatar accessibility
+            self.test_preset_avatar_accessibility()
+            
+        except Exception as e:
+            print(f"❌ Test suite failed with error: {e}")
+            self.log_result("Backend Storage API Test Suite Execution", False, str(e))
+        
+        # Print summary
+        self.print_backend_storage_api_summary()
+
+    def test_preset_avatar_accessibility(self):
+        """Test Preset Avatar Accessibility - MEDIUM PRIORITY"""
+        print("🧪 Testing Preset Avatar Accessibility...")
+        
+        # Test preset avatar URLs
+        accessible_avatars = 0
+        total_avatars = len(PRESET_AVATARS)
+        
+        for i, avatar in enumerate(PRESET_AVATARS[:3]):  # Test first 3 avatars
+            try:
+                response = requests.get(avatar['url'], timeout=10)
+                if response and response.status_code == 200:
+                    accessible_avatars += 1
+                    self.log_result(
+                        f"Preset Avatar {i+1} - {avatar['name']}",
+                        True,
+                        f"Avatar accessible: {avatar['url'][:50]}..."
+                    )
+                else:
+                    self.log_result(
+                        f"Preset Avatar {i+1} - {avatar['name']}",
+                        False,
+                        f"Avatar not accessible, status: {response.status_code if response else 'No response'}"
+                    )
+            except Exception as e:
+                self.log_result(
+                    f"Preset Avatar {i+1} - {avatar['name']}",
+                    False,
+                    f"Avatar test failed: {str(e)}"
+                )
+        
+        self.log_result(
+            "Preset Avatars - Overall accessibility",
+            accessible_avatars >= 2,
+            f"{accessible_avatars}/{len(PRESET_AVATARS[:3])} preset avatars accessible"
+        )
         """Run complete Supabase Storage Integration testing suite"""
         print(f"🚀 Starting Supabase Storage Integration Testing Suite")
         print(f"📍 Backend API URL: {BASE_URL}")
