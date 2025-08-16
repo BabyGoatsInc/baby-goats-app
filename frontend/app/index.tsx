@@ -184,6 +184,14 @@ function MainApp() {
     );
   }
 
+  if (currentScreen === 'achievements') {
+    return (
+      <AchievementsGallery 
+        onBack={handleBackToHome}
+      />
+    );
+  }
+
   if (currentScreen === 'goals') {
     return (
       <GoalsTracker 
