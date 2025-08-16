@@ -50,6 +50,12 @@ export default function UserProfileScreen({ onNavigateTo }: ProfileProps) {
     return 'ELITE';
   };
 
+  const totalProgress = user.pillarProgress 
+    ? (user.pillarProgress.resilient || 0) + 
+      (user.pillarProgress.relentless || 0) + 
+      (user.pillarProgress.fearless || 0)
+    : 0;
+
   const handleLogout = () => {
     Alert.alert(
       'Sign Out',
