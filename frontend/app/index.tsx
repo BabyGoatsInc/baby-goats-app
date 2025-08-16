@@ -309,14 +309,14 @@ function MainApp() {
           <TouchableOpacity onPress={() => setCurrentScreen('achievements')}>
             <Text style={styles.navLink}>ACHIEVEMENTS</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => setCurrentScreen('social_feed')}>
+            <Text style={styles.navLink}>SOCIAL</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => setCurrentScreen('onboarding')}>
             <Text style={styles.navLink}>ACADEMY</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setCurrentScreen('profile')}>
             <Text style={styles.navLink}>MENTORSHIP</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCurrentScreen('challenges')}>
-            <Text style={styles.navLink}>COMMUNITY</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>
