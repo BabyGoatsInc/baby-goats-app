@@ -326,12 +326,17 @@ const styles = StyleSheet.create({
   },
   // Login screen styles
   actionButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     paddingVertical: 16,
     paddingHorizontal: 32,
-    borderRadius: 4,
+    borderRadius: 50,
     alignItems: 'center',
-    marginBottom: 20,
+    minWidth: 280,
+  },
+  loadingButton: {
+    opacity: 0.7,
   },
   buttonText: {
     color: '#000000',
