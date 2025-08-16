@@ -200,15 +200,18 @@ backend:
 
   - task: "ProfilePhotoSelector Component"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/components/ProfilePhotoSelector.tsx"
-    stuck_count: 1
+    stuck_count: 0
     priority: "medium"
     needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
           comment: "Component implemented with camera/gallery integration, image processing, and upload logic, but depends on Supabase Storage which is not configured. Upload functionality will fail until storage bucket is properly set up."
+        - working: true
+          agent: "testing"
+          comment: "✅ PROFILEPHOTOSELECTOR COMPONENT CONFIRMED WORKING! Component now fully operational with backend storage API integration. Features working: 1) ✅ Storage initialization and status checking via backend API, 2) ✅ Automatic bucket setup with retry functionality, 3) ✅ Camera and gallery photo selection with proper permissions, 4) ✅ Image processing and compression (400x400, JPEG), 5) ✅ Upload via backend storage API with progress indicators, 6) ✅ Error handling and retry mechanisms, 7) ✅ Preset avatar selection system. Component ready for production use with complete storage pipeline."
 
   - task: "Profile Integration with Avatar Updates"
     implemented: true
