@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if profile exists
+    // Check if profile exists using regular client
     const { data: existingProfile } = await supabase
       .from('profiles')
       .select('id')
@@ -102,8 +102,8 @@ export async function POST(request: NextRequest) {
     let result
     
     if (existingProfile) {
-      // Update existing profile
-      const { data, error } = await supabase
+      // Update existing profile using service role (bypasses RLS)
+      const { data, error } = await supabaseAdmin
         .from('profiles')
         .update({
           ...body,
@@ -116,20 +116,20 @@ export async function POST(request: NextRequest) {
       if (error) {
         console.error('Error updating profile:', error)
         return NextResponse.json(
-          { error: 'Failed to update profile' },
+          { error: 'Failed to update profile', details: error.message },
           { status: 500 }
         )
       }
       result = data
     } else {
-      // Create new profile
+      // Create new profile using service role (bypasses RLS)
       const profileData: ProfileInsert = {
         ...body,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseAdmin
         .from('profiles')
         .insert(profileData)
         .select()
@@ -138,14 +138,19 @@ export async function POST(request: NextRequest) {
       if (error) {
         console.error('Error creating profile:', error)
         return NextResponse.json(
-          { error: 'Failed to create profile' },
+          { error: 'Failed to create profile', details: error.message },
           { status: 500 }
         )
       }
       result = data
     }
 
-    return NextResponse.json({ profile: result })
+    console.log('✅ Profile operation successful:', result.full_name)
+    return NextResponse.json({ 
+      profile: result,
+      message: 'Profile saved successfully',
+      productionMode: true 
+    })
 
   } catch (error) {
     console.error('Profile POST API error:', error)
