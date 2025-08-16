@@ -10,24 +10,16 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ConversationalAuthProps {
-  onAuthSuccess: (user: UserProfile) => void;
   onBack: () => void;
 }
 
-interface UserProfile {
-  id: string;
-  email: string;
-  name: string;
-  age: number;
-  parentEmail?: string;
-  isParentApproved: boolean;
-}
-
-export default function ConversationalAuth({ onAuthSuccess, onBack }: ConversationalAuthProps) {
+export default function ConversationalAuth({ onBack }: ConversationalAuthProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
