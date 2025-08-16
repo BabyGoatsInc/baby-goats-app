@@ -12,7 +12,7 @@ from datetime import datetime
 import time
 
 # Configuration - Testing authentication support
-BASE_URL = "https://champion-storage.preview.emergentagent.com/api"
+BASE_URL = "https://baby-goats-social.preview.emergentagent.com/api"
 SUPABASE_URL = "https://ssdzlzlubzcknkoflgyf.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzZHpsemx1Ynpja25rb2ZsZ3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3Njc5OTYsImV4cCI6MjA3MDM0Mzk5Nn0.7ZpO5R64KS89k4We6jO9CbCevxwf1S5EOoqv6Xtv1Yk"
 
