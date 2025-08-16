@@ -1398,10 +1398,10 @@ class APITester:
         # Print summary
         self.print_offline_capabilities_summary()
 
-    def print_performance_optimization_summary(self):
-        """Print Performance Optimization Integration test results summary"""
+    def print_offline_capabilities_summary(self):
+        """Print Offline Capabilities Integration test results summary"""
         print("=" * 80)
-        print("📊 PERFORMANCE OPTIMIZATION INTEGRATION TEST RESULTS SUMMARY")
+        print("📊 OFFLINE CAPABILITIES INTEGRATION TEST RESULTS SUMMARY")
         print("=" * 80)
         
         total_tests = len(self.results)
@@ -1413,64 +1413,91 @@ class APITester:
         print(f"❌ Failed: {failed_tests}")
         print(f"Success Rate: {(passed_tests/total_tests*100):.1f}%" if total_tests > 0 else "0%")
         
-        # Performance metrics analysis
-        if 'performance_results' in self.test_data:
-            print(f"\n⚡ API PERFORMANCE METRICS:")
-            for endpoint, response_time in self.test_data['performance_results']:
+        # Backend API compatibility analysis
+        api_compatibility_tests = [r for r in self.results if 'Offline API Compatibility' in r['test']]
+        api_compatibility_passed = len([r for r in api_compatibility_tests if r['success']])
+        
+        print(f"\n🔌 BACKEND API COMPATIBILITY:")
+        print(f"   Successful: {api_compatibility_passed}/{len(api_compatibility_tests)}")
+        
+        if api_compatibility_passed >= len(api_compatibility_tests) * 0.8:  # 80% success rate
+            print("   🎉 API COMPATIBILITY CONFIRMED - Offline system doesn't interfere with existing APIs!")
+            if 'offline_profiles_count' in self.test_data:
+                print(f"   📊 Profiles retrieved: {self.test_data['offline_profiles_count']}")
+            if 'offline_challenges_count' in self.test_data:
+                print(f"   🎯 Challenges retrieved: {self.test_data['offline_challenges_count']}")
+        else:
+            print("   ⚠️ API COMPATIBILITY ISSUES - Offline system may be interfering with existing APIs")
+        
+        # Storage system integration analysis
+        storage_integration_tests = [r for r in self.results if 'Offline Storage Integration' in r['test']]
+        storage_integration_passed = len([r for r in storage_integration_tests if r['success']])
+        
+        print(f"\n💾 STORAGE SYSTEM INTEGRATION:")
+        print(f"   Successful: {storage_integration_passed}/{len(storage_integration_tests)}")
+        
+        if storage_integration_passed >= len(storage_integration_tests) * 0.8:  # 80% success rate
+            print("   🎉 STORAGE INTEGRATION WORKING - Offline capabilities work with Supabase Storage!")
+            if 'offline_bucket_exists' in self.test_data:
+                print(f"   🪣 Storage bucket status: {'✅ Exists' if self.test_data['offline_bucket_exists'] else '❌ Missing'}")
+            if 'offline_queue_success' in self.test_data:
+                print(f"   📤 Queue processing: {self.test_data['offline_queue_success']}/3 uploads successful")
+        else:
+            print("   ⚠️ STORAGE INTEGRATION ISSUES - Offline capabilities may not work properly with storage")
+        
+        # Performance impact analysis
+        performance_impact_tests = [r for r in self.results if 'Offline Performance Impact' in r['test']]
+        performance_impact_passed = len([r for r in performance_impact_tests if r['success']])
+        
+        print(f"\n⚡ PERFORMANCE IMPACT:")
+        print(f"   Successful: {performance_impact_passed}/{len(performance_impact_tests)}")
+        
+        if 'offline_performance_results' in self.test_data:
+            print(f"   📈 API RESPONSE TIMES WITH OFFLINE LAYER:")
+            for endpoint, response_time in self.test_data['offline_performance_results']:
                 status = "✅ FAST" if response_time < 3.0 else "⚠️ SLOW"
-                print(f"   {endpoint}: {response_time:.2f}s {status}")
+                print(f"      {endpoint}: {response_time:.2f}s {status}")
         
-        # Image optimization analysis
-        optimization_tests = [r for r in self.results if 'Image Optimization Pipeline' in r['test']]
-        optimization_passed = len([r for r in optimization_tests if r['success']])
-        
-        print(f"\n🖼️ IMAGE OPTIMIZATION PIPELINE:")
-        print(f"   Successful: {optimization_passed}/{len(optimization_tests)}")
-        
-        if optimization_passed > 0:
-            print("   🎉 IMAGE OPTIMIZATION WORKING - ImageOptimizer integration functional!")
-            if 'optimized_image_size' in self.test_data:
-                print(f"   📏 Optimized image size: {self.test_data['optimized_image_size']} bytes")
-            if 'optimized_upload_time' in self.test_data:
-                print(f"   ⏱️ Upload time: {self.test_data['optimized_upload_time']:.2f}s")
+        if performance_impact_passed >= len(performance_impact_tests) * 0.8:  # 80% success rate
+            print("   🎉 PERFORMANCE MAINTAINED - Offline system doesn't degrade API performance!")
         else:
-            print("   ⚠️ IMAGE OPTIMIZATION ISSUES - ImageOptimizer may not be working properly")
+            print("   ⚠️ PERFORMANCE DEGRADATION - Offline system may be impacting API response times")
         
-        # Storage integration stability analysis
-        stability_tests = [r for r in self.results if 'Storage Integration Stability' in r['test']]
-        stability_passed = len([r for r in stability_tests if r['success']])
+        # Data consistency analysis
+        data_consistency_tests = [r for r in self.results if 'Offline Data Consistency' in r['test']]
+        data_consistency_passed = len([r for r in data_consistency_tests if r['success']])
         
-        print(f"\n🔧 STORAGE INTEGRATION STABILITY:")
-        print(f"   Successful: {stability_passed}/{len(stability_tests)}")
+        print(f"\n🔄 DATA CONSISTENCY:")
+        print(f"   Successful: {data_consistency_passed}/{len(data_consistency_tests)}")
         
-        if stability_passed >= len(stability_tests) * 0.8:  # 80% success rate
-            print("   🎉 STORAGE INTEGRATION STABLE - Optimizations don't affect core functionality!")
+        if data_consistency_passed >= len(data_consistency_tests) * 0.8:  # 80% success rate
+            print("   🎉 DATA CONSISTENCY MAINTAINED - Existing data endpoints remain functional!")
         else:
-            print("   ⚠️ STABILITY ISSUES - Optimizations may be affecting core storage functionality")
+            print("   ⚠️ DATA CONSISTENCY ISSUES - Some data endpoints may not be working properly")
         
-        # Backend storage API analysis
-        storage_api_tests = [r for r in self.results if 'Backend Storage API' in r['test']]
-        storage_api_passed = len([r for r in storage_api_tests if r['success']])
+        # Network state detection analysis
+        network_detection_tests = [r for r in self.results if 'Offline Network Detection' in r['test']]
+        network_detection_passed = len([r for r in network_detection_tests if r['success']])
         
-        print(f"\n🔧 BACKEND STORAGE API:")
-        print(f"   Successful: {storage_api_passed}/{len(storage_api_tests)}")
+        print(f"\n📡 NETWORK STATE DETECTION:")
+        print(f"   Successful: {network_detection_passed}/{len(network_detection_tests)}")
         
-        if storage_api_passed > 0:
-            print("   🎉 BACKEND API WORKING - Storage operations via service role key functional!")
+        if network_detection_passed >= len(network_detection_tests) * 0.8:  # 80% success rate
+            print("   🎉 NETWORK DETECTION WORKING - System properly detects online/offline states!")
         else:
-            print("   ⚠️ BACKEND API ISSUES - Storage API may not be configured properly")
+            print("   ⚠️ NETWORK DETECTION ISSUES - Network state detection may not be working properly")
         
-        # Performance validation summary
-        performance_tests = [r for r in self.results if 'API Performance' in r['test']]
-        performance_passed = len([r for r in performance_tests if r['success']])
+        # Caching integration analysis
+        caching_integration_tests = [r for r in self.results if 'Offline Caching Integration' in r['test']]
+        caching_integration_passed = len([r for r in caching_integration_tests if r['success']])
         
-        print(f"\n⚡ API RESPONSE PERFORMANCE:")
-        print(f"   Under 3s target: {performance_passed}/{len(performance_tests)}")
+        print(f"\n🗄️ API CACHING INTEGRATION:")
+        print(f"   Successful: {caching_integration_passed}/{len(caching_integration_tests)}")
         
-        if performance_passed >= len(performance_tests) * 0.8:  # 80% success rate
-            print("   🎉 PERFORMANCE TARGET MET - APIs maintain response times under 3 seconds!")
+        if caching_integration_passed >= len(caching_integration_tests) * 0.8:  # 80% success rate
+            print("   🎉 CACHING INTEGRATION WORKING - API caching works with offline system!")
         else:
-            print("   ⚠️ PERFORMANCE ISSUES - Some APIs exceed 3-second response time target")
+            print("   ⚠️ CACHING INTEGRATION ISSUES - API caching may not be working with offline system")
         
         if failed_tests > 0:
             print("\n🔍 FAILED TESTS:")
@@ -1478,24 +1505,25 @@ class APITester:
                 if not result['success']:
                     print(f"  • {result['test']}: {result['details']}")
         
-        print(f"\n💡 PERFORMANCE OPTIMIZATION STATUS:")
+        print(f"\n💡 OFFLINE CAPABILITIES INTEGRATION STATUS:")
         if passed_tests >= total_tests * 0.8:  # 80% success rate
-            print("   ✅ OPTIMIZATION INTEGRATION SUCCESSFUL - Performance optimizations work with existing storage!")
+            print("   ✅ INTEGRATION SUCCESSFUL - Offline capabilities integrate seamlessly with existing infrastructure!")
         elif passed_tests >= total_tests * 0.6:  # 60% success rate
-            print("   ⚠️ PARTIAL INTEGRATION - Some optimization features working, others need attention")
+            print("   ⚠️ PARTIAL INTEGRATION - Some offline features working, others need attention")
         else:
-            print("   ❌ INTEGRATION ISSUES - Performance optimizations may be conflicting with storage system")
+            print("   ❌ INTEGRATION ISSUES - Offline capabilities may be conflicting with existing infrastructure")
         
-        print(f"\n🎯 PERFORMANCE OPTIMIZATION FEATURES TESTED:")
-        print("   • ImageOptimizer integration with profile photo uploads")
-        print("   • API response time validation (< 3 seconds target)")
-        print("   • Storage operation performance with optimized images")
-        print("   • Backend stability with optimization features")
-        print("   • End-to-end profile photo management pipeline")
-        print("   • Bucket management with performance optimizations")
-        print("   • Error handling with optimized image processing")
-        print("   • Consecutive upload stability testing")
-        print("   • Backend proxy functionality preservation")
+        print(f"\n🎯 OFFLINE CAPABILITIES FEATURES TESTED:")
+        print("   • Backend API compatibility with offline caching layer")
+        print("   • Storage system integration with offline queue management")
+        print("   • Performance impact measurement (API response times)")
+        print("   • Data consistency verification across offline/online states")
+        print("   • Network state detection functionality")
+        print("   • API caching integration with offline system")
+        print("   • Profile photo upload pipeline with offline support")
+        print("   • Challenge data retrieval for offline access")
+        print("   • Profile management with offline sync capabilities")
+        print("   • Storage operations with offline queue management")
         
         print("\n🕐 Completed at:", datetime.now().isoformat())
         print("=" * 80)
