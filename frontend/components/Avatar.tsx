@@ -84,7 +84,9 @@ export default function Avatar({
         <Image 
           source={{ uri: imageUrl }} 
           style={imageStyle}
-          defaultSource={require('../assets/default-avatar.png')}
+          onError={() => {
+            // Handle image load error silently
+          }}
         />
       ) : (
         <View style={[styles.placeholderContainer, imageStyle]}>
