@@ -426,6 +426,306 @@ class APITester:
             f"{accessible_avatars}/{len(PRESET_AVATARS)} preset avatars accessible"
         )
 
+    def test_api_response_performance(self):
+        """Test API Response Performance - Verify endpoints maintain response times under 3 seconds - HIGH PRIORITY"""
+        print("🧪 Testing API Response Performance...")
+        
+        performance_results = []
+        
+        # Test 1: GET /api/profiles performance
+        try:
+            start_time = time.time()
+            response = self.make_request('GET', '/profiles', params={'limit': 10})
+            end_time = time.time()
+            response_time = end_time - start_time
+            
+            performance_results.append(('GET /api/profiles', response_time))
+            
+            if response and response.status_code == 200 and response_time < 3.0:
+                self.log_result(
+                    "API Performance - GET /api/profiles",
+                    True,
+                    f"Response time: {response_time:.2f}s (< 3s target)"
+                )
+            else:
+                self.log_result(
+                    "API Performance - GET /api/profiles",
+                    False,
+                    f"Response time: {response_time:.2f}s (>= 3s target) or failed request"
+                )
+        except Exception as e:
+            self.log_result(
+                "API Performance - GET /api/profiles",
+                False,
+                f"Performance test failed: {str(e)}"
+            )
+
+        # Test 2: GET /api/storage?action=check_bucket performance
+        try:
+            start_time = time.time()
+            response = self.make_request('GET', '/storage', params={'action': 'check_bucket'})
+            end_time = time.time()
+            response_time = end_time - start_time
+            
+            performance_results.append(('GET /api/storage (check_bucket)', response_time))
+            
+            if response and response.status_code == 200 and response_time < 3.0:
+                self.log_result(
+                    "API Performance - GET /api/storage (check_bucket)",
+                    True,
+                    f"Response time: {response_time:.2f}s (< 3s target)"
+                )
+            else:
+                self.log_result(
+                    "API Performance - GET /api/storage (check_bucket)",
+                    False,
+                    f"Response time: {response_time:.2f}s (>= 3s target) or failed request"
+                )
+        except Exception as e:
+            self.log_result(
+                "API Performance - GET /api/storage (check_bucket)",
+                False,
+                f"Performance test failed: {str(e)}"
+            )
+
+        # Test 3: GET /api/challenges performance
+        try:
+            start_time = time.time()
+            response = self.make_request('GET', '/challenges', params={'limit': 10})
+            end_time = time.time()
+            response_time = end_time - start_time
+            
+            performance_results.append(('GET /api/challenges', response_time))
+            
+            if response and response.status_code == 200 and response_time < 3.0:
+                self.log_result(
+                    "API Performance - GET /api/challenges",
+                    True,
+                    f"Response time: {response_time:.2f}s (< 3s target)"
+                )
+            else:
+                self.log_result(
+                    "API Performance - GET /api/challenges",
+                    False,
+                    f"Response time: {response_time:.2f}s (>= 3s target) or failed request"
+                )
+        except Exception as e:
+            self.log_result(
+                "API Performance - GET /api/challenges",
+                False,
+                f"Performance test failed: {str(e)}"
+            )
+
+        # Store performance results for summary
+        self.test_data['performance_results'] = performance_results
+
+    def test_optimized_image_upload_pipeline(self):
+        """Test Image Optimization Pipeline - Profile photo upload with ImageOptimizer simulation - HIGH PRIORITY"""
+        print("🧪 Testing Optimized Image Upload Pipeline...")
+        
+        # Test 1: Create optimized test image (simulating ImageOptimizer output)
+        try:
+            # Create a test image optimized for profile photos (400x400, JPEG, 85% quality)
+            # This simulates the ImageOptimizer.optimizeProfilePhoto() output
+            optimized_image = Image.new('RGB', (400, 400), color='green')
+            img_buffer = io.BytesIO()
+            optimized_image.save(img_buffer, format='JPEG', quality=85, optimize=True)
+            img_buffer.seek(0)
+            
+            # Convert to base64 for backend API
+            image_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+            original_size = len(img_buffer.getvalue())
+            
+            self.log_result(
+                "Image Optimization Pipeline - Optimized image creation",
+                True,
+                f"Created optimized 400x400 JPEG (85% quality, {original_size} bytes, {len(image_base64)} chars base64)"
+            )
+            self.test_data['optimized_image_base64'] = image_base64
+            self.test_data['optimized_image_size'] = original_size
+        except Exception as e:
+            self.log_result(
+                "Image Optimization Pipeline - Optimized image creation",
+                False,
+                f"Optimized image creation failed: {str(e)}"
+            )
+            return
+
+        # Test 2: Upload optimized image with performance measurement
+        try:
+            timestamp = int(time.time())
+            filename = f"optimized_profile_{timestamp}.jpg"
+            
+            upload_data = {
+                'action': 'upload',
+                'userId': TEST_USER_ID,
+                'fileName': filename,
+                'fileData': self.test_data['optimized_image_base64'],
+                'contentType': 'image/jpeg'
+            }
+            
+            start_time = time.time()
+            response = self.make_request('POST', '/storage', data=upload_data)
+            end_time = time.time()
+            upload_time = end_time - start_time
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                upload_success = data.get('success', False)
+                upload_url = data.get('url', '')
+                
+                if upload_success and upload_url:
+                    self.log_result(
+                        "Image Optimization Pipeline - Optimized image upload",
+                        True,
+                        f"Upload successful in {upload_time:.2f}s: {filename}, Size: {self.test_data['optimized_image_size']} bytes"
+                    )
+                    self.test_data['optimized_uploaded_url'] = upload_url
+                    self.test_data['optimized_upload_time'] = upload_time
+                else:
+                    self.log_result(
+                        "Image Optimization Pipeline - Optimized image upload",
+                        False,
+                        f"Upload failed: {data.get('error', 'Unknown error')}"
+                    )
+            else:
+                self.log_result(
+                    "Image Optimization Pipeline - Optimized image upload",
+                    False,
+                    f"Upload request failed, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Image Optimization Pipeline - Optimized image upload",
+                False,
+                f"Optimized upload test failed: {str(e)}"
+            )
+
+        # Test 3: Verify optimized image accessibility and performance
+        if self.test_data.get('optimized_uploaded_url'):
+            try:
+                start_time = time.time()
+                response = requests.get(self.test_data['optimized_uploaded_url'], timeout=30)
+                end_time = time.time()
+                access_time = end_time - start_time
+                
+                if response and response.status_code == 200:
+                    content_type = response.headers.get('content-type', '')
+                    content_length = len(response.content)
+                    self.log_result(
+                        "Image Optimization Pipeline - Optimized image accessibility",
+                        True,
+                        f"Optimized image accessible in {access_time:.2f}s, Content-Type: {content_type}, Size: {content_length} bytes"
+                    )
+                    self.test_data['optimized_access_time'] = access_time
+                else:
+                    self.log_result(
+                        "Image Optimization Pipeline - Optimized image accessibility",
+                        False,
+                        f"Optimized image not accessible, status: {response.status_code if response else 'No response'}"
+                    )
+            except Exception as e:
+                self.log_result(
+                    "Image Optimization Pipeline - Optimized image accessibility",
+                    False,
+                    f"Optimized image accessibility test failed: {str(e)}"
+                )
+
+    def test_storage_integration_stability(self):
+        """Test Storage Integration Stability - Ensure optimizations don't affect core functionality - HIGH PRIORITY"""
+        print("🧪 Testing Storage Integration Stability...")
+        
+        # Test 1: Verify bucket management still works
+        try:
+            response = self.make_request('GET', '/storage', params={'action': 'check_bucket'})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                bucket_exists = data.get('bucketExists', False)
+                
+                self.log_result(
+                    "Storage Integration Stability - Bucket management",
+                    bucket_exists,
+                    f"Bucket management stable: {bucket_exists}"
+                )
+            else:
+                self.log_result(
+                    "Storage Integration Stability - Bucket management",
+                    False,
+                    f"Bucket management unstable, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Storage Integration Stability - Bucket management",
+                False,
+                f"Bucket management test failed: {str(e)}"
+            )
+
+        # Test 2: Test multiple consecutive uploads (stress test)
+        consecutive_uploads = 0
+        for i in range(3):
+            try:
+                # Create small test image
+                test_image = Image.new('RGB', (100, 100), color=f'rgb({50+i*50}, {100+i*50}, {150+i*50})')
+                img_buffer = io.BytesIO()
+                test_image.save(img_buffer, format='JPEG', quality=80)
+                img_buffer.seek(0)
+                
+                image_base64 = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+                
+                upload_data = {
+                    'action': 'upload',
+                    'userId': TEST_USER_ID,
+                    'fileName': f'stability_test_{i}_{int(time.time())}.jpg',
+                    'fileData': image_base64,
+                    'contentType': 'image/jpeg'
+                }
+                
+                response = self.make_request('POST', '/storage', data=upload_data)
+                
+                if response and response.status_code == 200:
+                    data = response.json()
+                    if data.get('success', False):
+                        consecutive_uploads += 1
+                
+                # Small delay between uploads
+                time.sleep(0.5)
+                
+            except Exception as e:
+                print(f"Upload {i} failed: {e}")
+        
+        self.log_result(
+            "Storage Integration Stability - Consecutive uploads",
+            consecutive_uploads >= 2,
+            f"Successful consecutive uploads: {consecutive_uploads}/3"
+        )
+
+        # Test 3: Verify backend proxy functionality remains intact
+        try:
+            response = self.make_request('GET', '/')
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                proxy_message = data.get('message', '')
+                
+                self.log_result(
+                    "Storage Integration Stability - Backend proxy functionality",
+                    'Baby Goats API Proxy' in proxy_message,
+                    f"Backend proxy stable: {proxy_message[:50]}..."
+                )
+            else:
+                self.log_result(
+                    "Storage Integration Stability - Backend proxy functionality",
+                    False,
+                    f"Backend proxy unstable, status: {response.status_code if response else 'No response'}"
+                )
+        except Exception as e:
+            self.log_result(
+                "Storage Integration Stability - Backend proxy functionality",
+                False,
+                f"Backend proxy test failed: {str(e)}"
+            )
+
     def test_backend_storage_api_error_handling(self):
         """Test Backend Storage API - Error Handling - MEDIUM PRIORITY"""
         print("🧪 Testing Backend Storage API - Error Handling...")
