@@ -16,21 +16,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ConversationalAuth from './conversational';
 import { useAuth } from '../../contexts/AuthContext';
 
-interface AuthProps {
-  onAuthSuccess: (user: UserProfile) => void;
+interface AuthenticationProps {
   onBack: () => void;
 }
 
-interface UserProfile {
-  id: string;
-  email: string;
-  name: string;
-  age: number;
-  parentEmail?: string;
-  isParentApproved: boolean;
-}
-
-export default function Authentication({ onAuthSuccess, onBack }: AuthProps) {
+export default function Authentication({ onBack }: AuthenticationProps) {
   const [mode, setMode] = useState<'choice' | 'signup' | 'login'>('choice');
   const [fadeAnim] = useState(new Animated.Value(0));
 
