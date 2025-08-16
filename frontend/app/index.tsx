@@ -30,7 +30,7 @@ import SocialNotifications from '../components/SocialNotifications';
 
 // Technical infrastructure imports
 import { technicalInfrastructure } from '../lib/technicalInfrastructure';
-import { ErrorBoundary } from '../lib/errorMonitoring';
+// import { ErrorBoundary } from '../lib/errorMonitoring'; // Temporarily disabled
 
 // Social system imports
 import { socialSystem } from '../lib/socialSystem';
