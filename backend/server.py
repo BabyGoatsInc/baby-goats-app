@@ -73,17 +73,6 @@ async def proxy_profiles_post(request: Request):
         logging.error(f"Error proxying profile creation: {e}")
         return JSONResponse(content={"error": "Failed to create profile"}, status_code=500)
 
-@api_router.put("/profiles") 
-async def proxy_profiles_put(request: Request):
-    """Proxy profile updates to production profiles endpoint with service role key"""
-    try:
-        body = await request.json()
-        response = await http_client.put(f"{NEXTJS_API_BASE}/profiles", json=body, timeout=10.0)
-        return JSONResponse(content=response.json(), status_code=response.status_code)
-    except Exception as e:
-        logging.error(f"Error proxying profile update: {e}")
-        return JSONResponse(content={"error": "Failed to update profile"}, status_code=500)
-
 @api_router.get("/highlights")  
 async def proxy_highlights(request: Request):
     """Proxy highlights requests to Next.js API"""
