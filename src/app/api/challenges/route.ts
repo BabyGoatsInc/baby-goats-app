@@ -170,6 +170,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Create completion record using service role (bypasses RLS)
+    const completionData: ChallengeCompletionInsert = {
+      user_id: body.user_id,
+      challenge_id: body.challenge_id,
+      notes: body.notes || null,
+      completed_at: new Date().toISOString()
+    }
+
     const { data: completion, error } = await supabaseAdmin
       .from('challenge_completions')
       .insert(completionData)
