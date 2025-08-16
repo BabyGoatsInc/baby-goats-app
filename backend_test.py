@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite for Baby Goats Application - FastAPI Proxy System
-Tests all API endpoints through FastAPI proxy (port 8001) that forwards to Next.js APIs (port 3001)
+Backend API Testing Suite for Baby Goats Application - Production Database with Service Role Key
+Tests production database functionality after implementing service role key configuration
+Focus: Verify write operations work directly with Supabase database (bypassing RLS)
 """
 
 import requests
@@ -10,9 +11,8 @@ import uuid
 from datetime import datetime
 import time
 
-# Configuration - Testing FastAPI proxy system
+# Configuration - Testing production database with service role key
 BASE_URL = "https://goat-training-2.preview.emergentagent.com/api"
-NEXTJS_DIRECT_URL = "http://localhost:3001/api"  # For comparison testing
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
