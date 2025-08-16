@@ -485,8 +485,8 @@ class AuthTester:
         print("=" * 60)
         
         try:
-            # HIGH PRIORITY: Supabase Auth Integration
-            self.test_supabase_auth_signup()
+            # HIGH PRIORITY: Backend Auth Support Setup
+            self.test_backend_auth_user_support()
             self.test_supabase_auth_signin()
             
             # HIGH PRIORITY: Profile Creation Flow
