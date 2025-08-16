@@ -260,12 +260,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   subtitle: {
+    color: '#CCCCCC',
     fontSize: 16,
-    color: '#999999',
     textAlign: 'center',
-    maxWidth: 280,
-    lineHeight: 22,
-    fontWeight: '300',
+    marginBottom: 40,
   },
   choiceContainer: {
     marginBottom: 48,
