@@ -121,22 +121,19 @@ export default function ProfilePhotoSelector({
     setUploadingPhoto(true);
     
     try {
-      // Process the image (crop to square, resize for optimal upload)
-      const manipulatedImage = await ImageManipulator.manipulateAsync(
-        uri,
-        [
-          { resize: { width: 400, height: 400 } }
-        ],
-        { 
-          compress: 0.8, 
-          format: ImageManipulator.SaveFormat.JPEG 
-        }
-      );
+      console.log('📸 Starting optimized image processing...');
+      
+      // Use the new ImageOptimizer for better performance and smaller file sizes
+      const optimizedImage = await ImageOptimizer.optimizeProfilePhoto(uri, {
+        quality: 0.85, // Slightly higher quality for profile photos
+      });
 
-      // Upload to Supabase Storage
+      console.log(`🎯 Image optimized: ${optimizedImage.width}x${optimizedImage.height}, ${optimizedImage.fileSize} bytes`);
+
+      // Upload to Supabase Storage using optimized image
       const uploadResult = await uploadProfilePhoto(
         user.id,
-        manipulatedImage.uri,
+        optimizedImage.uri,
         'photo'
       );
 
