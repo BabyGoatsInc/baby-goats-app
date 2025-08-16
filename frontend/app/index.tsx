@@ -25,6 +25,7 @@ import { offlineDataLayer } from '../lib/offlineDataLayer';
 import { startCacheCleanup } from '../lib/apiCache';
 import { performanceMonitor } from '../lib/performanceMonitor';
 import OfflineIndicator from '../components/OfflineIndicator';
+import SocialNotifications from '../components/SocialNotifications';
 
 // Technical infrastructure imports
 import { technicalInfrastructure } from '../lib/technicalInfrastructure';
