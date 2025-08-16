@@ -44,7 +44,7 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
-# Baby Goats API Proxy Routes
+# Baby Goats API Proxy Routes (existing endpoints)
 @api_router.get("/profiles")
 async def proxy_profiles(request: Request):
     """Proxy profiles requests to Next.js API"""
@@ -63,14 +63,26 @@ async def proxy_profiles(request: Request):
 
 @api_router.post("/profiles")
 async def proxy_profiles_post(request: Request):
-    """Proxy profile creation to Next.js API"""
+    """Proxy profile creation to MVP endpoint for functional demo"""
     try:
         body = await request.json()
-        response = await http_client.post(f"{NEXTJS_API_BASE}/profiles", json=body, timeout=10.0)
+        # Route to MVP endpoint instead of regular endpoint for write operations
+        response = await http_client.post(f"{NEXTJS_API_BASE}/mvp/profiles", json=body, timeout=10.0)
         return JSONResponse(content=response.json(), status_code=response.status_code)
     except Exception as e:
-        logging.error(f"Error proxying profile creation: {e}")
+        logging.error(f"Error proxying MVP profile creation: {e}")
         return JSONResponse(content={"error": "Failed to create profile"}, status_code=500)
+
+@api_router.put("/profiles") 
+async def proxy_profiles_put(request: Request):
+    """Proxy profile updates to MVP endpoint"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/mvp/profiles", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying MVP profile update: {e}")
+        return JSONResponse(content={"error": "Failed to update profile"}, status_code=500)
 
 @api_router.get("/highlights")  
 async def proxy_highlights(request: Request):
