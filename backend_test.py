@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Profile Photos & Avatars Testing Suite for Baby Goats Application
-Tests complete profile photo system with Supabase Storage integration
-Focus: Verify profile photo infrastructure, avatar components, and authentication integration
+Advanced Goal Tracking System Backend Testing Suite for Baby Goats Application
+Tests backend APIs that support goal tracking functionality including challenges, stats, and profiles
+Focus: Verify goal tracking backend infrastructure and data persistence capabilities
 """
 
 import requests
