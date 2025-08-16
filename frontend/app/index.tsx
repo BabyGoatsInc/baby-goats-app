@@ -544,3 +544,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
   },
 });
+
+export default function Index() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
+  );
+}
