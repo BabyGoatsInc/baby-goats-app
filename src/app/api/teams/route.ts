@@ -20,9 +20,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const cookieStore = await cookies();
     const supabase = createServerComponentClient({ 
-      cookies: () => cookieStore,
+      cookies,
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
     });
