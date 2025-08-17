@@ -203,8 +203,24 @@ export async function POST(request: NextRequest) {
   try {
     const body: ProfileUpdate = await request.json()
     
+    // INPUT VALIDATION: Validate and sanitize all inputs
+    const validation = validateProfileData(body)
+    
+    if (!validation.isValid) {
+      return NextResponse.json(
+        { 
+          error: 'Validation failed', 
+          details: validation.errors 
+        },
+        { status: 400 }
+      )
+    }
+
+    // Use sanitized data
+    const sanitizedData = validation.sanitizedData
+    
     // Validate required fields
-    if (!body.id) {
+    if (!sanitizedData.id) {
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 }
@@ -215,7 +231,7 @@ export async function POST(request: NextRequest) {
     const { data: existingProfile } = await supabase
       .from('profiles')
       .select('id')
-      .eq('id', body.id)
+      .eq('id', sanitizedData.id)
       .single()
 
     let result
@@ -225,10 +241,10 @@ export async function POST(request: NextRequest) {
       const { data, error } = await supabaseAdmin
         .from('profiles')
         .update({
-          ...body,
+          ...sanitizedData,
           updated_at: new Date().toISOString()
         })
-        .eq('id', body.id)
+        .eq('id', sanitizedData.id)
         .select()
         .single()
 
@@ -243,7 +259,7 @@ export async function POST(request: NextRequest) {
     } else {
       // Create new profile using service role (bypasses RLS)
       const profileData: ProfileInsert = {
-        ...body,
+        ...sanitizedData,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
