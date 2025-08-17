@@ -1,15 +1,37 @@
 #!/usr/bin/env python3
 """
-Baby Goats Comprehensive Social Features Backend Testing Suite
-Tests all social system backend functionality that supports the implemented frontend social features:
-- Social System Library Integration (socialSystem.ts functionality)
-- Friend Management APIs (friend requests, accept/decline, friend lists)
-- Activity Feed APIs (social activity generation and retrieval)
-- Social Profile APIs (enhanced profile data with social context)
-- Social Notifications Backend (notification generation and retrieval)
-- Privacy Controls APIs (privacy settings and friend visibility)
-- Social Data Integration (integration with existing user profiles, challenges, achievements)
-Focus: Comprehensive backend social features testing for production readiness
+Baby Goats Comprehensive Social Platform Backend Testing Suite
+COMPREHENSIVE BABY GOATS SOCIAL PLATFORM BACKEND TESTING
+
+**TESTING OBJECTIVE:** Verify all backend API endpoints are production-ready while user applies database schema to Supabase. 
+Focus on confirming code implementation is complete and identify exactly what's waiting for database tables.
+
+**PRIORITY TESTING AREAS:**
+
+**1. SOCIAL FEATURES APIs (High Priority - New Implementation)**
+- Live Chat & Messaging APIs (/api/messages)
+- Leaderboards & Rankings APIs (/api/leaderboards) 
+- Friendship Management APIs (/api/friendships)
+- Social Notifications APIs (/api/notifications)
+
+**2. TEAM SYSTEM APIs (High Priority - New Implementation)**
+- Team Management APIs (/api/teams)
+- Team Members APIs (/api/team-members) 
+- Team Challenges APIs (/api/team-challenges)
+
+**3. REGRESSION TESTING (Critical - Ensure No Breakage)**
+- Profiles API (/api/profiles) - Should still work
+- Storage API (/api/storage) - Should still work  
+- Challenges API (/api/challenges) - Should still work
+- Stats API (/api/stats) - Should still work
+
+**EXPECTED RESULTS:**
+- Existing APIs (profiles, storage, challenges, stats) should work normally
+- New social/team APIs should fail with "Could not find table" errors (confirming they need database schema)
+- All API implementations should show proper error handling
+- FastAPI proxy routing should work for all endpoints
+
+Focus: Comprehensive backend testing for production readiness validation
 """
 
 import requests
