@@ -279,13 +279,40 @@ async function handleUpload(payload: {
   }
 }
 
-async function handleDelete(payload: { filePath: string }) {
+async function handleDelete(payload: { filePath: string }, authenticatedUserId: string) {
   try {
     const { filePath } = payload;
 
+    // INPUT VALIDATION: Validate filePath
+    if (!filePath || typeof filePath !== 'string') {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'File path is required' 
+      }, { status: 400 });
+    }
+
+    // SECURITY: Sanitize file path and check for path traversal
+    const sanitizedPath = sanitizeInput(filePath);
+    
+    // Check if path contains traversal attempts
+    if (sanitizedPath.includes('..') || sanitizedPath.includes('\\')) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Invalid file path: path traversal detected' 
+      }, { status: 400 });
+    }
+
+    // AUTHORIZATION: Ensure user can only delete their own files
+    if (!sanitizedPath.startsWith(`${authenticatedUserId}/`)) {
+      return NextResponse.json({
+        success: false,
+        error: 'Forbidden: Cannot delete files from other users'
+      }, { status: 403 });
+    }
+
     const { error } = await supabaseServiceClient.storage
       .from(STORAGE_BUCKET)
-      .remove([filePath]);
+      .remove([sanitizedPath]);
 
     if (error) {
       console.error('Delete error:', error);
