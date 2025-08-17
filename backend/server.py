@@ -392,6 +392,148 @@ async def proxy_notifications_delete(request: Request):
         logging.error(f"Error proxying notifications DELETE request: {e}")
         return JSONResponse(content={"error": "Failed to delete notifications"}, status_code=500)
 
+# Team Management API Proxy Routes
+@api_router.get("/teams")
+async def proxy_teams_get(request: Request):
+    """Proxy teams GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/teams"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying teams GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch teams"}, status_code=500)
+
+@api_router.post("/teams")
+async def proxy_teams_post(request: Request):
+    """Proxy teams POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/teams", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying teams POST request: {e}")
+        return JSONResponse(content={"error": "Failed to create team"}, status_code=500)
+
+@api_router.put("/teams")
+async def proxy_teams_put(request: Request):
+    """Proxy teams PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/teams", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying teams PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update team"}, status_code=500)
+
+@api_router.delete("/teams")
+async def proxy_teams_delete(request: Request):
+    """Proxy teams DELETE requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/teams"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.delete(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying teams DELETE request: {e}")
+        return JSONResponse(content={"error": "Failed to delete team"}, status_code=500)
+
+@api_router.get("/team-members")
+async def proxy_team_members_get(request: Request):
+    """Proxy team-members GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/team-members"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying team-members GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch team members"}, status_code=500)
+
+@api_router.post("/team-members")
+async def proxy_team_members_post(request: Request):
+    """Proxy team-members POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/team-members", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying team-members POST request: {e}")
+        return JSONResponse(content={"error": "Failed to join team"}, status_code=500)
+
+@api_router.put("/team-members")
+async def proxy_team_members_put(request: Request):
+    """Proxy team-members PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/team-members", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying team-members PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update team member"}, status_code=500)
+
+@api_router.delete("/team-members")
+async def proxy_team_members_delete(request: Request):
+    """Proxy team-members DELETE requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/team-members"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.delete(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying team-members DELETE request: {e}")
+        return JSONResponse(content={"error": "Failed to remove team member"}, status_code=500)
+
+@api_router.get("/team-challenges")
+async def proxy_team_challenges_get(request: Request):
+    """Proxy team-challenges GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/team-challenges"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying team-challenges GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch team challenges"}, status_code=500)
+
+@api_router.post("/team-challenges")
+async def proxy_team_challenges_post(request: Request):
+    """Proxy team-challenges POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/team-challenges", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying team-challenges POST request: {e}")
+        return JSONResponse(content={"error": "Failed to create/register team challenge"}, status_code=500)
+
+@api_router.put("/team-challenges")
+async def proxy_team_challenges_put(request: Request):
+    """Proxy team-challenges PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/team-challenges", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying team-challenges PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update team challenge progress"}, status_code=500)
+
 # Original FastAPI routes (keep for backwards compatibility)
 @api_router.get("/")
 async def root():
