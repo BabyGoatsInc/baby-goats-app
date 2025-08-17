@@ -117,28 +117,54 @@ function validateProfileData(data: any): { isValid: boolean; errors: string[]; s
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const sport = searchParams.get('sport')
-    const gradYear = searchParams.get('grad_year')
-    const search = searchParams.get('search')
-    const limit = parseInt(searchParams.get('limit') || '20')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    
+    // INPUT SANITIZATION: Sanitize all query parameters
+    const rawSport = searchParams.get('sport')
+    const rawGradYear = searchParams.get('grad_year')
+    const rawSearch = searchParams.get('search')
+    const rawLimit = searchParams.get('limit') || '20'
+    const rawOffset = searchParams.get('offset') || '0'
+
+    // Sanitize inputs
+    const sport = rawSport ? sanitizeInput(rawSport) : null
+    const search = rawSearch ? sanitizeInput(rawSearch) : null
+    
+    // Validate and parse numeric inputs
+    let gradYear: number | null = null
+    if (rawGradYear) {
+      const parsedGradYear = parseInt(rawGradYear)
+      const currentYear = new Date().getFullYear()
+      if (!isNaN(parsedGradYear) && parsedGradYear >= currentYear && parsedGradYear <= currentYear + 10) {
+        gradYear = parsedGradYear
+      } else {
+        return NextResponse.json(
+          { error: `Invalid graduation year. Must be between ${currentYear} and ${currentYear + 10}` },
+          { status: 400 }
+        )
+      }
+    }
+
+    // Validate pagination parameters
+    const limit = Math.min(Math.max(parseInt(rawLimit) || 20, 1), 100) // Max 100 results
+    const offset = Math.max(parseInt(rawOffset) || 0, 0)
 
     let query = supabase
       .from('profiles')
       .select('*')
       // Note: is_parent_approved column may not exist yet, so we'll show all profiles for now
 
-    // Apply filters
-    if (sport) {
+    // Apply filters with sanitized inputs
+    if (sport && sport.length > 0) {
       query = query.eq('sport', sport)
     }
     
     if (gradYear) {
-      query = query.eq('grad_year', parseInt(gradYear))
+      query = query.eq('grad_year', gradYear)
     }
 
-    if (search) {
-      query = query.ilike('full_name', `%${search}%`)
+    if (search && search.length > 0) {
+      // Use sanitized search term and prevent SQL injection
+      query = query.ilike('full_name', `%${search.substring(0, 50)}%`)
     }
 
     // Apply pagination
