@@ -1,0 +1,352 @@
+{
+  "summary": {
+    "success_rate": 0.0,
+    "working_apis": 3,
+    "total_apis": 11,
+    "verdict": "NEEDS_WORK",
+    "core_apis_working": 1,
+    "social_apis_working": 2,
+    "team_apis_working": 0,
+    "database_table_issues": 0,
+    "rls_policy_issues": 0,
+    "authentication_issues": 0
+  },
+  "detailed_results": [
+    {
+      "test": "Profiles API - GET /profiles",
+      "success": true,
+      "details": "\u2705 Profiles API working: 1 items retrieved",
+      "status_code": 200,
+      "response_data": {
+        "profiles": [
+          {
+            "id": "5ca55a65-caa4-4a9c-95de-ae59be757b63",
+            "username": "shericejonescc",
+            "full_name": "Social Test User",
+            "sport": "Soccer",
+            "grad_year": 2025,
+            "location": null,
+            "avatar_url": null,
+            "created_at": "2025-08-13T03:20:49.594954+00:00",
+            "updated_at": "2025-08-16T18:26:12.64+00:00"
+          }
+        ],
+        "pagination": {
+          "limit": 5,
+          "offset": 0,
+          "hasMore": false
+        }
+      },
+      "timestamp": "2025-08-17T15:54:02.773662"
+    },
+    {
+      "test": "Challenges API - GET /challenges",
+      "success": true,
+      "details": "\u2705 Challenges API working: 5 items retrieved",
+      "status_code": 200,
+      "response_data": {
+        "challenges": [
+          {
+            "id": "1bc18723-6d6b-4a9f-8536-07a83c10386e",
+            "title": "Find Your Why",
+            "task": "Write a paragraph about why your sport matters to you and what drives your passion",
+            "proof_type": "video",
+            "xp": 10,
+            "active_on": null,
+            "created_at": "2025-08-13T17:24:17.9736+00:00",
+            "description": "Discover your core motivation for athletics",
+            "category": "fearless",
+            "difficulty": "easy",
+            "points": 10,
+            "is_active": true
+          },
+          {
+            "id": "494d793b-a780-4dfa-b075-1890bcc55e77",
+            "title": "Morning Routine",
+            "task": "Create and complete a 10-minute morning routine that prepares you mentally for the day",
+            "proof_type": "video",
+            "xp": 10,
+            "active_on": null,
+            "created_at": "2025-08-13T17:24:17.9736+00:00",
+            "description": "Build consistent mental preparation habits",
+            "category": "resilient",
+            "difficulty": "easy",
+            "points": 10,
+            "is_active": true
+          },
+          {
+            "id": "71a5c8fb-ecfb-4a11-b813-c4075994e787",
+            "title": "Skill Focus",
+            "task": "Spend 20 minutes working on your weakest fundamental skill",
+            "proof_type": "video",
+            "xp": 10,
+            "active_on": null,
+            "created_at": "2025-08-13T17:24:17.9736+00:00",
+            "description": "Targeted practice on areas needing improvement",
+            "category": "relentless",
+            "difficulty": "easy",
+            "points": 10,
+            "is_active": true
+          },
+          {
+            "id": "5ced89d8-b597-4479-ad27-717fb278db44",
+            "title": "Positive Self-Talk",
+            "task": "Replace one negative thought about your performance with a positive affirmation",
+            "proof_type": "video",
+            "xp": 10,
+            "active_on": null,
+            "created_at": "2025-08-13T17:24:17.9736+00:00",
+            "description": "Mental game improvement through positive thinking",
+            "category": "resilient",
+            "difficulty": "easy",
+            "points": 10,
+            "is_active": true
+          },
+          {
+            "id": "593de75d-0843-468b-ace6-07641c7b547a",
+            "title": "Set Your Daily Goal",
+            "task": "Write down one specific skill you want to improve today and practice it for 15 minutes",
+            "proof_type": "video",
+            "xp": 10,
+            "active_on": null,
+            "created_at": "2025-08-13T17:24:17.9736+00:00",
+            "description": "Goal setting and skill identification challenge",
+            "category": "relentless",
+            "difficulty": "easy",
+            "points": 10,
+            "is_active": true
+          }
+        ],
+        "pagination": {
+          "limit": 5,
+          "offset": 0,
+          "hasMore": true
+        }
+      },
+      "timestamp": "2025-08-17T15:54:02.886130"
+    },
+    {
+      "test": "Storage API - GET /storage",
+      "success": false,
+      "details": "\u274c No response (timeout or connection error)",
+      "status_code": null,
+      "response_data": null,
+      "timestamp": "2025-08-17T15:54:02.950569"
+    },
+    {
+      "test": "Stats API - GET /stats",
+      "success": true,
+      "details": "\u2705 Stats API working: 0 items retrieved",
+      "status_code": 200,
+      "response_data": {
+        "stats": [],
+        "pagination": {
+          "limit": 50,
+          "offset": 0,
+          "hasMore": false
+        }
+      },
+      "timestamp": "2025-08-17T15:54:03.116861"
+    },
+    {
+      "test": "Teams API - GET /teams",
+      "success": false,
+      "details": "\u274c No response (timeout or connection error)",
+      "status_code": null,
+      "response_data": null,
+      "timestamp": "2025-08-17T15:54:03.314524"
+    },
+    {
+      "test": "Team Members API - GET /team-members",
+      "success": false,
+      "details": "\u274c No response (timeout or connection error)",
+      "status_code": null,
+      "response_data": null,
+      "timestamp": "2025-08-17T15:54:03.500629"
+    },
+    {
+      "test": "Team Challenges API - GET /team-challenges",
+      "success": false,
+      "details": "\u274c No response (timeout or connection error)",
+      "status_code": null,
+      "response_data": null,
+      "timestamp": "2025-08-17T15:54:03.653029"
+    },
+    {
+      "test": "Messages API - GET /messages",
+      "success": true,
+      "details": "\u2705 Messages API working: 0 items retrieved",
+      "status_code": 200,
+      "response_data": {
+        "success": true,
+        "conversations": [],
+        "count": 0
+      },
+      "timestamp": "2025-08-17T15:54:03.800052"
+    },
+    {
+      "test": "Friendships API - GET /friendships",
+      "success": false,
+      "details": "\u274c No response (timeout or connection error)",
+      "status_code": null,
+      "response_data": null,
+      "timestamp": "2025-08-17T15:54:03.981165"
+    },
+    {
+      "test": "Leaderboards API - GET /leaderboards",
+      "success": true,
+      "details": "\u2705 Leaderboards API working: 0 items retrieved",
+      "status_code": 200,
+      "response_data": {
+        "success": true,
+        "leaderboards": [],
+        "count": 0
+      },
+      "timestamp": "2025-08-17T15:54:04.191500"
+    },
+    {
+      "test": "Notifications API - GET /notifications",
+      "success": false,
+      "details": "\u274c No response (timeout or connection error)",
+      "status_code": null,
+      "response_data": null,
+      "timestamp": "2025-08-17T15:54:04.342109"
+    },
+    {
+      "test": "Profile Creation - POST /profiles (RLS Policy Test)",
+      "success": false,
+      "details": "\u274c No response (timeout or connection error)",
+      "status_code": null,
+      "response_data": null,
+      "timestamp": "2025-08-17T15:54:04.641240"
+    },
+    {
+      "test": "Challenge Completion - POST /challenges (RLS Policy Test)",
+      "success": false,
+      "details": "\u274c No response (timeout or connection error)",
+      "status_code": null,
+      "response_data": null,
+      "timestamp": "2025-08-17T15:54:04.753063"
+    }
+  ],
+  "api_status": {
+    "/api/profiles": {
+      "tests": 2,
+      "success": 1,
+      "status_codes": [
+        200,
+        null
+      ],
+      "errors": [
+        "\u274c No response (timeout or connection error)"
+      ],
+      "working": true
+    },
+    "/api/challenges": {
+      "tests": 2,
+      "success": 1,
+      "status_codes": [
+        200,
+        null
+      ],
+      "errors": [
+        "\u274c No response (timeout or connection error)"
+      ],
+      "working": true
+    },
+    "/api/storage": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ],
+      "errors": [
+        "\u274c No response (timeout or connection error)"
+      ],
+      "working": false
+    },
+    "/api/stats": {
+      "tests": 1,
+      "success": 1,
+      "status_codes": [
+        200
+      ],
+      "errors": [],
+      "working": true
+    },
+    "/api/teams": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ],
+      "errors": [
+        "\u274c No response (timeout or connection error)"
+      ],
+      "working": false
+    },
+    "/api/team-members": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ],
+      "errors": [
+        "\u274c No response (timeout or connection error)"
+      ],
+      "working": false
+    },
+    "/api/team-challenges": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ],
+      "errors": [
+        "\u274c No response (timeout or connection error)"
+      ],
+      "working": false
+    },
+    "/api/messages": {
+      "tests": 1,
+      "success": 1,
+      "status_codes": [
+        200
+      ],
+      "errors": [],
+      "working": true
+    },
+    "/api/friendships": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ],
+      "errors": [
+        "\u274c No response (timeout or connection error)"
+      ],
+      "working": false
+    },
+    "/api/leaderboards": {
+      "tests": 1,
+      "success": 1,
+      "status_codes": [
+        200
+      ],
+      "errors": [],
+      "working": true
+    },
+    "/api/notifications": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ],
+      "errors": [
+        "\u274c No response (timeout or connection error)"
+      ],
+      "working": false
+    }
+  },
+  "timestamp": "2025-08-17T15:54:04.753693"
+}
