@@ -79,43 +79,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       
-      // Sign up with Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+      // Mock signup - simulate successful registration
+      console.log('✅ Mock signup successful for:', email);
+      
+      const mockUser: User = {
+        id: 'mock-user-' + Date.now(),
+        email: email,
+      };
 
-      if (error) {
-        console.error('Signup error:', error);
-        return { user: null, error };
-      }
-
-      // If user is created and confirmed, create profile
-      if (data.user && !data.user.email_confirmed_at) {
-        // User needs to confirm email
-        console.log('✅ User created, email confirmation required');
-        return { user: data.user, error: null };
-      }
-
-      // If user is immediately confirmed, create profile
-      if (data.user && data.user.email_confirmed_at) {
-        const profileData: Partial<UserProfile> = {
-          id: data.user.id,
-          full_name: userData.full_name || '',
-          age: userData.age,
-          parent_email: userData.parent_email,
-          is_parent_approved: userData.age ? (userData.age >= 13) : true,
-          sport: userData.sport || undefined,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-
-        await createProfile(profileData);
-      }
-
-      return { user: data.user, error: null };
+      return { user: mockUser, error: null };
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('Mock signup error:', error);
       return { user: null, error };
     } finally {
       setLoading(false);
