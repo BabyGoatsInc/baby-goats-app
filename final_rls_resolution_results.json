@@ -1,0 +1,186 @@
+{
+  "summary": {
+    "success_rate": 0.0,
+    "working_apis": 3,
+    "total_apis": 11,
+    "verdict": "NEEDS_WORK",
+    "database_table_issues": 0,
+    "rls_policy_issues": 0,
+    "server_errors": 0
+  },
+  "detailed_results": [
+    {
+      "test": "Core API Status - GET /api/profiles",
+      "success": true,
+      "details": "\u2705 Profiles API working: 1 profiles retrieved",
+      "status_code": 200,
+      "timestamp": "2025-08-17T15:52:37.144724"
+    },
+    {
+      "test": "Core API Status - GET /api/challenges",
+      "success": true,
+      "details": "\u2705 Challenges API working: 5 challenges retrieved",
+      "status_code": 200,
+      "timestamp": "2025-08-17T15:52:37.267070"
+    },
+    {
+      "test": "Core API Status - GET /api/storage",
+      "success": false,
+      "details": "\u274c No response from Storage API",
+      "status_code": null,
+      "timestamp": "2025-08-17T15:52:37.295759"
+    },
+    {
+      "test": "Core API Status - GET /api/stats",
+      "success": true,
+      "details": "\u2705 Stats API working: response received",
+      "status_code": 200,
+      "timestamp": "2025-08-17T15:52:37.460909"
+    },
+    {
+      "test": "Team Management Resolution - GET /api/teams",
+      "success": false,
+      "details": "\u274c No response from Teams API",
+      "status_code": null,
+      "timestamp": "2025-08-17T15:52:37.625761"
+    },
+    {
+      "test": "Team Management Resolution - GET /api/team-members",
+      "success": false,
+      "details": "\u274c No response from Team Members API",
+      "status_code": null,
+      "timestamp": "2025-08-17T15:52:37.775957"
+    },
+    {
+      "test": "Team Management Resolution - GET /api/team-challenges",
+      "success": false,
+      "details": "\u274c No response from Team Challenges API",
+      "status_code": null,
+      "timestamp": "2025-08-17T15:52:38.041689"
+    },
+    {
+      "test": "Social Features Resolution - GET /api/messages",
+      "success": true,
+      "details": "\ud83c\udf89 Messages API now working: 0 messages retrieved",
+      "status_code": 200,
+      "timestamp": "2025-08-17T15:52:38.232201"
+    },
+    {
+      "test": "Social Features Resolution - GET /api/friendships",
+      "success": false,
+      "details": "\u274c No response from Friendships API",
+      "status_code": null,
+      "timestamp": "2025-08-17T15:52:38.428564"
+    },
+    {
+      "test": "Social Features Resolution - GET /api/leaderboards",
+      "success": true,
+      "details": "\ud83c\udf89 Leaderboards API now working: 0 leaderboards retrieved",
+      "status_code": 200,
+      "timestamp": "2025-08-17T15:52:38.564908"
+    },
+    {
+      "test": "Social Features Resolution - GET /api/notifications",
+      "success": false,
+      "details": "\u274c No response from Notifications API",
+      "status_code": null,
+      "timestamp": "2025-08-17T15:52:38.836164"
+    },
+    {
+      "test": "RLS Policy Write Operations - POST /api/profiles",
+      "success": false,
+      "details": "\u274c No response from Profiles API",
+      "status_code": null,
+      "timestamp": "2025-08-17T15:52:39.146573"
+    },
+    {
+      "test": "RLS Policy Write Operations - POST /api/challenges",
+      "success": false,
+      "details": "\u274c No response from Challenges API",
+      "status_code": null,
+      "timestamp": "2025-08-17T15:52:39.240562"
+    }
+  ],
+  "api_status": {
+    "/api/profiles": {
+      "tests": 2,
+      "success": 1,
+      "status_codes": [
+        200,
+        null
+      ]
+    },
+    "/api/challenges": {
+      "tests": 2,
+      "success": 1,
+      "status_codes": [
+        200,
+        null
+      ]
+    },
+    "/api/storage": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ]
+    },
+    "/api/stats": {
+      "tests": 1,
+      "success": 1,
+      "status_codes": [
+        200
+      ]
+    },
+    "/api/teams": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ]
+    },
+    "/api/team-members": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ]
+    },
+    "/api/team-challenges": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ]
+    },
+    "/api/messages": {
+      "tests": 1,
+      "success": 1,
+      "status_codes": [
+        200
+      ]
+    },
+    "/api/friendships": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ]
+    },
+    "/api/leaderboards": {
+      "tests": 1,
+      "success": 1,
+      "status_codes": [
+        200
+      ]
+    },
+    "/api/notifications": {
+      "tests": 1,
+      "success": 0,
+      "status_codes": [
+        null
+      ]
+    }
+  },
+  "timestamp": "2025-08-17T15:52:39.241131"
+}
