@@ -67,9 +67,7 @@ export async function GET(request: NextRequest) {
           content,
           message_type,
           read_at,
-          created_at,
-          sender:profiles!messages_sender_id_fkey(id, full_name, avatar_url),
-          receiver:profiles!messages_receiver_id_fkey(id, full_name, avatar_url)
+          created_at
         `)
         .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
         .order('created_at', { ascending: false })
