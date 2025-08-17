@@ -111,22 +111,59 @@ function validateFileName(fileName: string): { isValid: boolean; sanitizedName: 
 
 export async function POST(request: NextRequest) {
   try {
+    // 1. AUTHENTICATION: Verify JWT token first
+    const { user, error: authError } = await verifyAuthToken(request);
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Unauthorized', 
+          details: authError || 'Authentication required' 
+        }, 
+        { status: 401 }
+      );
+    }
+
     const { action, ...payload } = await request.json();
+
+    // 2. INPUT VALIDATION: Validate action parameter
+    const allowedActions = ['upload', 'delete', 'setup_bucket'];
+    if (!allowedActions.includes(action)) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Invalid action. Allowed actions: upload, delete, setup_bucket' 
+      }, { status: 400 });
+    }
+
+    // 3. AUTHORIZATION: Ensure user can only access their own resources
+    if (payload.userId && payload.userId !== user.id) {
+      return NextResponse.json({
+        success: false,
+        error: 'Forbidden: Cannot access other user resources'
+      }, { status: 403 });
+    }
 
     switch (action) {
       case 'upload':
-        return await handleUpload(payload);
+        return await handleUpload(payload, user.id);
       case 'delete':
-        return await handleDelete(payload);
+        return await handleDelete(payload, user.id);
       case 'setup_bucket':
         return await setupBucket();
       default:
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+        return NextResponse.json({ 
+          success: false, 
+          error: 'Invalid action' 
+        }, { status: 400 });
     }
   } catch (error) {
     console.error('Storage API error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        success: false, 
+        error: 'Internal server error' 
+      },
       { status: 500 }
     );
   }
