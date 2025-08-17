@@ -3,73 +3,53 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://ssdzlzlubzcknkoflgyf.supabase.co'
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzZHpsemx1Ynpja25rb2ZsZ3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3Njc5OTYsImV4cCI6MjA3MDM0Mzk5Nn0.7ZpO5R64KS89k4We6jO9CbCevxwf1S5EOoqv6Xtv1Yk'
 
-// Create a compatibility layer for AsyncStorage
-const createCompatibleAsyncStorage = () => {
+// Universal storage adapter that works in both server and client environments
+const createUniversalStorage = () => {
+  // Check if we're in server-side environment
+  if (typeof window === 'undefined') {
+    // Server-side: return a no-op storage that prevents errors
+    return {
+      getItem: async (_key: string) => null,
+      setItem: async (_key: string, _value: string) => {},
+      removeItem: async (_key: string) => {},
+      clear: async () => {},
+      getAllKeys: async () => [],
+    };
+  }
+  
+  // Client-side: try to use AsyncStorage, fallback to localStorage
   try {
-    // Try to import AsyncStorage dynamically to avoid server-side issues
     const AsyncStorage = require('@react-native-async-storage/async-storage').default;
     return AsyncStorage;
   } catch (error) {
-    console.warn('AsyncStorage not available, using fallback storage');
-    // Return a compatible fallback that works in server environments
-    return {
-      getItem: async (key: string) => {
-        try {
-          return typeof window !== 'undefined' && window.localStorage 
-            ? window.localStorage.getItem(key) 
-            : null;
-        } catch {
-          return null;
-        }
-      },
-      setItem: async (key: string, value: string) => {
-        try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            window.localStorage.setItem(key, value);
-          }
-        } catch {
-          // Silently fail in server environment
-        }
-      },
-      removeItem: async (key: string) => {
-        try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            window.localStorage.removeItem(key);
-          }
-        } catch {
-          // Silently fail in server environment
-        }
-      },
-      clear: async () => {
-        try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            window.localStorage.clear();
-          }
-        } catch {
-          // Silently fail in server environment
-        }
-      },
-      getAllKeys: async () => {
-        try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            return Object.keys(window.localStorage);
-          }
-          return [];
-        } catch {
-          return [];
-        }
-      },
-    };
+    // Fallback to localStorage for web environments
+    try {
+      return {
+        getItem: async (key: string) => localStorage.getItem(key),
+        setItem: async (key: string, value: string) => localStorage.setItem(key, value),
+        removeItem: async (key: string) => localStorage.removeItem(key),
+        clear: async () => localStorage.clear(),
+        getAllKeys: async () => Object.keys(localStorage),
+      };
+    } catch (localStorageError) {
+      // Ultimate fallback for environments without localStorage
+      return {
+        getItem: async (_key: string) => null,
+        setItem: async (_key: string, _value: string) => {},
+        removeItem: async (_key: string) => {},
+        clear: async () => {},
+        getAllKeys: async () => [],
+      };
+    }
   }
 };
 
-// Create Supabase client with compatibility layer
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: createCompatibleAsyncStorage(),
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
+    storage: createUniversalStorage(),
+    autoRefreshToken: typeof window !== 'undefined', // Only auto-refresh on client-side
+    persistSession: typeof window !== 'undefined',   // Only persist on client-side
+    detectSessionInUrl: false, // Disable for React Native
   },
 })
 
