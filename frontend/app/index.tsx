@@ -298,14 +298,28 @@ function MainApp() {
       
       {/* Social Notifications */}
       {user?.id && (
-        <SocialNotifications 
-          userId={user.id}
-          onNotificationPress={(type, data) => {
-            if (type === 'friend_request') {
-              setCurrentScreen('social_friends');
-            }
-          }}
-        />
+        <>
+          <SocialNotifications 
+            userId={user.id}
+            onNotificationPress={(type, data) => {
+              if (type === 'friend_request') {
+                setCurrentScreen('social_friends');
+              }
+            }}
+          />
+          <RealtimeNotifications
+            onNotificationPress={(notification) => {
+              if (notification.type === 'friend_request') {
+                setCurrentScreen('social_friends');
+              } else if (notification.type === 'message') {
+                setCurrentScreen('social_friends');
+              } else if (notification.type === 'achievement') {
+                setCurrentScreen('achievements');
+              }
+            }}
+            maxVisible={3}
+          />
+        </>
       )}
       
       {/* Navigation */}
