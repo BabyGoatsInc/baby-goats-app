@@ -38,9 +38,7 @@ export async function GET(request: NextRequest) {
           friend_id,
           status,
           created_at,
-          accepted_at,
-          user:profiles!friendships_user_id_fkey(id, full_name, avatar_url, sport, grad_year),
-          friend:profiles!friendships_friend_id_fkey(id, full_name, avatar_url, sport, grad_year)
+          accepted_at
         `)
         .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
         .eq('status', 'accepted')
