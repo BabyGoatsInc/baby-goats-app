@@ -600,6 +600,9 @@ backend:
         - working: false
           agent: "testing"
           comment: "🎯 FINAL VERIFICATION AFTER DATABASE TABLES CREATION: ❌ Teams API still failing with connection errors. Despite user's claim of creating essential social database tables (friendships, teams, notifications), comprehensive testing shows Teams API returns no response (connection timeout). API implementation is correct but database tables are either not created or not accessible. CRITICAL: teams table still not accessible via API."
+        - working: false
+          agent: "testing"
+          comment: "🚨 CRITICAL: NEXT.JS 15 COOKIES API FIX NOT APPLIED! Teams API still returning 500 errors, confirming that the Next.js 15 cookies() API compatibility fix was NOT successfully implemented. Testing shows GET /api/teams?limit=1 returns 500 Internal Server Error. The required change from 'cookies,' to 'const cookieStore = await cookies(); cookies: () => cookieStore,' was not applied to /app/src/app/api/teams/route.ts for ALL HTTP methods (GET, POST, PUT, DELETE). URGENT: Re-apply Next.js 15 cookies API fixes to resolve 500 errors."
 
   - task: "Team Members Management APIs (/api/team-members)"
     implemented: true
