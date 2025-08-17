@@ -1841,4 +1841,4 @@ class SocialInfrastructureTester:
 
 if __name__ == "__main__":
     tester = SocialInfrastructureTester()
-    tester.run_social_infrastructure_integration_tests()
+    tester.run_comprehensive_backend_testing()
