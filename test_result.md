@@ -58,7 +58,7 @@
 ##
 ## agent_communication:
 ##     - agent: "main"
-##       message: "Starting Profile Photo Integration comprehensive testing while user sets up database schema. Focus on end-to-end testing of ProfilePhotoSelector component, camera/gallery integration, image processing, Supabase Storage upload/delete operations, and mobile UI validation. This is high-priority pending task that doesn't depend on new social database tables."
+##       message: "Starting comprehensive backend testing to verify all API endpoints are ready for social features while user applies database schema to Supabase. Focus on testing Live Chat APIs, Leaderboards APIs, Team Management APIs, and Team Challenges APIs to confirm code implementation is complete and waiting only for database tables. Testing existing working APIs (Profiles, Storage, Challenges) to ensure no regression. This validates the complete Baby Goats social platform backend is production-ready."
 
 # Protocol Guidelines for Main agent
 #
