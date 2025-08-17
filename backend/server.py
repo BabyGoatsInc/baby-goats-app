@@ -213,6 +213,185 @@ async def proxy_debug_schema(request: Request):
         logging.error(f"Error proxying debug schema: {e}")
         return JSONResponse(content={"error": "Failed to fetch debug schema"}, status_code=500)
 
+# Advanced Social Features API Proxy Routes
+@api_router.get("/messages")
+async def proxy_messages_get(request: Request):
+    """Proxy messages GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/messages"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying messages GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch messages"}, status_code=500)
+
+@api_router.post("/messages")
+async def proxy_messages_post(request: Request):
+    """Proxy messages POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/messages", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying messages POST request: {e}")
+        return JSONResponse(content={"error": "Failed to send message"}, status_code=500)
+
+@api_router.put("/messages")
+async def proxy_messages_put(request: Request):
+    """Proxy messages PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/messages", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying messages PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update messages"}, status_code=500)
+
+@api_router.get("/friendships")
+async def proxy_friendships_get(request: Request):
+    """Proxy friendships GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/friendships"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying friendships GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch friendships"}, status_code=500)
+
+@api_router.post("/friendships")
+async def proxy_friendships_post(request: Request):
+    """Proxy friendships POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/friendships", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying friendships POST request: {e}")
+        return JSONResponse(content={"error": "Failed to create friendship"}, status_code=500)
+
+@api_router.put("/friendships")
+async def proxy_friendships_put(request: Request):
+    """Proxy friendships PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/friendships", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying friendships PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update friendship"}, status_code=500)
+
+@api_router.delete("/friendships")
+async def proxy_friendships_delete(request: Request):
+    """Proxy friendships DELETE requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/friendships"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.delete(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying friendships DELETE request: {e}")
+        return JSONResponse(content={"error": "Failed to delete friendship"}, status_code=500)
+
+@api_router.get("/leaderboards")
+async def proxy_leaderboards_get(request: Request):
+    """Proxy leaderboards GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/leaderboards"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying leaderboards GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch leaderboards"}, status_code=500)
+
+@api_router.post("/leaderboards")
+async def proxy_leaderboards_post(request: Request):
+    """Proxy leaderboards POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/leaderboards", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying leaderboards POST request: {e}")
+        return JSONResponse(content={"error": "Failed to update leaderboards"}, status_code=500)
+
+@api_router.put("/leaderboards")
+async def proxy_leaderboards_put(request: Request):
+    """Proxy leaderboards PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/leaderboards", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying leaderboards PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update leaderboard rankings"}, status_code=500)
+
+@api_router.get("/notifications")
+async def proxy_notifications_get(request: Request):
+    """Proxy notifications GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/notifications"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying notifications GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch notifications"}, status_code=500)
+
+@api_router.post("/notifications")
+async def proxy_notifications_post(request: Request):
+    """Proxy notifications POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/notifications", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying notifications POST request: {e}")
+        return JSONResponse(content={"error": "Failed to create notification"}, status_code=500)
+
+@api_router.put("/notifications")
+async def proxy_notifications_put(request: Request):
+    """Proxy notifications PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/notifications", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying notifications PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update notifications"}, status_code=500)
+
+@api_router.delete("/notifications")
+async def proxy_notifications_delete(request: Request):
+    """Proxy notifications DELETE requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/notifications"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.delete(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying notifications DELETE request: {e}")
+        return JSONResponse(content={"error": "Failed to delete notifications"}, status_code=500)
+
 # Original FastAPI routes (keep for backwards compatibility)
 @api_router.get("/")
 async def root():
