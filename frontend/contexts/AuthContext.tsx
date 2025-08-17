@@ -120,27 +120,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Mock function - not needed with mock data
-  const loadUserProfile = async (authUser: User) => {
-    // This function is not needed with mock data
-    setLoading(false);
-  };
-
+  // Authentication methods
   const signUp = async (email: string, password: string, userData: Partial<UserProfile>) => {
     try {
       setLoading(true);
       
-      // Mock signup - simulate successful registration
-      console.log('✅ Mock signup successful for:', email);
-      
-      const mockUser: User = {
-        id: 'mock-user-' + Date.now(),
-        email: email,
-      };
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: userData.full_name || '',
+            sport: userData.sport || '',
+            grad_year: userData.grad_year || null,
+          }
+        }
+      });
 
-      return { user: mockUser, error: null };
+      if (error) {
+        return { user: null, error };
+      }
+
+      // If signup successful and user exists, create profile
+      if (data.user) {
+        const profileData = {
+          id: data.user.id,
+          email: data.user.email,
+          full_name: userData.full_name || '',
+          sport: userData.sport,
+          grad_year: userData.grad_year,
+          avatar_url: userData.avatar_url,
+          parent_email: userData.parent_email,
+          is_parent_approved: false,
+        };
+
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert(profileData);
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+        }
+      }
+
+      return { user: data.user, error: null };
     } catch (error) {
-      console.error('Mock signup error:', error);
+      console.error('Signup error:', error);
       return { user: null, error };
     } finally {
       setLoading(false);
@@ -151,17 +176,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       
-      // Mock signin - simulate successful login
-      console.log('✅ Mock signin successful for:', email);
-      
-      const mockUser: User = {
-        id: 'mock-user-signin-' + Date.now(),
-        email: email,
-      };
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      return { user: mockUser, error: null };
+      if (error) {
+        return { user: null, error };
+      }
+
+      return { user: data.user, error: null };
     } catch (error) {
-      console.error('Mock signin error:', error);
+      console.error('Signin error:', error);
       return { user: null, error };
     } finally {
       setLoading(false);
@@ -171,33 +197,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       setLoading(true);
-      // Mock signout - clear user state
-      setUser(null);
-      setSession(null);
-      console.log('✅ Mock user signed out successfully');
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Signout error:', error);
+      } else {
+        setUser(null);
+        setSession(null);
+      }
     } catch (error) {
-      console.error('Mock signout error:', error);
+      console.error('Signout error:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const createProfile = async (profileData: Partial<UserProfile>) => {
-    try {
-      // Mock profile creation
-      const mockProfile: UserProfile = {
-        id: profileData.id || 'mock-profile-' + Date.now(),
-        full_name: profileData.full_name || 'Mock User',
-        sport: profileData.sport,
-        grad_year: profileData.grad_year,
-        avatar_url: profileData.avatar_url,
-      };
-
-      console.log('✅ Mock profile created successfully');
-      return { profile: mockProfile, error: null };
-    } catch (error) {
-      console.error('Mock error creating profile:', error);
-      return { profile: null, error };
     }
   };
 
@@ -207,22 +217,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { profile: null, error: 'No user logged in' };
       }
 
-      // Mock profile update
-      const updatedProfile: UserProfile = {
-        id: user.id,
-        full_name: profileData.full_name || user.full_name,
-        sport: profileData.sport || user.sport,
-        grad_year: profileData.grad_year || user.grad_year,
-        avatar_url: profileData.avatar_url,
-      };
+      const { data: updatedProfile, error } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', user.id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        return { profile: null, error };
+      }
 
       // Update local user state
-      setUser(prev => prev ? { ...prev, ...updatedProfile } : null);
-      
-      console.log('✅ Mock profile updated successfully');
+      setUser(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          full_name: updatedProfile.full_name || prev.full_name,
+          sport: updatedProfile.sport || prev.sport,
+          grad_year: updatedProfile.grad_year || prev.grad_year,
+        };
+      });
+
       return { profile: updatedProfile, error: null };
     } catch (error) {
-      console.error('Mock error updating profile:', error);
+      console.error('Error updating profile:', error);
       return { profile: null, error };
     }
   };
