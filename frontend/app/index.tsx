@@ -389,9 +389,11 @@ function MainApp() {
             </Text>
           </Animated.View>
 
-          {/* Social Features Section */}
+          {/* Connect With Champions */}
           <Animated.View style={[styles.socialSection, quoteAnimatedStyle]}>
-            <Text style={styles.socialTitle}>Connect With Champions</Text>
+            <Text style={styles.socialTitle}>🤝 CONNECT WITH CHAMPIONS</Text>
+            <Text style={styles.sectionSubtitle}>Build your network of elite young athletes</Text>
+            
             <View style={styles.socialButtons}>
               <TouchableOpacity 
                 style={styles.socialButton}
@@ -416,8 +418,31 @@ function MainApp() {
                 onPress={() => setCurrentScreen('social_profile')}
                 activeOpacity={0.8}
               >
-                <Text style={styles.socialButtonEmoji}>🏆</Text>
+                <Text style={styles.socialButtonEmoji}>👤</Text>
                 <Text style={styles.socialButtonText}>MY PROFILE</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* New Advanced Social Features */}
+            <View style={styles.advancedSocialButtons}>
+              <TouchableOpacity 
+                style={styles.advancedSocialButton}
+                onPress={() => setCurrentScreen('social_messages')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.advancedSocialButtonEmoji}>💬</Text>
+                <Text style={styles.advancedSocialButtonText}>LIVE CHAT</Text>
+                <Text style={styles.advancedSocialButtonSubtext}>Message friends</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.advancedSocialButton}
+                onPress={() => setCurrentScreen('social_leaderboards')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.advancedSocialButtonEmoji}>🏆</Text>
+                <Text style={styles.advancedSocialButtonText}>LEADERBOARDS</Text>
+                <Text style={styles.advancedSocialButtonSubtext}>Rankings & competition</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
