@@ -419,9 +419,23 @@ async function setupStoragePolicies() {
 
 export async function GET(request: NextRequest) {
   try {
+    // AUTHENTICATION: Verify JWT token for GET requests too (for security)
+    const { user, error: authError } = await verifyAuthToken(request);
+    
+    if (authError || !user) {
+      return NextResponse.json(
+        { 
+          error: 'Unauthorized', 
+          details: authError || 'Authentication required' 
+        }, 
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
 
+    // INPUT VALIDATION: Validate action parameter
     if (action === 'check_bucket') {
       // Check bucket status
       const { data: buckets, error } = await supabaseServiceClient.storage.listBuckets();
@@ -439,7 +453,9 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    return NextResponse.json({ 
+      error: 'Invalid action. Allowed actions: check_bucket' 
+    }, { status: 400 });
 
   } catch (error) {
     console.error('Storage check error:', error);
