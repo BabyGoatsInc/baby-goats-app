@@ -760,10 +760,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Profile Photo Integration End-to-End Testing"
-    - "ProfilePhotoSelector Component Mobile Testing"
-    - "Supabase Storage Integration Validation"
+    - "Next.js 15 Cookies API Compatibility Fixes"
+    - "Team Management APIs (/api/teams)"
+    - "Social Feature Enhancements Phase 6 - Navigation & Notifications"
   stuck_tasks:
+    - "Next.js 15 Cookies API Compatibility Fixes"
+    - "Team Management APIs (/api/teams)"
     - "Security Input Sanitization Improvements"
     - "Cross-system Error Handling Coordination"
   test_all: false
