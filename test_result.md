@@ -703,12 +703,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Team Management APIs (/api/teams)"
-    - "Team Members Management APIs (/api/team-members)"
-    - "Team Challenges APIs (/api/team-challenges)"
-    - "Team System Database Schema Validation"
+    - "Profile Photo Integration End-to-End Testing"
+    - "ProfilePhotoSelector Component Mobile Testing"
+    - "Supabase Storage Integration Validation"
   stuck_tasks:
-    - "Team System Database Schema Validation"
+    - "Security Input Sanitization Improvements"
+    - "Cross-system Error Handling Coordination"
   test_all: false
   test_priority: "high_first"
 
