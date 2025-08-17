@@ -172,75 +172,76 @@ class SocialFeaturesVerificationTest:
         # Test GET leaderboards
         self.test_api_endpoint("GET", "/leaderboards", test_name="GET Leaderboards API")
         
-        # Test POST leaderboard entry
+        # Test GET leaderboards with parameters
+        self.test_api_endpoint("GET", "/leaderboards?type=points&scope=global", test_name="GET Leaderboards with Filters API")
+        
+        # Test POST leaderboard entry with correct parameters
         leaderboard_data = {
             "user_id": self.test_user_id,
-            "leaderboard_type": "weekly_challenges",
-            "score": 150,
-            "rank": 1
+            "action": "challenge_complete",
+            "points": 150
         }
         self.test_api_endpoint("POST", "/leaderboards", data=leaderboard_data, test_name="POST Leaderboard Entry API")
         
-        # Test PUT leaderboard update
-        update_data = {
-            "user_id": self.test_user_id,
-            "score": 200
-        }
-        self.test_api_endpoint("PUT", "/leaderboards", data=update_data, test_name="PUT Leaderboard Update API")
+        # Test PUT leaderboard update (admin function)
+        self.test_api_endpoint("PUT", "/leaderboards", test_name="PUT Leaderboard Update API")
 
     def test_friendship_apis(self):
         """Test Friendship Management APIs"""
         print("\n👥 TESTING FRIENDSHIP APIs")
         print("-" * 40)
         
-        # Test GET friendships
-        self.test_api_endpoint("GET", "/friendships", test_name="GET Friendships API")
+        # Test GET friendships with user_id parameter
+        self.test_api_endpoint("GET", f"/friendships?user_id={self.test_user_id}", test_name="GET Friendships API")
         
-        # Test POST friendship request
+        # Test GET friend requests
+        self.test_api_endpoint("GET", f"/friendships?user_id={self.test_user_id}&type=received_requests", test_name="GET Friend Requests API")
+        
+        # Test POST friendship request with correct field names
         friendship_data = {
-            "requester_id": self.test_user_id,
-            "requested_id": self.test_friend_id,
-            "status": "pending"
+            "user_id": self.test_user_id,
+            "friend_id": self.test_friend_id
         }
         self.test_api_endpoint("POST", "/friendships", data=friendship_data, test_name="POST Friendship Request API")
         
-        # Test PUT friendship update (accept)
+        # Test PUT friendship update (accept) with correct parameters
         update_data = {
             "friendship_id": str(uuid.uuid4()),
-            "status": "accepted"
+            "user_id": self.test_user_id,
+            "action": "accept"
         }
         self.test_api_endpoint("PUT", "/friendships", data=update_data, test_name="PUT Friendship Update API")
         
-        # Test DELETE friendship
-        self.test_api_endpoint("DELETE", f"/friendships?friendship_id={uuid.uuid4()}", test_name="DELETE Friendship API")
+        # Test DELETE friendship with correct parameters
+        self.test_api_endpoint("DELETE", f"/friendships?user_id={self.test_user_id}&friend_id={self.test_friend_id}", test_name="DELETE Friendship API")
 
     def test_notifications_apis(self):
         """Test Social Notifications APIs"""
         print("\n🔔 TESTING NOTIFICATIONS APIs")
         print("-" * 40)
         
-        # Test GET notifications
-        self.test_api_endpoint("GET", "/notifications", test_name="GET Notifications API")
+        # Test GET notifications with user_id parameter
+        self.test_api_endpoint("GET", f"/notifications?user_id={self.test_user_id}", test_name="GET Notifications API")
         
-        # Test POST notification
+        # Test POST notification with correct structure
         notification_data = {
             "user_id": self.test_user_id,
             "type": "friend_request",
             "title": "New Friend Request",
-            "message": "Someone wants to be your friend!",
-            "is_read": False
+            "message": "Someone wants to be your friend!"
         }
         self.test_api_endpoint("POST", "/notifications", data=notification_data, test_name="POST Notification API")
         
-        # Test PUT notification update
+        # Test PUT notification update with correct parameters
         update_data = {
+            "user_id": self.test_user_id,
             "notification_id": str(uuid.uuid4()),
             "is_read": True
         }
         self.test_api_endpoint("PUT", "/notifications", data=update_data, test_name="PUT Notification Update API")
         
-        # Test DELETE notification
-        self.test_api_endpoint("DELETE", f"/notifications?notification_id={uuid.uuid4()}", test_name="DELETE Notification API")
+        # Test DELETE notification with user_id parameter
+        self.test_api_endpoint("DELETE", f"/notifications?user_id={self.test_user_id}&notification_id={uuid.uuid4()}", test_name="DELETE Notification API")
 
     def test_team_management_apis(self):
         """Test Team Management APIs"""
