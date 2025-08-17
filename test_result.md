@@ -703,12 +703,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Comprehensive Real-time Social Features Testing"
-    - "Profile Photo Integration UI Testing"
-    - "Goals and Achievements End-to-End Testing"
-    - "Social Navigation and Live Features Testing"
+    - "Team Management APIs (/api/teams)"
+    - "Team Members Management APIs (/api/team-members)"
+    - "Team Challenges APIs (/api/team-challenges)"
+    - "Team System Database Schema Validation"
   stuck_tasks:
-    []
+    - "Team System Database Schema Validation"
   test_all: false
   test_priority: "high_first"
 
