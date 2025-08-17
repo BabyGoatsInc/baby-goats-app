@@ -571,12 +571,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Social Infrastructure Assessment & Enhancement"
-    - "Security Input Sanitization Improvements"
-    - "Cross-system Error Handling Coordination"
+    - "Comprehensive Real-time Social Features Testing"
+    - "Profile Photo Integration UI Testing"
+    - "Goals and Achievements End-to-End Testing"
+    - "Social Navigation and Live Features Testing"
   stuck_tasks:
     []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 agent_communication:
