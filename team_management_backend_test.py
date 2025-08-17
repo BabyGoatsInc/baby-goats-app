@@ -14,7 +14,7 @@ from typing import Dict, List, Any
 
 class TeamManagementBackendTester:
     def __init__(self):
-        self.base_url = "https://babygoats-teams.preview.emergentagent.com/api"
+        self.base_url = "https://youthgoat-social.preview.emergentagent.com/api"
         self.test_results = []
         self.test_data = {}
         
