@@ -1,454 +1,156 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Dimensions } from "react-native";
-
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withTiming, 
-  withDelay,
-  Easing
-} from 'react-native-reanimated';
-import { useFonts, SairaExtraCondensed_300Light } from '@expo-google-fonts/saira-extra-condensed';
-import { Inter_400Regular, Inter_500Medium } from '@expo-google-fonts/inter';
-
-import { AuthProvider } from '../contexts/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  ScrollView, 
+  TouchableOpacity, 
+  SafeAreaView,
+  Alert,
+  Platform,
+  Dimensions
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
-import EliteOnboarding from './onboarding/elite';
-import DailyChallenges from './challenges/index';
-import Authentication from './auth/index';
-import UserProfileScreen from './profile/index';
-import GoalsTracker from './goals/index';
-import AchievementsGallery from './achievements/index';
 
-// Offline capabilities imports
-import { offlineManager } from '../lib/offlineManager';
-import { offlineDataLayer } from '../lib/offlineDataLayer';
-import { startCacheCleanup } from '../lib/apiCache';
-import { performanceMonitor } from '../lib/performanceMonitor';
-import OfflineIndicator from '../components/OfflineIndicator';
+// Import screens and components
+import AuthScreen from './auth';
+import OnboardingScreen from './onboarding';
+import ChallengesIndexScreen from './challenges';
+import ProfileIndexScreen from './profile';
+import GoalsIndexScreen from './goals';
+import AchievementsIndexScreen from './achievements';
+import FeedScreen from './social/feed';
+import FriendsScreen from './social/friends';
+import SocialProfileScreen from './social/profile';
+import TeamsScreen from './teams'; // New teams screen
+
+// Import components
 import SocialNotifications from '../components/SocialNotifications';
 import RealtimeNotifications from '../components/RealtimeNotifications';
 
-// Technical infrastructure imports
-import { technicalInfrastructure } from '../lib/technicalInfrastructure';
-// import { ErrorBoundary } from '../lib/errorMonitoring'; // Temporarily disabled
-
-// Social system imports
-import { socialSystem } from '../lib/socialSystem';
-import SocialProfileScreen from './social/profile';
-import FriendsScreen from './social/friends';
-import ActivityFeedScreen from './social/feed';
-
-const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-const isTablet = screenWidth >= 768;
+const isTablet = screenWidth > 768;
 
-type Screen = 'home' | 'auth' | 'onboarding' | 'challenges' | 'profile' | 'goals' | 'achievements' | 'social_feed' | 'social_friends' | 'social_profile' | 'social_messages' | 'social_leaderboards';
+type Screen = 'auth' | 'onboarding' | 'home' | 'challenges' | 'profile' | 'goals' | 'achievements' | 
+              'social_feed' | 'social_friends' | 'social_profile' | 'social_messages' | 'social_leaderboards' | 'teams';
 
-interface UserProfile {
-  id: string;
-  email: string;
-  name: string;
-  age: number;
-  parentEmail?: string;
-  isParentApproved: boolean;
-  sport?: string;
-  interestLevel?: number;
-  currentStreak?: number;
-  totalChallengesCompleted?: number;
-  pillarProgress?: {
-    resilient: number;
-    relentless: number;
-    fearless: number;
-  };
-}
-
-function MainApp() {
-  const { user } = useAuth();
+export default function Index() {
+  const { user, signOut, isLoading } = useAuth();
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
-  const [offlineSystemReady, setOfflineSystemReady] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // Load fonts
-  let [fontsLoaded] = useFonts({
-    SairaExtraCondensed_300Light,
-    Inter_400Regular,
-    Inter_500Medium,
-  });
-
-  // Initialize offline capabilities and technical infrastructure including social system
   useEffect(() => {
-    async function initializeAppSystems() {
-      try {
-        console.log('🚀 Initializing Baby Goats comprehensive systems...');
-        
-        // Initialize all technical infrastructure systems
-        await technicalInfrastructure.initializeAll();
-        
-        // Initialize social system
-        await socialSystem.initialize();
-        
-        setOfflineSystemReady(true);
-        console.log('✅ Baby Goats comprehensive systems with social features ready!');
-      } catch (error) {
-        console.error('❌ Failed to initialize app systems:', error);
-        // Continue without complete technical infrastructure but log the error
-        setOfflineSystemReady(true);
+    if (!isLoading) {
+      if (!user) {
+        setCurrentScreen('auth');
+      } else if (showOnboarding) {
+        setCurrentScreen('onboarding');
+      } else {
+        setCurrentScreen('home');
       }
     }
+  }, [user, isLoading, showOnboarding]);
 
-    initializeAppSystems();
-  }, []);
-
-  // Animation values
-  const navOpacity = useSharedValue(0);
-  const heroOpacity = useSharedValue(0);
-  const heroTranslateY = useSharedValue(30);
-  const bodyOpacity = useSharedValue(0);
-  const bodyTranslateY = useSharedValue(30);
-  const ctaOpacity = useSharedValue(0);
-  const ctaTranslateY = useSharedValue(30);
-  const quoteOpacity = useSharedValue(0);
-  const quoteTranslateY = useSharedValue(30);
-  const statsOpacity = useSharedValue(0);
-  const statsTranslateY = useSharedValue(30);
-  const footerOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    if (fontsLoaded) {
-      // Staggered animation sequence
-      setTimeout(() => {
-        navOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
-      }, 200);
-      
-      setTimeout(() => {
-        heroOpacity.value = withTiming(1, { duration: 800, easing: Easing.out(Easing.cubic) });
-        heroTranslateY.value = withTiming(0, { duration: 800, easing: Easing.out(Easing.cubic) });
-      }, 400);
-      
-      setTimeout(() => {
-        bodyOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
-        bodyTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
-      }, 800);
-      
-      setTimeout(() => {
-        ctaOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
-        ctaTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
-      }, 1200);
-      
-      setTimeout(() => {
-        quoteOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
-        quoteTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
-      }, 1600);
-      
-      setTimeout(() => {
-        statsOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
-        statsTranslateY.value = withTiming(0, { duration: 600, easing: Easing.out(Easing.cubic) });
-      }, 2000);
-      
-      setTimeout(() => {
-        footerOpacity.value = withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) });
-      }, 2400);
-    }
-  }, [fontsLoaded]);
-
-  const navAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: navOpacity.value
-  }));
-
-  const heroAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: heroOpacity.value,
-    transform: [{ translateY: heroTranslateY.value }]
-  }));
-
-  const bodyAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: bodyOpacity.value,
-    transform: [{ translateY: bodyTranslateY.value }]
-  }));
-
-  const ctaAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: ctaOpacity.value,
-    transform: [{ translateY: ctaTranslateY.value }]
-  }));
-
-  const quoteAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: quoteOpacity.value,
-    transform: [{ translateY: quoteTranslateY.value }]
-  }));
-
-  const statsAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: statsOpacity.value,
-    transform: [{ translateY: statsTranslateY.value }]
-  }));
-
-  const footerAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: footerOpacity.value
-  }));
-
-  const handleScreenNavigation = (screen: Screen) => {
-    setCurrentScreen(screen);
+  const handleAuthSuccess = () => {
+    setShowOnboarding(true);
+    setCurrentScreen('onboarding');
   };
 
-  const handleBackToHome = () => {
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
     setCurrentScreen('home');
   };
 
-  // Show loading if fonts aren't loaded yet
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor="#000000" />
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading...</Text>
-        </View>
-      </View>
-    );
-  }
-
-  // Other screen components remain the same
-  if (currentScreen === 'auth') {
-    return (
-      <Authentication 
-        onBack={handleBackToHome}
-      />
-    );
-  }
-
-  if (currentScreen === 'profile') {
-    return (
-      <UserProfileScreen 
-        onNavigateTo={handleScreenNavigation}
-      />
-    );
-  }
-
-  if (currentScreen === 'onboarding') {
-    return (
-      <EliteOnboarding 
-        onComplete={() => setCurrentScreen('challenges')}
-        onBack={handleBackToHome}
-      />
-    );
-  }
-
-  if (currentScreen === 'achievements') {
-    return (
-      <AchievementsGallery 
-        onBack={handleBackToHome}
-      />
-    );
-  }
-
-  if (currentScreen === 'goals') {
-    return (
-      <GoalsTracker 
-        onBack={handleBackToHome}
-      />
-    );
-  }
-
-  if (currentScreen === 'social_profile') {
-    return (
-      <SocialProfileScreen 
-        onBack={handleBackToHome}
-        userId={undefined} // Shows current user's profile
-      />
-    );
-  }
-
-  if (currentScreen === 'social_friends') {
-    return (
-      <FriendsScreen 
-        onBack={handleBackToHome}
-        onViewProfile={(userId) => {
-          // In a real app, you'd navigate to profile with userId
-          // For now, just go to social profile
-          setCurrentScreen('social_profile');
-        }}
-      />
-    );
-  }
-
-  if (currentScreen === 'social_feed') {
-    return (
-      <ActivityFeedScreen 
-        onBack={handleBackToHome}
-        onViewProfile={(userId) => {
-          // In a real app, you'd navigate to profile with userId
-          setCurrentScreen('social_profile');
-        }}
-      />
-    );
-  }
-
-  if (currentScreen === 'social_messages') {
-    return (
-      <View style={styles.screenContainer}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={() => setCurrentScreen('home')}
-        >
-          <Text style={styles.backButtonText}>← Back to Home</Text>
-        </TouchableOpacity>
-        <Text style={styles.screenTitle}>Live Chat & Messaging</Text>
-        <Text style={styles.screenDescription}>
-          Connect and chat with your friends in real-time. Stay motivated together!
-        </Text>
-        <View style={styles.comingSoonContainer}>
-          <Text style={styles.comingSoonEmoji}>💬</Text>
-          <Text style={styles.comingSoonTitle}>Coming Soon!</Text>
-          <Text style={styles.comingSoonText}>
-            Live messaging features are being developed. You'll be able to chat with friends, 
-            share achievements, and motivate each other in real-time.
-          </Text>
-        </View>
-      </View>
-    );
-  }
-
-  if (currentScreen === 'social_leaderboards') {
-    return (
-      <View style={styles.screenContainer}>
-        <TouchableOpacity 
-          style={styles.backButton} 
-          onPress={() => setCurrentScreen('home')}
-        >
-          <Text style={styles.backButtonText}>← Back to Home</Text>
-        </TouchableOpacity>
-        <Text style={styles.screenTitle}>Leaderboards & Rankings</Text>
-        <Text style={styles.screenDescription}>
-          See how you rank among elite young athletes worldwide.
-        </Text>
-        <View style={styles.comingSoonContainer}>
-          <Text style={styles.comingSoonEmoji}>🏆</Text>
-          <Text style={styles.comingSoonTitle}>Coming Soon!</Text>
-          <Text style={styles.comingSoonText}>
-            Competitive leaderboards are being developed. Track your progress against 
-            other athletes and climb the rankings!
-          </Text>
-        </View>
-      </View>
-    );
-  }
-
-  if (currentScreen === 'challenges') {
-    return (
-      <DailyChallenges 
-        onBack={() => setCurrentScreen('home')}
-      />
-    );
-  }
-
-  // Luxury Home Page
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
-      
-      {/* Offline Indicator */}
-      <OfflineIndicator position="top" showDetails={false} />
-      
-      {/* Social Notifications */}
-      {user?.id && (
-        <>
-          <SocialNotifications 
-            userId={user.id}
-            onNotificationPress={(type, data) => {
-              if (type === 'friend_request') {
-                setCurrentScreen('social_friends');
-              }
-            }}
-          />
-          <RealtimeNotifications
-            onNotificationPress={(notification) => {
-              if (notification.type === 'friend_request') {
-                setCurrentScreen('social_friends');
-              } else if (notification.type === 'message') {
-                setCurrentScreen('social_friends');
-              } else if (notification.type === 'achievement') {
-                setCurrentScreen('achievements');
-              }
-            }}
-            maxVisible={3}
-          />
-        </>
-      )}
-      
-      {/* Navigation */}
-      <Animated.View style={[styles.navigation, navAnimatedStyle]}>
-        <Text style={styles.brandName}>BABY GOATS</Text>
-        <View style={styles.navLinks}>
-          <TouchableOpacity onPress={() => setCurrentScreen('goals')}>
-            <Text style={styles.navLink}>PROGRESS</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCurrentScreen('achievements')}>
-            <Text style={styles.navLink}>ACHIEVEMENTS</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCurrentScreen('social_feed')}>
-            <Text style={styles.navLink}>SOCIAL</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCurrentScreen('onboarding')}>
-            <Text style={styles.navLink}>ACADEMY</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setCurrentScreen('profile')}>
-            <Text style={styles.navLink}>MENTORSHIP</Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
-
-      {/* Hero Section */}
-      <View style={styles.heroContainer}>
-        <View style={styles.heroContent}>
-          <Animated.View style={[styles.heroTitleContainer, heroAnimatedStyle]}>
-            <Text style={styles.heroTitle}>Future</Text>
-            <Text style={[styles.heroTitle, styles.heroTitleItalic]}>Legends</Text>
-          </Animated.View>
-
-          <Animated.View style={[styles.heroBodyContainer, bodyAnimatedStyle]}>
-            <Text style={styles.heroBody}>
-              Where young champions forge their path to greatness. Every legend started as a dream.
-              Transform your potential into legendary performance through dedication, elite training,
-              and unwavering belief.
-            </Text>
-          </Animated.View>
-
-          <Animated.View style={[styles.ctaContainer, ctaAnimatedStyle]}>
-            <TouchableOpacity 
-              style={styles.primaryCta}
-              onPress={() => setCurrentScreen('auth')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.primaryCtaText}>JOIN THE LEGACY</Text>
+  const MainApp = () => (
+    <SafeAreaView style={styles.container}>
+      <LinearGradient colors={['#000000', '#1a1a1a', '#2d2d2d']} style={styles.gradient}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.greeting}>Welcome back,</Text>
+              <Text style={styles.userName}>{user?.user_metadata?.full_name || 'Champion'}</Text>
+            </View>
+            <TouchableOpacity style={styles.profileButton} onPress={() => setCurrentScreen('profile')}>
+              <Text style={styles.profileButtonText}>👤</Text>
             </TouchableOpacity>
+          </View>
 
-            <TouchableOpacity 
-              style={styles.secondaryCta}
-              onPress={() => setCurrentScreen('onboarding')}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.secondaryCtaText}>CHAMPION STORIES</Text>
-            </TouchableOpacity>
-          </Animated.View>
+          {/* Arena Status */}
+          <View style={styles.arenaSection}>
+            <Text style={styles.sectionTitle}>⚡ THE ARENA</Text>
+            <Text style={styles.arenaSubtitle}>Where champions are forged</Text>
+            
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>12</Text>
+                <Text style={styles.statLabel}>CHALLENGES</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>847</Text>
+                <Text style={styles.statLabel}>POINTS</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>5</Text>
+                <Text style={styles.statLabel}>STREAK</Text>
+              </View>
+            </View>
+          </View>
 
-          {/* Inspirational Quote */}
-          <Animated.View style={[styles.quoteSection, quoteAnimatedStyle]}>
-            <View style={styles.quoteDivider} />
-            <Text style={styles.quote}>
-              "Champions aren't made in comfort zones"
-            </Text>
-            <Text style={styles.quoteAttribution}>
-              — FOR THE NEXT GENERATION OF GOATS
-            </Text>
-          </Animated.View>
+          {/* Quick Actions */}
+          <View style={styles.actionsSection}>
+            <Text style={styles.sectionTitle}>🚀 CHAMPION ACTIONS</Text>
+            
+            <View style={styles.actionGrid}>
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => setCurrentScreen('challenges')}
+              >
+                <Text style={styles.actionEmoji}>💪</Text>
+                <Text style={styles.actionText}>CHALLENGES</Text>
+                <Text style={styles.actionSubtext}>Push your limits</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => setCurrentScreen('goals')}
+              >
+                <Text style={styles.actionEmoji}>🎯</Text>
+                <Text style={styles.actionText}>PROGRESS</Text>
+                <Text style={styles.actionSubtext}>Track your journey</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => setCurrentScreen('achievements')}
+              >
+                <Text style={styles.actionEmoji}>🏆</Text>
+                <Text style={styles.actionText}>ACHIEVEMENTS</Text>
+                <Text style={styles.actionSubtext}>Unlock greatness</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => setCurrentScreen('teams')}
+              >
+                <Text style={styles.actionEmoji}>👥</Text>
+                <Text style={styles.actionText}>TEAMS</Text>
+                <Text style={styles.actionSubtext}>Join forces</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
 
           {/* Connect With Champions */}
-          <Animated.View style={[styles.socialSection, quoteAnimatedStyle]}>
-            <Text style={styles.socialTitle}>🤝 CONNECT WITH CHAMPIONS</Text>
+          <View style={styles.socialSection}>
+            <Text style={styles.sectionTitle}>🤝 CONNECT WITH CHAMPIONS</Text>
             <Text style={styles.sectionSubtitle}>Build your network of elite young athletes</Text>
             
             <View style={styles.socialButtons}>
               <TouchableOpacity 
                 style={styles.socialButton}
                 onPress={() => setCurrentScreen('social_feed')}
-                activeOpacity={0.8}
               >
                 <Text style={styles.socialButtonEmoji}>📢</Text>
                 <Text style={styles.socialButtonText}>ACTIVITY FEED</Text>
@@ -457,7 +159,6 @@ function MainApp() {
               <TouchableOpacity 
                 style={styles.socialButton}
                 onPress={() => setCurrentScreen('social_friends')}
-                activeOpacity={0.8}
               >
                 <Text style={styles.socialButtonEmoji}>👥</Text>
                 <Text style={styles.socialButtonText}>FRIENDS</Text>
@@ -466,7 +167,6 @@ function MainApp() {
               <TouchableOpacity 
                 style={styles.socialButton}
                 onPress={() => setCurrentScreen('social_profile')}
-                activeOpacity={0.8}
               >
                 <Text style={styles.socialButtonEmoji}>👤</Text>
                 <Text style={styles.socialButtonText}>MY PROFILE</Text>
@@ -478,7 +178,6 @@ function MainApp() {
               <TouchableOpacity 
                 style={styles.advancedSocialButton}
                 onPress={() => setCurrentScreen('social_messages')}
-                activeOpacity={0.8}
               >
                 <Text style={styles.advancedSocialButtonEmoji}>💬</Text>
                 <Text style={styles.advancedSocialButtonText}>LIVE CHAT</Text>
@@ -488,61 +187,137 @@ function MainApp() {
               <TouchableOpacity 
                 style={styles.advancedSocialButton}
                 onPress={() => setCurrentScreen('social_leaderboards')}
-                activeOpacity={0.8}
               >
                 <Text style={styles.advancedSocialButtonEmoji}>🏆</Text>
                 <Text style={styles.advancedSocialButtonText}>LEADERBOARDS</Text>
                 <Text style={styles.advancedSocialButtonSubtext}>Rankings & competition</Text>
               </TouchableOpacity>
             </View>
-          </Animated.View>
-        </View>
-      </View>
+          </View>
 
-      {/* Stats Section */}
-      <Animated.View style={[styles.statsContainer, statsAnimatedStyle]}>
-        <View style={styles.statsGrid}>
-          <View style={[styles.statItem, styles.statBorder]}>
-            <Text style={styles.statValue}>1000+</Text>
-            <Text style={styles.statLabel}>YOUNG ATHLETES</Text>
-          </View>
-          <View style={[styles.statItem, styles.statBorder]}>
-            <Text style={styles.statValue}>50+</Text>
-            <Text style={styles.statLabel}>ELITE MENTORS</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>24/7</Text>
-            <Text style={styles.statLabel}>DREAM SUPPORT</Text>
-          </View>
-        </View>
-        
-        {/* Elegant divider */}
-        <View style={styles.elegantDivider} />
-      </Animated.View>
+          {/* Real-time Notifications */}
+          <RealtimeNotifications />
 
-      {/* Footer */}
-      <Animated.View style={[styles.footer, footerAnimatedStyle]}>
-        <Text style={styles.footerTagline}>BUILDING CHAMPIONS SINCE 2024</Text>
-        <View style={styles.socialLinks}>
-          <TouchableOpacity>
-            <Text style={styles.socialLink}>TIKTOK</Text>
+          {/* Social Notifications */}
+          <SocialNotifications />
+
+          {/* Elite Mindset */}
+          <View style={styles.mindsetSection}>
+            <Text style={styles.sectionTitle}>🧠 ELITE MINDSET</Text>
+            <Text style={styles.mindsetQuote}>
+              "Champions aren't made in comfort zones. Every rep, every challenge, every moment of discomfort is building the champion within you."
+            </Text>
+            <Text style={styles.mindsetAuthor}>- Baby Goats Elite Training</Text>
+          </View>
+
+          {/* Sign Out */}
+          <TouchableOpacity style={styles.signOutButton} onPress={signOut}>
+            <Text style={styles.signOutText}>Sign Out</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.socialLink}>INSTAGRAM</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.socialLink}>YOUTUBE</Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
-    </View>
+        </ScrollView>
+      </LinearGradient>
+    </SafeAreaView>
   );
+
+  const renderContent = () => {
+    switch (currentScreen) {
+      case 'auth':
+        return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
+      case 'onboarding':
+        return <OnboardingScreen onComplete={handleOnboardingComplete} />;
+      case 'challenges':
+        return <ChallengesIndexScreen />;
+      case 'profile':
+        return <ProfileIndexScreen />;
+      case 'goals':
+        return <GoalsIndexScreen />;
+      case 'achievements':
+        return <AchievementsIndexScreen />;
+      case 'social_feed':
+        return <FeedScreen onBack={() => setCurrentScreen('home')} />;
+      case 'social_friends':
+        return <FriendsScreen onBack={() => setCurrentScreen('home')} />;
+      case 'social_profile':
+        return <SocialProfileScreen onBack={() => setCurrentScreen('home')} />;
+      case 'teams':
+        return <TeamsScreen />;
+      case 'social_messages':
+        return (
+          <View style={styles.screenContainer}>
+            <TouchableOpacity 
+              style={styles.backButton} 
+              onPress={() => setCurrentScreen('home')}
+            >
+              <Text style={styles.backButtonText}>← Back to Home</Text>
+            </TouchableOpacity>
+            <Text style={styles.screenTitle}>Live Chat & Messaging</Text>
+            <Text style={styles.screenDescription}>
+              Connect and chat with your friends in real-time. Stay motivated together!
+            </Text>
+            <View style={styles.comingSoonContainer}>
+              <Text style={styles.comingSoonEmoji}>💬</Text>
+              <Text style={styles.comingSoonTitle}>Coming Soon!</Text>
+              <Text style={styles.comingSoonText}>
+                Live messaging features are being developed. You'll be able to chat with friends, 
+                share achievements, and motivate each other in real-time.
+              </Text>
+            </View>
+          </View>
+        );
+      case 'social_leaderboards':
+        return (
+          <View style={styles.screenContainer}>
+            <TouchableOpacity 
+              style={styles.backButton} 
+              onPress={() => setCurrentScreen('home')}
+            >
+              <Text style={styles.backButtonText}>← Back to Home</Text>
+            </TouchableOpacity>
+            <Text style={styles.screenTitle}>Leaderboards & Rankings</Text>
+            <Text style={styles.screenDescription}>
+              See how you rank among elite young athletes worldwide.
+            </Text>
+            <View style={styles.comingSoonContainer}>
+              <Text style={styles.comingSoonEmoji}>🏆</Text>
+              <Text style={styles.comingSoonTitle}>Coming Soon!</Text>
+              <Text style={styles.comingSoonText}>
+                Competitive leaderboards are being developed. Track your progress against 
+                other athletes and climb the rankings!
+              </Text>
+            </View>
+          </View>
+        );
+      case 'home':
+      default:
+        return <MainApp />;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <LinearGradient colors={['#000000', '#1a1a1a', '#2d2d2d']} style={styles.gradient}>
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Loading Baby Goats...</Text>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
+    );
+  }
+
+  return renderContent();
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
+  },
+  gradient: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -551,398 +326,284 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontFamily: 'Inter_400Regular',
+    fontSize: 18,
+    fontWeight: '600',
   },
-  
-  // Navigation
-  navigation: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 50,
-    paddingHorizontal: 32,
-    paddingTop: 60,
-    paddingBottom: 24,
+
+  // Header Section
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? 50 : 30,
+    paddingBottom: 20,
   },
-  brandName: {
-    fontSize: isTablet ? 28 : 24,
-    fontWeight: '300',
-    color: '#FFFFFF',
-    letterSpacing: 4,
-    fontFamily: 'SairaExtraCondensed_300Light',
-  },
-  navLinks: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: isTablet ? 48 : 32,
-  },
-  navLink: {
-    fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: '400',
-    letterSpacing: 2,
-    fontFamily: 'Inter_400Regular',
-  },
-
-  // Hero Section
-  heroContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-    minHeight: screenHeight,
-  },
-  heroContent: {
-    maxWidth: isTablet ? 800 : 400,
-    alignItems: 'center',
-    width: '100%',
-  },
-  heroTitleContainer: {
-    alignItems: 'center',
-    marginBottom: isTablet ? 32 : 24,
-  },
-  heroTitle: {
-    fontSize: isTablet ? 48 : 32,
-    fontWeight: '300',
-    color: '#FFFFFF',
-    letterSpacing: -1,
-    textAlign: 'center',
-    fontFamily: 'SairaExtraCondensed_300Light',
-    lineHeight: isTablet ? 52 : 36,
-  },
-  heroTitleItalic: {
-    fontStyle: 'italic',
-  },
-  heroBodyContainer: {
-    marginBottom: isTablet ? 48 : 40,
-    paddingHorizontal: isTablet ? 40 : 0,
-  },
-  heroBody: {
-    fontSize: isTablet ? 18 : 16,
+  greeting: {
     color: '#CCCCCC',
-    textAlign: 'center',
-    lineHeight: isTablet ? 28 : 24,
-    fontWeight: '400',
-    letterSpacing: 0.3,
-    fontFamily: 'Inter_400Regular',
-    maxWidth: isTablet ? 600 : 350,
-  },
-
-  // CTAs
-  ctaContainer: {
-    flexDirection: isTablet ? 'row' : 'column',
-    alignItems: 'center',
-    gap: 24,
-    marginBottom: isTablet ? 64 : 48,
-  },
-  primaryCta: {
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    paddingVertical: 16,
-    paddingHorizontal: isTablet ? 48 : 40,
-    backgroundColor: 'transparent',
-    minWidth: isTablet ? 200 : 180,
-    alignItems: 'center',
-  },
-  primaryCtaText: {
-    fontSize: 12,
-    color: '#EC1616', // Red color as specified
-    fontWeight: '400',
-    letterSpacing: 2,
-    fontFamily: 'Inter_400Regular',
-  },
-  secondaryCta: {
-    paddingVertical: 16,
-    paddingHorizontal: isTablet ? 48 : 40,
-    minWidth: isTablet ? 200 : 180,
-    alignItems: 'center',
-  },
-  secondaryCtaText: {
-    fontSize: 12,
-    color: '#CCCCCC',
-    fontWeight: '400',
-    letterSpacing: 2,
-    textDecorationLine: 'underline',
-    fontFamily: 'Inter_400Regular',
-  },
-
-  // Quote Section
-  quoteSection: {
-    alignItems: 'center',
-    paddingTop: 32,
-    borderTopWidth: 1,
-    borderTopColor: '#222222',
-    marginBottom: isTablet ? 64 : 48,
-  },
-  quoteDivider: {
-    width: 1,
-    height: 1,
-    backgroundColor: 'transparent',
-    marginBottom: 0,
-  },
-  quote: {
-    fontSize: isTablet ? 24 : 20,
-    color: '#AAAAAA',
-    fontStyle: 'italic',
-    textAlign: 'center',
-    fontWeight: '300',
-    fontFamily: 'SairaExtraCondensed_300Light',
-    marginBottom: 16,
-    letterSpacing: -0.5,
-  },
-  quoteAttribution: {
-    fontSize: 10,
-    color: '#666666',
-    fontWeight: '400',
-    letterSpacing: 2,
-    textAlign: 'center',
-    fontFamily: 'Inter_400Regular',
-  },
-
-  // Social Section
-  socialSection: {
-    alignItems: 'center',
-    paddingTop: 32,
-    borderTopWidth: 1,
-    borderTopColor: '#222222',
-    marginBottom: isTablet ? 64 : 48,
-  },
-  socialTitle: {
-    fontSize: isTablet ? 20 : 18,
-    color: '#FFFFFF',
-    fontWeight: '500',
-    textAlign: 'center',
-    fontFamily: 'Inter_500Medium',
-    marginBottom: 24,
-    letterSpacing: 1,
-  },
-  socialButtons: {
-    flexDirection: isTablet ? 'row' : 'column',
-    gap: 16,
-    alignItems: 'center',
-    width: '100%',
-  },
-  socialButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: '#333333',
-    paddingVertical: 16,
-    paddingHorizontal: isTablet ? 32 : 24,
-    borderRadius: 8,
-    alignItems: 'center',
-    minWidth: isTablet ? 180 : 200,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  socialButtonEmoji: {
     fontSize: 16,
   },
-  socialButtonText: {
-    fontSize: 12,
+  userName: {
     color: '#FFFFFF',
-    fontWeight: '400',
-    letterSpacing: 1,
-    fontFamily: 'Inter_400Regular',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
-  sectionSubtitle: {
-    fontSize: isTablet ? 16 : 14,
-    color: '#CCCCCC',
-    fontWeight: '400',
-    textAlign: 'center',
-    fontFamily: 'Inter_400Regular',
-    marginBottom: 24,
-    letterSpacing: 0.5,
-  },
-  advancedSocialButtons: {
-    flexDirection: isTablet ? 'row' : 'column',
-    gap: 16,
-    alignItems: 'center',
-    width: '100%',
-    marginTop: 24,
-  },
-  advancedSocialButton: {
-    backgroundColor: 'rgba(236, 22, 22, 0.1)',
-    borderWidth: 1,
-    borderColor: '#EC1616',
-    paddingVertical: 20,
-    paddingHorizontal: isTablet ? 32 : 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    minWidth: isTablet ? 200 : 220,
-    flexDirection: 'column',
+  profileButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
     justifyContent: 'center',
-    gap: 8,
+    alignItems: 'center',
   },
-  advancedSocialButtonEmoji: {
+  profileButtonText: {
     fontSize: 20,
   },
-  advancedSocialButtonText: {
-    fontSize: 14,
-    color: '#EC1616',
-    fontWeight: '500',
-    letterSpacing: 1,
-    fontFamily: 'Inter_500Medium',
+
+  // Sections
+  arenaSection: {
+    paddingHorizontal: 20,
+    marginBottom: 30,
   },
-  advancedSocialButtonSubtext: {
-    fontSize: 10,
-    color: '#CCCCCC',
-    fontWeight: '400',
-    letterSpacing: 0.5,
-    fontFamily: 'Inter_400Regular',
-    textAlign: 'center',
+  actionsSection: {
+    paddingHorizontal: 20,
+    marginBottom: 30,
+  },
+  socialSection: {
+    paddingHorizontal: 20,
+    marginBottom: 30,
+  },
+  mindsetSection: {
+    paddingHorizontal: 20,
+    marginBottom: 30,
   },
 
-  // Stats Section
-  statsContainer: {
-    position: 'absolute',
-    bottom: isTablet ? 96 : 120,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 32,
-    alignItems: 'center',
+  sectionTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    letterSpacing: 1,
   },
+  arenaSubtitle: {
+    color: '#EC1616',
+    fontSize: 14,
+    marginBottom: 20,
+    fontWeight: '600',
+  },
+  sectionSubtitle: {
+    color: '#CCCCCC',
+    fontSize: 14,
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+
+  // Stats Grid
   statsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    maxWidth: isTablet ? 600 : 400,
-    width: '100%',
   },
-  statItem: {
-    alignItems: 'center',
+  statCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 16,
     flex: 1,
+    marginHorizontal: 4,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(236, 22, 22, 0.3)',
   },
-  statBorder: {
-    borderRightWidth: 1,
-    borderRightColor: '#222222',
-    paddingRight: 16,
-  },
-  statValue: {
-    fontSize: isTablet ? 32 : 24,
-    color: '#FFFFFF',
-    fontWeight: '300',
-    fontFamily: 'SairaExtraCondensed_300Light',
-    marginBottom: 8,
-    letterSpacing: -1,
+  statNumber: {
+    color: '#EC1616',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
   statLabel: {
-    fontSize: 10,
-    color: '#666666',
-    fontWeight: '400',
-    letterSpacing: 2,
-    textAlign: 'center',
-    fontFamily: 'Inter_400Regular',
-  },
-  elegantDivider: {
-    width: 96,
-    height: 1,
-    backgroundColor: '#FFFFFF',
-    marginTop: 32,
-    opacity: 0.3,
+    color: '#CCCCCC',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
 
-  // Footer
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 32,
-    paddingVertical: 24,
+  // Action Grid
+  actionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  actionButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    padding: 20,
+    width: '48%',
+    marginBottom: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  actionEmoji: {
+    fontSize: 32,
+    marginBottom: 12,
+  },
+  actionText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    letterSpacing: 0.5,
+  },
+  actionSubtext: {
+    color: '#CCCCCC',
+    fontSize: 11,
+    textAlign: 'center',
+  },
+
+  // Social Buttons
+  socialButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  socialButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 16,
+    flex: 1,
+    marginHorizontal: 4,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  footerTagline: {
-    fontSize: 10,
-    color: '#666666',
-    fontWeight: '400',
-    letterSpacing: 2,
-    fontFamily: 'Inter_400Regular',
+  socialButtonEmoji: {
+    fontSize: 24,
+    marginBottom: 8,
   },
-  socialLinks: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 32,
-  },
-  socialLink: {
-    fontSize: 10,
-    color: '#666666',
-    fontWeight: '400',
-    letterSpacing: 2,
-    fontFamily: 'Inter_400Regular',
+  socialButtonText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textAlign: 'center',
   },
 
-  // Screen Container Styles
+  // Advanced Social Features Buttons
+  advancedSocialButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  advancedSocialButton: {
+    backgroundColor: 'rgba(236, 22, 22, 0.1)',
+    borderRadius: 16,
+    padding: 20,
+    flex: 1,
+    marginHorizontal: 4,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(236, 22, 22, 0.3)',
+  },
+  advancedSocialButtonEmoji: {
+    fontSize: 28,
+    marginBottom: 8,
+  },
+  advancedSocialButtonText: {
+    color: '#EC1616',
+    fontSize: 13,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  advancedSocialButtonSubtext: {
+    color: '#CCCCCC',
+    fontSize: 11,
+    textAlign: 'center',
+  },
+
+  // Mindset Section
+  mindsetQuote: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontStyle: 'italic',
+    lineHeight: 24,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  mindsetAuthor: {
+    color: '#EC1616',
+    fontSize: 12,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+
+  // Sign Out
+  signOutButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 8,
+    padding: 12,
+    marginHorizontal: 20,
+    marginBottom: 40,
+    alignItems: 'center',
+  },
+  signOutText: {
+    color: '#CCCCCC',
+    fontSize: 14,
+  },
+
+  // Screen Container for Coming Soon screens
   screenContainer: {
     flex: 1,
     backgroundColor: '#000000',
-    paddingHorizontal: 32,
-    paddingTop: 60,
+    padding: 20,
   },
   backButton: {
-    paddingVertical: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     paddingHorizontal: 16,
-    marginBottom: 32,
+    paddingVertical: 8,
+    borderRadius: 20,
     alignSelf: 'flex-start',
+    marginTop: Platform.OS === 'ios' ? 50 : 30,
+    marginBottom: 20,
   },
   backButtonText: {
+    color: '#FFFFFF',
     fontSize: 14,
-    color: '#CCCCCC',
-    fontFamily: 'Inter_400Regular',
+    fontWeight: '500',
   },
   screenTitle: {
-    fontSize: isTablet ? 32 : 28,
     color: '#FFFFFF',
-    fontWeight: '300',
-    fontFamily: 'SairaExtraCondensed_300Light',
-    marginBottom: 16,
-    letterSpacing: -1,
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 12,
   },
   screenDescription: {
-    fontSize: isTablet ? 18 : 16,
     color: '#CCCCCC',
-    fontFamily: 'Inter_400Regular',
-    lineHeight: isTablet ? 28 : 24,
-    marginBottom: 48,
+    fontSize: 16,
+    lineHeight: 22,
+    marginBottom: 40,
   },
   comingSoonContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 64,
-    paddingHorizontal: 32,
+    paddingHorizontal: 20,
   },
   comingSoonEmoji: {
     fontSize: 64,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   comingSoonTitle: {
-    fontSize: isTablet ? 24 : 20,
     color: '#FFFFFF',
-    fontWeight: '500',
-    fontFamily: 'Inter_500Medium',
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 16,
-    letterSpacing: 1,
+    textAlign: 'center',
   },
   comingSoonText: {
-    fontSize: isTablet ? 16 : 14,
     color: '#CCCCCC',
-    fontFamily: 'Inter_400Regular',
+    fontSize: 16,
+    lineHeight: 24,
     textAlign: 'center',
-    lineHeight: isTablet ? 24 : 20,
     maxWidth: isTablet ? 500 : 300,
   },
 });
-
-export default function Index() {
-  return (
-    <AuthProvider>
-      <MainApp />
-    </AuthProvider>
-  );
-}
