@@ -120,10 +120,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       setLoading(true);
-      await supabase.auth.signOut();
-      console.log('✅ User signed out successfully');
+      // Mock signout - clear user state
+      setUser(null);
+      setSession(null);
+      console.log('✅ Mock user signed out successfully');
     } catch (error) {
-      console.error('Signout error:', error);
+      console.error('Mock signout error:', error);
     } finally {
       setLoading(false);
     }
