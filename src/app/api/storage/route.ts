@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // Create a service role client for admin operations
 const supabaseServiceClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
@@ -12,7 +13,101 @@ const supabaseServiceClient = createClient(supabaseUrl, supabaseServiceRoleKey, 
   }
 });
 
+// Create a regular client for JWT verification
+const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
 const STORAGE_BUCKET = 'profile-photos';
+
+/**
+ * Verify JWT token and extract user information
+ */
+async function verifyAuthToken(request: NextRequest): Promise<{ user: any; error: string | null }> {
+  try {
+    const authorization = request.headers.get('Authorization');
+    
+    if (!authorization || !authorization.startsWith('Bearer ')) {
+      return { user: null, error: 'Missing or invalid authorization header' };
+    }
+
+    const token = authorization.replace('Bearer ', '');
+    
+    // Verify the JWT token with Supabase
+    const { data: { user }, error } = await supabaseClient.auth.getUser(token);
+    
+    if (error || !user) {
+      return { user: null, error: error?.message || 'Invalid token' };
+    }
+
+    return { user, error: null };
+  } catch (error) {
+    return { user: null, error: 'Token verification failed' };
+  }
+}
+
+/**
+ * Sanitize and validate input to prevent XSS and injection attacks
+ */
+function sanitizeInput(input: string): string {
+  if (typeof input !== 'string') return '';
+  
+  return input
+    // Remove HTML tags and scripts
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    // Remove JavaScript protocols
+    .replace(/javascript:/gi, '')
+    // Remove event handlers
+    .replace(/on\w+\s*=/gi, '')
+    // Remove potential command injection
+    .replace(/[;&|`$(){}[\]]/g, '')
+    // Escape special characters
+    .replace(/[<>"']/g, (match) => {
+      const map: { [key: string]: string } = {
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;'
+      };
+      return map[match] || match;
+    })
+    // Limit length
+    .substring(0, 255)
+    .trim();
+}
+
+/**
+ * Validate file name for security
+ */
+function validateFileName(fileName: string): { isValid: boolean; sanitizedName: string; error?: string } {
+  if (!fileName || typeof fileName !== 'string') {
+    return { isValid: false, sanitizedName: '', error: 'File name is required' };
+  }
+
+  // Sanitize the input first
+  const sanitized = sanitizeInput(fileName);
+  
+  // Additional file name validation
+  const validFileNameRegex = /^[a-zA-Z0-9._-]+\.(jpg|jpeg|png|webp)$/i;
+  
+  if (!validFileNameRegex.test(sanitized)) {
+    return { 
+      isValid: false, 
+      sanitizedName: sanitized, 
+      error: 'Invalid file name. Only alphanumeric characters, dots, hyphens, and underscores allowed with jpg/jpeg/png/webp extensions.' 
+    };
+  }
+
+  // Check for path traversal attempts
+  if (sanitized.includes('..') || sanitized.includes('/') || sanitized.includes('\\')) {
+    return { 
+      isValid: false, 
+      sanitizedName: sanitized, 
+      error: 'Path traversal detected in file name' 
+    };
+  }
+
+  return { isValid: true, sanitizedName: sanitized };
+}
 
 export async function POST(request: NextRequest) {
   try {
