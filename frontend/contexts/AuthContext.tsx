@@ -133,21 +133,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const createProfile = async (profileData: Partial<UserProfile>) => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert([profileData])
-        .select()
-        .single();
+      // Mock profile creation
+      const mockProfile: UserProfile = {
+        id: profileData.id || 'mock-profile-' + Date.now(),
+        full_name: profileData.full_name || 'Mock User',
+        sport: profileData.sport,
+        grad_year: profileData.grad_year,
+        avatar_url: profileData.avatar_url,
+      };
 
-      if (error) {
-        console.error('Error creating profile:', error);
-        return { profile: null, error };
-      }
-
-      console.log('✅ Profile created successfully');
-      return { profile: data, error: null };
+      console.log('✅ Mock profile created successfully');
+      return { profile: mockProfile, error: null };
     } catch (error) {
-      console.error('Error creating profile:', error);
+      console.error('Mock error creating profile:', error);
       return { profile: null, error };
     }
   };
