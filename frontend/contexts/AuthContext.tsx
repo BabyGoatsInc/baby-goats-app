@@ -69,31 +69,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, 1000);
   }, []);
 
+  // Mock function - not needed with mock data
   const loadUserProfile = async (authUser: User) => {
-    try {
-      // Try to get existing profile
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authUser.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-        console.error('Error loading profile:', error);
-      }
-
-      const authUserData: AuthUser = {
-        id: authUser.id,
-        email: authUser.email!,
-        profile: profile || undefined
-      };
-
-      setUser(authUserData);
-    } catch (error) {
-      console.error('Error in loadUserProfile:', error);
-    } finally {
-      setLoading(false);
-    }
+    // This function is not needed with mock data
+    setLoading(false);
   };
 
   const signUp = async (email: string, password: string, userData: Partial<UserProfile>) => {
