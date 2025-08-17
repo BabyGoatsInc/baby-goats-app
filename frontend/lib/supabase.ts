@@ -3,37 +3,72 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://ssdzlzlubzcknkoflgyf.supabase.co'
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzZHpsemx1Ynpja25rb2ZsZ3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3Njc5OTYsImV4cCI6MjA3MDM0Mzk5Nn0.7ZpO5R64KS89k4We6jO9CbCevxwf1S5EOoqv6Xtv1Yk'
 
-// Mock AsyncStorage for server-side environments
-const mockAsyncStorage = {
-  getItem: async () => null,
-  setItem: async () => {},
-  removeItem: async () => {},
-  clear: async () => {},
-  getAllKeys: async () => [],
+// Create a compatibility layer for AsyncStorage
+const createCompatibleAsyncStorage = () => {
+  try {
+    // Try to import AsyncStorage dynamically to avoid server-side issues
+    const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+    return AsyncStorage;
+  } catch (error) {
+    console.warn('AsyncStorage not available, using fallback storage');
+    // Return a compatible fallback that works in server environments
+    return {
+      getItem: async (key: string) => {
+        try {
+          return typeof window !== 'undefined' && window.localStorage 
+            ? window.localStorage.getItem(key) 
+            : null;
+        } catch {
+          return null;
+        }
+      },
+      setItem: async (key: string, value: string) => {
+        try {
+          if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.setItem(key, value);
+          }
+        } catch {
+          // Silently fail in server environment
+        }
+      },
+      removeItem: async (key: string) => {
+        try {
+          if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.removeItem(key);
+          }
+        } catch {
+          // Silently fail in server environment
+        }
+      },
+      clear: async () => {
+        try {
+          if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.clear();
+          }
+        } catch {
+          // Silently fail in server environment
+        }
+      },
+      getAllKeys: async () => {
+        try {
+          if (typeof window !== 'undefined' && window.localStorage) {
+            return Object.keys(window.localStorage);
+          }
+          return [];
+        } catch {
+          return [];
+        }
+      },
+    };
+  }
 };
 
-// Determine which storage to use
-let storage = mockAsyncStorage;
-try {
-  // Try to use real AsyncStorage if available
-  if (typeof window === 'undefined') {
-    // Server-side environment - use mock
-    storage = mockAsyncStorage;
-  } else {
-    // Client-side environment - try to import AsyncStorage
-    const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-    storage = AsyncStorage;
-  }
-} catch (error) {
-  console.warn('Using mock storage due to environment compatibility');
-  storage = mockAsyncStorage;
-}
-
+// Create Supabase client with compatibility layer
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: storage,
+    storage: createCompatibleAsyncStorage(),
     autoRefreshToken: true,
-    persistSession: false, // Disabled for server-side compatibility
+    persistSession: true,
     detectSessionInUrl: false,
   },
 })
