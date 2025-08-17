@@ -27,6 +27,7 @@ import { startCacheCleanup } from '../lib/apiCache';
 import { performanceMonitor } from '../lib/performanceMonitor';
 import OfflineIndicator from '../components/OfflineIndicator';
 import SocialNotifications from '../components/SocialNotifications';
+import RealtimeNotifications from '../components/RealtimeNotifications';
 
 // Technical infrastructure imports
 import { technicalInfrastructure } from '../lib/technicalInfrastructure';
