@@ -142,22 +142,25 @@ class SocialFeaturesVerificationTest:
         print("\n📱 TESTING SOCIAL MESSAGING APIs")
         print("-" * 40)
         
-        # Test GET messages
-        self.test_api_endpoint("GET", "/messages", test_name="GET Messages API")
+        # Test GET messages with user_id parameter
+        self.test_api_endpoint("GET", f"/messages?user_id={self.test_user_id}", test_name="GET Messages API")
         
-        # Test POST message
+        # Test GET conversation between two users
+        self.test_api_endpoint("GET", f"/messages?user_id={self.test_user_id}&friend_id={self.test_friend_id}", test_name="GET Conversation API")
+        
+        # Test POST message with correct field names
         message_data = {
             "sender_id": self.test_user_id,
-            "recipient_id": self.test_friend_id,
+            "receiver_id": self.test_friend_id,
             "content": "Hello from Baby Goats social test!",
             "message_type": "text"
         }
         self.test_api_endpoint("POST", "/messages", data=message_data, test_name="POST Message API")
         
-        # Test PUT messages (mark as read)
+        # Test PUT messages (mark as read) with correct parameters
         update_data = {
-            "message_id": str(uuid.uuid4()),
-            "is_read": True
+            "user_id": self.test_user_id,
+            "friend_id": self.test_friend_id
         }
         self.test_api_endpoint("PUT", "/messages", data=update_data, test_name="PUT Messages API")
 
