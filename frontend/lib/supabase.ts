@@ -1,57 +1,80 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 const supabaseUrl = 'https://ssdzlzlubzcknkoflgyf.supabase.co'
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzZHpsemx1Ynpja25rb2ZsZ3lmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3Njc5OTYsImV4cCI6MjA3MDM0Mzk5Nn0.7ZpO5R64KS89k4We6jO9CbCevxwf1S5EOoqv6Xtv1Yk'
 
-// Universal storage adapter that works in both server and client environments
-const createUniversalStorage = () => {
-  // Check if we're in server-side environment
-  if (typeof window === 'undefined') {
-    // Server-side: return a no-op storage that prevents errors
-    return {
-      getItem: async (_key: string) => null,
-      setItem: async (_key: string, _value: string) => {},
-      removeItem: async (_key: string) => {},
-      clear: async () => {},
-      getAllKeys: async () => [],
-    };
+// Lazy-loaded Supabase client to avoid import-time AsyncStorage issues
+let _supabaseClient: SupabaseClient | null = null;
+
+const createSupabaseClient = (): SupabaseClient => {
+  if (_supabaseClient) {
+    return _supabaseClient;
   }
-  
-  // Client-side: try to use AsyncStorage, fallback to localStorage
-  try {
-    const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-    return AsyncStorage;
-  } catch (error) {
-    // Fallback to localStorage for web environments
-    try {
+
+  // Create storage adapter that works in both environments
+  const createStorage = () => {
+    // Server-side environment - return no-op storage
+    if (typeof window === 'undefined') {
       return {
-        getItem: async (key: string) => localStorage.getItem(key),
-        setItem: async (key: string, value: string) => localStorage.setItem(key, value),
-        removeItem: async (key: string) => localStorage.removeItem(key),
-        clear: async () => localStorage.clear(),
-        getAllKeys: async () => Object.keys(localStorage),
-      };
-    } catch (localStorageError) {
-      // Ultimate fallback for environments without localStorage
-      return {
-        getItem: async (_key: string) => null,
-        setItem: async (_key: string, _value: string) => {},
-        removeItem: async (_key: string) => {},
+        getItem: async () => null,
+        setItem: async () => {},
+        removeItem: async () => {},
         clear: async () => {},
         getAllKeys: async () => [],
       };
     }
-  }
+
+    // Client-side environment - use appropriate storage
+    try {
+      // Try AsyncStorage first (React Native)
+      const AsyncStorage = eval('require')('@react-native-async-storage/async-storage').default;
+      return AsyncStorage;
+    } catch {
+      // Fallback to localStorage (web)
+      try {
+        return {
+          getItem: async (key: string) => localStorage.getItem(key),
+          setItem: async (key: string, value: string) => localStorage.setItem(key, value),
+          removeItem: async (key: string) => localStorage.removeItem(key),
+          clear: async () => localStorage.clear(),
+          getAllKeys: async () => Object.keys(localStorage),
+        };
+      } catch {
+        // Ultimate fallback - no-op storage
+        return {
+          getItem: async () => null,
+          setItem: async () => {},
+          removeItem: async () => {},
+          clear: async () => {},
+          getAllKeys: async () => [],
+        };
+      }
+    }
+  };
+
+  _supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      storage: createStorage(),
+      autoRefreshToken: typeof window !== 'undefined',
+      persistSession: typeof window !== 'undefined',
+      detectSessionInUrl: false,
+    },
+  });
+
+  return _supabaseClient;
 };
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    storage: createUniversalStorage(),
-    autoRefreshToken: typeof window !== 'undefined', // Only auto-refresh on client-side
-    persistSession: typeof window !== 'undefined',   // Only persist on client-side
-    detectSessionInUrl: false, // Disable for React Native
-  },
-})
+// Export a getter function instead of direct client
+export const getSupabase = () => createSupabaseClient();
+
+// For backward compatibility, export as supabase
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(target, prop) {
+    const client = createSupabaseClient();
+    const value = (client as any)[prop];
+    return typeof value === 'function' ? value.bind(client) : value;
+  }
+});
 
 // Database types matching the actual Supabase schema
 export interface UserProfile {
