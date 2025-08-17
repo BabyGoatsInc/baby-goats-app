@@ -151,8 +151,7 @@ export async function GET(request: NextRequest) {
 
     const { data: teams, error } = await query
       .order('created_at', { ascending: false })
-      .limit(limit)
-      .offset(offset);
+      .range(offset, offset + limit - 1);
 
     if (error) {
       console.error('Error fetching teams:', error);
