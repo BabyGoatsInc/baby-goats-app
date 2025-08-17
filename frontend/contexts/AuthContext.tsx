@@ -156,28 +156,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { profile: null, error: 'No user logged in' };
       }
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({
-          ...profileData,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error updating profile:', error);
-        return { profile: null, error };
-      }
+      // Mock profile update
+      const updatedProfile: UserProfile = {
+        id: user.id,
+        full_name: profileData.full_name || user.full_name,
+        sport: profileData.sport || user.sport,
+        grad_year: profileData.grad_year || user.grad_year,
+        avatar_url: profileData.avatar_url,
+      };
 
       // Update local user state
-      setUser(prev => prev ? { ...prev, profile: data } : null);
+      setUser(prev => prev ? { ...prev, ...updatedProfile } : null);
       
-      console.log('✅ Profile updated successfully');
-      return { profile: data, error: null };
+      console.log('✅ Mock profile updated successfully');
+      return { profile: updatedProfile, error: null };
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Mock error updating profile:', error);
       return { profile: null, error };
     }
   };
