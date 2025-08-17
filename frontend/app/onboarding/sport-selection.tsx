@@ -371,14 +371,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 16,
     elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
   },
   selectedSportCard: {
     elevation: 6,
-    shadowOpacity: 0.4,
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.4)',
   },
   sportCardGradient: {
     padding: 20,
