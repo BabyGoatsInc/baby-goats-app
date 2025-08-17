@@ -241,7 +241,7 @@ backend:
     file: "/app/src/app/api/storage/route.ts, /app/frontend/lib/storage.ts"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "main"
