@@ -170,22 +170,77 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleUpload(payload: { 
-  userId: string; 
+  userId?: string; 
   fileName: string; 
   fileData: string; 
   contentType: string; 
-}) {
+}, authenticatedUserId: string) {
   try {
-    const { userId, fileName, fileData, contentType } = payload;
+    const { fileName, fileData, contentType } = payload;
+
+    // INPUT VALIDATION: Validate and sanitize fileName
+    const fileValidation = validateFileName(fileName);
+    if (!fileValidation.isValid) {
+      return NextResponse.json({ 
+        success: false, 
+        error: fileValidation.error 
+      }, { status: 400 });
+    }
+
+    // INPUT VALIDATION: Validate contentType
+    const allowedContentTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedContentTypes.includes(contentType)) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Invalid content type. Only JPEG, PNG, and WebP images are allowed.' 
+      }, { status: 400 });
+    }
+
+    // INPUT VALIDATION: Validate fileData (base64)
+    if (!fileData || typeof fileData !== 'string') {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Invalid file data' 
+      }, { status: 400 });
+    }
+
+    // Check if base64 data is valid
+    const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+    if (!base64Regex.test(fileData)) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Invalid base64 file data' 
+      }, { status: 400 });
+    }
+
+    // Use authenticated user ID (prevent user ID spoofing)
+    const userId = authenticatedUserId;
 
     // Ensure bucket exists first
     await ensureBucketExists();
 
-    // Create the file path
-    const filePath = `${userId}/${fileName}`;
+    // Create the file path using sanitized file name
+    const filePath = `${userId}/${fileValidation.sanitizedName}`;
 
-    // Convert base64 to buffer
-    const fileBuffer = Buffer.from(fileData, 'base64');
+    // Convert base64 to buffer with size validation
+    let fileBuffer: Buffer;
+    try {
+      fileBuffer = Buffer.from(fileData, 'base64');
+    } catch (error) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Invalid base64 encoding' 
+      }, { status: 400 });
+    }
+
+    // Validate file size (5MB limit)
+    const maxFileSize = 5 * 1024 * 1024; // 5MB
+    if (fileBuffer.length > maxFileSize) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'File size exceeds 5MB limit' 
+      }, { status: 400 });
+    }
 
     // Upload file using service role client
     const { data: uploadData, error: uploadError } = await supabaseServiceClient.storage
