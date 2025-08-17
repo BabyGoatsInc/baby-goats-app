@@ -511,25 +511,26 @@ function DefaultErrorFallback({ error }: { error: Error }) {
   );
 }
 
-const styles = StyleSheet.create({
+// Define styles without StyleSheet.create to avoid server-side rendering issues
+const styles = {
   errorContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as 'center',
+    alignItems: 'center' as 'center',
     backgroundColor: '#000000',
     padding: 32,
   },
   errorTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as 'bold',
     color: '#FFFFFF',
     marginBottom: 16,
-    textAlign: 'center',
+    textAlign: 'center' as 'center',
   },
   errorMessage: {
     fontSize: 16,
     color: '#CCCCCC',
-    textAlign: 'center',
+    textAlign: 'center' as 'center',
     marginBottom: 32,
     lineHeight: 24,
   },
@@ -542,9 +543,9 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '600' as '600',
   },
-});
+};
 
 /**
  * Performance monitoring utilities
