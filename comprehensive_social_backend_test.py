@@ -25,9 +25,9 @@ import hashlib
 import re
 
 # Configuration - Testing Comprehensive Social Features Backend
-BASE_URL = "https://athlete-social.preview.emergentagent.com/api"
-NEXTJS_API_BASE = "https://athlete-social.preview.emergentagent.com/api"
-FRONTEND_URL = "https://athlete-social.preview.emergentagent.com"
+BASE_URL = "https://goat-realtime.preview.emergentagent.com/api"
+NEXTJS_API_BASE = "https://goat-realtime.preview.emergentagent.com/api"
+FRONTEND_URL = "https://goat-realtime.preview.emergentagent.com"
 
 HEADERS = {
     'Content-Type': 'application/json',
