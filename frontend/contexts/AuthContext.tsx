@@ -1,6 +1,33 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase, AuthUser, UserProfile } from '../lib/supabase';
-import { Session, User } from '@supabase/supabase-js';
+// import { supabase, AuthUser, UserProfile } from '../lib/supabase';
+// import { Session, User } from '@supabase/supabase-js';
+
+// Temporary mock types for testing
+interface AuthUser {
+  id: string;
+  email: string;
+  full_name: string;
+  sport?: string;
+  grad_year?: number;
+}
+
+interface UserProfile {
+  id: string;
+  full_name: string;
+  sport?: string;
+  grad_year?: number;
+  avatar_url?: string;
+}
+
+interface Session {
+  user: AuthUser;
+  access_token: string;
+}
+
+interface User {
+  id: string;
+  email: string;
+}
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -19,32 +46,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize auth state
+  // Mock initialization - for testing social features without Supabase
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session?.user) {
-        loadUserProfile(session.user);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔐 Auth event:', event, session?.user?.email);
-      setSession(session);
+    setTimeout(() => {
+      // Create a mock user for testing social features
+      const mockUser: AuthUser = {
+        id: 'mock-user-123',
+        email: 'athlete@babygoats.com',
+        full_name: 'Elite Athlete',
+        sport: 'Soccer',
+        grad_year: 2025,
+      };
       
-      if (session?.user) {
-        await loadUserProfile(session.user);
-      } else {
-        setUser(null);
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+      const mockSession: Session = {
+        user: mockUser,
+        access_token: 'mock-token-123'
+      };
+      
+      setUser(mockUser);
+      setSession(mockSession);
+      setLoading(false);
+    }, 1000);
   }, []);
 
   const loadUserProfile = async (authUser: User) => {
