@@ -100,20 +100,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      // Mock signin - simulate successful login
+      console.log('✅ Mock signin successful for:', email);
+      
+      const mockUser: User = {
+        id: 'mock-user-signin-' + Date.now(),
+        email: email,
+      };
 
-      if (error) {
-        console.error('Signin error:', error);
-        return { user: null, error };
-      }
-
-      console.log('✅ User signed in successfully');
-      return { user: data.user, error: null };
+      return { user: mockUser, error: null };
     } catch (error) {
-      console.error('Signin error:', error);
+      console.error('Mock signin error:', error);
       return { user: null, error };
     } finally {
       setLoading(false);
