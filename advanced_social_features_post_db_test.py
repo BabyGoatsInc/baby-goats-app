@@ -62,13 +62,13 @@ class AdvancedSocialFeaturesTester:
         
         try:
             if method == 'GET':
-                response = requests.get(url, headers=HEADERS, params=params, timeout=30)
+                response = requests.get(url, headers=HEADERS, params=params, timeout=10)
             elif method == 'POST':
-                response = requests.post(url, headers=HEADERS, json=data, timeout=30)
+                response = requests.post(url, headers=HEADERS, json=data, timeout=10)
             elif method == 'PUT':
-                response = requests.put(url, headers=HEADERS, json=data, timeout=30)
+                response = requests.put(url, headers=HEADERS, json=data, timeout=10)
             elif method == 'DELETE':
-                response = requests.delete(url, headers=HEADERS, params=params, timeout=30)
+                response = requests.delete(url, headers=HEADERS, params=params, timeout=10)
             else:
                 raise ValueError(f"Unsupported method: {method}")
             
