@@ -174,8 +174,7 @@ export async function POST(request: NextRequest) {
         message_type,
         read_at,
         metadata,
-        created_at,
-        sender:profiles!messages_sender_id_fkey(id, full_name, avatar_url)
+        created_at
       `)
       .single();
 
