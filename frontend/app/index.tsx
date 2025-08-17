@@ -878,6 +878,65 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     fontFamily: 'Inter_400Regular',
   },
+
+  // Screen Container Styles
+  screenContainer: {
+    flex: 1,
+    backgroundColor: '#000000',
+    paddingHorizontal: 32,
+    paddingTop: 60,
+  },
+  backButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 32,
+    alignSelf: 'flex-start',
+  },
+  backButtonText: {
+    fontSize: 14,
+    color: '#CCCCCC',
+    fontFamily: 'Inter_400Regular',
+  },
+  screenTitle: {
+    fontSize: isTablet ? 32 : 28,
+    color: '#FFFFFF',
+    fontWeight: '300',
+    fontFamily: 'SairaExtraCondensed_300Light',
+    marginBottom: 16,
+    letterSpacing: -1,
+  },
+  screenDescription: {
+    fontSize: isTablet ? 18 : 16,
+    color: '#CCCCCC',
+    fontFamily: 'Inter_400Regular',
+    lineHeight: isTablet ? 28 : 24,
+    marginBottom: 48,
+  },
+  comingSoonContainer: {
+    alignItems: 'center',
+    paddingVertical: 64,
+    paddingHorizontal: 32,
+  },
+  comingSoonEmoji: {
+    fontSize: 64,
+    marginBottom: 24,
+  },
+  comingSoonTitle: {
+    fontSize: isTablet ? 24 : 20,
+    color: '#FFFFFF',
+    fontWeight: '500',
+    fontFamily: 'Inter_500Medium',
+    marginBottom: 16,
+    letterSpacing: 1,
+  },
+  comingSoonText: {
+    fontSize: isTablet ? 16 : 14,
+    color: '#CCCCCC',
+    fontFamily: 'Inter_400Regular',
+    textAlign: 'center',
+    lineHeight: isTablet ? 24 : 20,
+    maxWidth: isTablet ? 500 : 300,
+  },
 });
 
 export default function Index() {
