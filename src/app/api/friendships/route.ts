@@ -454,9 +454,8 @@ export async function DELETE(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const cookieStore = await cookies();
     const supabase = createServerComponentClient({ 
-      cookies: () => cookieStore,
+      cookies,
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
     });
