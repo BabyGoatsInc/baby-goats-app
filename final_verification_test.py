@@ -1,5 +1,848 @@
 #!/usr/bin/env python3
 """
+FINAL VERIFICATION: BABY GOATS SOCIAL PLATFORM COMPLETE FUNCTIONALITY TEST
+
+**CRITICAL UPDATE:** User has successfully applied foreign key constraints and cleaned orphaned data in Supabase. 
+All database tables, RLS policies, and foreign key relationships are now properly configured.
+
+**TESTING OBJECTIVE:** Verify that Baby Goats social platform is now 100% functional with all database issues resolved.
+
+**PRIORITY TESTING:**
+
+**1. SOCIAL FEATURES APIs (Should now work 100%)**
+- Live Chat & Messaging APIs (/api/messages) - Should return 200 OK, not 500 errors
+- Leaderboards & Rankings APIs (/api/leaderboards) - Should continue working perfectly
+- Friendship Management APIs (/api/friendships) - Should return 200 OK, not 500 errors  
+- Social Notifications APIs (/api/notifications) - Should return 200 OK, not 500 errors
+
+**2. TEAM SYSTEM APIs (Should now work 100%)**
+- Team Management APIs (/api/teams) - Should return 200 OK, not 500 errors
+- Team Members APIs (/api/team-members) - Should return 200 OK, not 500 errors
+- Team Challenges APIs (/api/team-challenges) - Should return 200 OK, not 500 errors
+
+**3. REGRESSION TESTING (Ensure still working)**
+- Profiles API (/api/profiles) - Should still work perfectly
+- Storage API (/api/storage) - Should still work (with authentication)
+- Challenges API (/api/challenges) - Should still work perfectly
+- Stats API (/api/stats) - Should now work (foreign keys fixed)
+
+**EXPECTED RESULTS:**
+- All APIs should return 200 OK responses instead of 500 "Failed to fetch" errors
+- Backend success rate should jump to 90%+ (Target achieved)
+- Social and team features should be 100% functional
+- Baby Goats social platform should be production-ready
+
+**SUCCESS CRITERIA:**
+- Confirm all 500 errors are resolved
+- Verify foreign key relationships allow proper API joins
+- Validate complete Baby Goats social platform functionality  
+- Determine platform is ready for frontend testing and production deployment
+
+**CRITICAL:** This is the final comprehensive test to confirm Baby Goats social platform is complete, functional, and production-ready!
+"""
+
+import requests
+import json
+import uuid
+from datetime import datetime
+import time
+import base64
+import io
+from PIL import Image
+
+# Configuration
+BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
+
+HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': 'Bearer test-token'  # Add auth header for protected endpoints
+}
+
+# Test data
+TEST_USER_ID = str(uuid.uuid4())
+TEST_FRIEND_ID = str(uuid.uuid4())
+TEST_TEAM_ID = str(uuid.uuid4())
+
+class FinalVerificationTester:
+    def __init__(self):
+        self.results = []
+        self.test_data = {}
+        self.performance_metrics = {}
+        self.error_logs = []
+        
+    def log_result(self, test_name, success, details="", response_data=None):
+        """Log test result with comprehensive details"""
+        result = {
+            'test': test_name,
+            'success': success,
+            'details': details,
+            'timestamp': datetime.now().isoformat(),
+            'category': self.get_test_category(test_name)
+        }
+        if response_data:
+            result['response'] = response_data
+        self.results.append(result)
+        
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status}: {test_name}")
+        if details:
+            print(f"   Details: {details}")
+        if not success and response_data:
+            print(f"   Response: {response_data}")
+        print()
+
+    def get_test_category(self, test_name):
+        """Categorize tests for reporting"""
+        if 'Social Features' in test_name:
+            return 'SOCIAL_FEATURES'
+        elif 'Team System' in test_name:
+            return 'TEAM_SYSTEM'
+        elif 'Regression' in test_name:
+            return 'REGRESSION'
+        else:
+            return 'CORE_API'
+
+    def make_request_with_monitoring(self, method, endpoint, data=None, params=None):
+        """Make HTTP request with comprehensive monitoring"""
+        url = f"{BASE_URL}{endpoint}"
+        start_time = time.time()
+        
+        try:
+            if method == 'GET':
+                response = requests.get(url, headers=HEADERS, params=params, timeout=30)
+            elif method == 'POST':
+                response = requests.post(url, headers=HEADERS, json=data, timeout=30)
+            elif method == 'PUT':
+                response = requests.put(url, headers=HEADERS, json=data, timeout=30)
+            elif method == 'DELETE':
+                response = requests.delete(url, headers=HEADERS, params=params, timeout=30)
+            else:
+                raise ValueError(f"Unsupported method: {method}")
+            
+            end_time = time.time()
+            response_time = end_time - start_time
+            
+            # Performance monitoring
+            endpoint_key = f"{method} {endpoint}"
+            if endpoint_key not in self.performance_metrics:
+                self.performance_metrics[endpoint_key] = []
+            self.performance_metrics[endpoint_key].append(response_time)
+            
+            return response
+            
+        except requests.exceptions.Timeout:
+            print(f"Request timed out: {method} {url}")
+            return None
+        except requests.exceptions.ConnectionError:
+            print(f"Connection error: {method} {url}")
+            return None
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return None
+
+    def test_social_features_apis(self):
+        """Test Social Features APIs - Should now work 100%"""
+        print("🎯 Testing Social Features APIs (Should now work 100%)...")
+        
+        # Test 1: Live Chat & Messaging APIs (/api/messages)
+        try:
+            print("Testing Live Chat & Messaging APIs...")
+            
+            # Test GET /api/messages
+            response = self.make_request_with_monitoring('GET', '/messages', params={'user_id': TEST_USER_ID})
+            
+            if response and response.status_code == 200:
+                self.log_result(
+                    "Social Features - GET /api/messages",
+                    True,
+                    f"✅ Messages API working perfectly! Status: {response.status_code}"
+                )
+            elif response and response.status_code == 500:
+                response_text = response.text
+                if 'Failed to fetch' in response_text:
+                    self.log_result(
+                        "Social Features - GET /api/messages",
+                        False,
+                        f"❌ CRITICAL: Still getting 500 'Failed to fetch' error - Database issues not resolved"
+                    )
+                else:
+                    self.log_result(
+                        "Social Features - GET /api/messages",
+                        False,
+                        f"❌ CRITICAL: 500 error but different issue: {response_text[:200]}"
+                    )
+            else:
+                self.log_result(
+                    "Social Features - GET /api/messages",
+                    False,
+                    f"❌ Unexpected response: {response.status_code if response else 'No response'}"
+                )
+                
+            # Test POST /api/messages
+            message_data = {
+                'sender_id': TEST_USER_ID,
+                'recipient_id': TEST_FRIEND_ID,
+                'message': 'Test message for final verification',
+                'message_type': 'text'
+            }
+            
+            response = self.make_request_with_monitoring('POST', '/messages', data=message_data)
+            
+            if response and response.status_code in [200, 201]:
+                self.log_result(
+                    "Social Features - POST /api/messages",
+                    True,
+                    f"✅ Message creation working perfectly! Status: {response.status_code}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Social Features - POST /api/messages",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for message creation"
+                )
+            else:
+                self.log_result(
+                    "Social Features - POST /api/messages",
+                    False,
+                    f"❌ Message creation failed: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Social Features - Messages APIs",
+                False,
+                f"❌ Messages API test failed: {str(e)}"
+            )
+
+        # Test 2: Leaderboards & Rankings APIs (/api/leaderboards)
+        try:
+            print("Testing Leaderboards & Rankings APIs...")
+            
+            # Test GET /api/leaderboards
+            response = self.make_request_with_monitoring('GET', '/leaderboards', params={'type': 'global', 'limit': 10})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "Social Features - GET /api/leaderboards",
+                    True,
+                    f"✅ Leaderboards API working perfectly! Status: {response.status_code}, Data: {len(data.get('leaderboards', []))} entries"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Social Features - GET /api/leaderboards",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for leaderboards"
+                )
+            else:
+                self.log_result(
+                    "Social Features - GET /api/leaderboards",
+                    False,
+                    f"❌ Leaderboards failed: {response.status_code if response else 'No response'}"
+                )
+                
+            # Test POST /api/leaderboards (update rankings)
+            leaderboard_data = {
+                'user_id': TEST_USER_ID,
+                'score': 1500,
+                'category': 'overall',
+                'period': 'weekly'
+            }
+            
+            response = self.make_request_with_monitoring('POST', '/leaderboards', data=leaderboard_data)
+            
+            if response and response.status_code in [200, 201]:
+                self.log_result(
+                    "Social Features - POST /api/leaderboards",
+                    True,
+                    f"✅ Leaderboard update working perfectly! Status: {response.status_code}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Social Features - POST /api/leaderboards",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for leaderboard updates"
+                )
+            else:
+                self.log_result(
+                    "Social Features - POST /api/leaderboards",
+                    False,
+                    f"❌ Leaderboard update failed: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Social Features - Leaderboards APIs",
+                False,
+                f"❌ Leaderboards API test failed: {str(e)}"
+            )
+
+        # Test 3: Friendship Management APIs (/api/friendships)
+        try:
+            print("Testing Friendship Management APIs...")
+            
+            # Test GET /api/friendships
+            response = self.make_request_with_monitoring('GET', '/friendships', params={'user_id': TEST_USER_ID})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "Social Features - GET /api/friendships",
+                    True,
+                    f"✅ Friendships API working perfectly! Status: {response.status_code}, Friends: {len(data.get('friendships', []))}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Social Features - GET /api/friendships",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for friendships"
+                )
+            else:
+                self.log_result(
+                    "Social Features - GET /api/friendships",
+                    False,
+                    f"❌ Friendships failed: {response.status_code if response else 'No response'}"
+                )
+                
+            # Test POST /api/friendships (friend request)
+            friendship_data = {
+                'requester_id': TEST_USER_ID,
+                'recipient_id': TEST_FRIEND_ID,
+                'status': 'pending'
+            }
+            
+            response = self.make_request_with_monitoring('POST', '/friendships', data=friendship_data)
+            
+            if response and response.status_code in [200, 201]:
+                self.log_result(
+                    "Social Features - POST /api/friendships",
+                    True,
+                    f"✅ Friend request working perfectly! Status: {response.status_code}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Social Features - POST /api/friendships",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for friend requests"
+                )
+            else:
+                self.log_result(
+                    "Social Features - POST /api/friendships",
+                    False,
+                    f"❌ Friend request failed: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Social Features - Friendships APIs",
+                False,
+                f"❌ Friendships API test failed: {str(e)}"
+            )
+
+        # Test 4: Social Notifications APIs (/api/notifications)
+        try:
+            print("Testing Social Notifications APIs...")
+            
+            # Test GET /api/notifications
+            response = self.make_request_with_monitoring('GET', '/notifications', params={'user_id': TEST_USER_ID})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "Social Features - GET /api/notifications",
+                    True,
+                    f"✅ Notifications API working perfectly! Status: {response.status_code}, Notifications: {len(data.get('notifications', []))}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Social Features - GET /api/notifications",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for notifications"
+                )
+            else:
+                self.log_result(
+                    "Social Features - GET /api/notifications",
+                    False,
+                    f"❌ Notifications failed: {response.status_code if response else 'No response'}"
+                )
+                
+            # Test POST /api/notifications (create notification)
+            notification_data = {
+                'user_id': TEST_USER_ID,
+                'type': 'friend_request',
+                'title': 'New Friend Request',
+                'message': 'You have a new friend request',
+                'data': {'requester_id': TEST_FRIEND_ID}
+            }
+            
+            response = self.make_request_with_monitoring('POST', '/notifications', data=notification_data)
+            
+            if response and response.status_code in [200, 201]:
+                self.log_result(
+                    "Social Features - POST /api/notifications",
+                    True,
+                    f"✅ Notification creation working perfectly! Status: {response.status_code}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Social Features - POST /api/notifications",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for notification creation"
+                )
+            else:
+                self.log_result(
+                    "Social Features - POST /api/notifications",
+                    False,
+                    f"❌ Notification creation failed: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Social Features - Notifications APIs",
+                False,
+                f"❌ Notifications API test failed: {str(e)}"
+            )
+
+    def test_team_system_apis(self):
+        """Test Team System APIs - Should now work 100%"""
+        print("🎯 Testing Team System APIs (Should now work 100%)...")
+        
+        # Test 1: Team Management APIs (/api/teams)
+        try:
+            print("Testing Team Management APIs...")
+            
+            # Test GET /api/teams
+            response = self.make_request_with_monitoring('GET', '/teams', params={'limit': 10})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "Team System - GET /api/teams",
+                    True,
+                    f"✅ Teams API working perfectly! Status: {response.status_code}, Teams: {len(data.get('teams', []))}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Team System - GET /api/teams",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for teams"
+                )
+            else:
+                self.log_result(
+                    "Team System - GET /api/teams",
+                    False,
+                    f"❌ Teams failed: {response.status_code if response else 'No response'}"
+                )
+                
+            # Test POST /api/teams (create team)
+            team_data = {
+                'name': 'Elite Champions Final Test',
+                'sport': 'Soccer',
+                'captain_id': TEST_USER_ID,
+                'max_members': 15,
+                'privacy_level': 'public',
+                'description': 'Final verification test team'
+            }
+            
+            response = self.make_request_with_monitoring('POST', '/teams', data=team_data)
+            
+            if response and response.status_code in [200, 201]:
+                data = response.json()
+                if 'team' in data:
+                    self.test_data['created_team_id'] = data['team'].get('id', TEST_TEAM_ID)
+                self.log_result(
+                    "Team System - POST /api/teams",
+                    True,
+                    f"✅ Team creation working perfectly! Status: {response.status_code}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Team System - POST /api/teams",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for team creation"
+                )
+            else:
+                self.log_result(
+                    "Team System - POST /api/teams",
+                    False,
+                    f"❌ Team creation failed: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Team System - Teams APIs",
+                False,
+                f"❌ Teams API test failed: {str(e)}"
+            )
+
+        # Test 2: Team Members APIs (/api/team-members)
+        try:
+            print("Testing Team Members APIs...")
+            
+            team_id = self.test_data.get('created_team_id', TEST_TEAM_ID)
+            
+            # Test GET /api/team-members
+            response = self.make_request_with_monitoring('GET', '/team-members', params={'team_id': team_id})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "Team System - GET /api/team-members",
+                    True,
+                    f"✅ Team Members API working perfectly! Status: {response.status_code}, Members: {len(data.get('members', []))}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Team System - GET /api/team-members",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for team members"
+                )
+            else:
+                self.log_result(
+                    "Team System - GET /api/team-members",
+                    False,
+                    f"❌ Team members failed: {response.status_code if response else 'No response'}"
+                )
+                
+            # Test POST /api/team-members (join team)
+            member_data = {
+                'team_id': team_id,
+                'user_id': TEST_FRIEND_ID,
+                'role': 'member',
+                'status': 'active'
+            }
+            
+            response = self.make_request_with_monitoring('POST', '/team-members', data=member_data)
+            
+            if response and response.status_code in [200, 201]:
+                self.log_result(
+                    "Team System - POST /api/team-members",
+                    True,
+                    f"✅ Team member join working perfectly! Status: {response.status_code}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Team System - POST /api/team-members",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for team member join"
+                )
+            else:
+                self.log_result(
+                    "Team System - POST /api/team-members",
+                    False,
+                    f"❌ Team member join failed: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Team System - Team Members APIs",
+                False,
+                f"❌ Team Members API test failed: {str(e)}"
+            )
+
+        # Test 3: Team Challenges APIs (/api/team-challenges)
+        try:
+            print("Testing Team Challenges APIs...")
+            
+            team_id = self.test_data.get('created_team_id', TEST_TEAM_ID)
+            
+            # Test GET /api/team-challenges
+            response = self.make_request_with_monitoring('GET', '/team-challenges', params={'team_id': team_id})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "Team System - GET /api/team-challenges",
+                    True,
+                    f"✅ Team Challenges API working perfectly! Status: {response.status_code}, Challenges: {len(data.get('challenges', []))}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Team System - GET /api/team-challenges",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for team challenges"
+                )
+            else:
+                self.log_result(
+                    "Team System - GET /api/team-challenges",
+                    False,
+                    f"❌ Team challenges failed: {response.status_code if response else 'No response'}"
+                )
+                
+            # Test POST /api/team-challenges (create team challenge)
+            challenge_data = {
+                'team_id': team_id,
+                'challenge_id': str(uuid.uuid4()),
+                'name': 'Final Verification Team Challenge',
+                'description': 'Team challenge for final verification testing',
+                'target_value': 1000,
+                'challenge_type': 'cumulative'
+            }
+            
+            response = self.make_request_with_monitoring('POST', '/team-challenges', data=challenge_data)
+            
+            if response and response.status_code in [200, 201]:
+                self.log_result(
+                    "Team System - POST /api/team-challenges",
+                    True,
+                    f"✅ Team challenge creation working perfectly! Status: {response.status_code}"
+                )
+            elif response and response.status_code == 500:
+                self.log_result(
+                    "Team System - POST /api/team-challenges",
+                    False,
+                    f"❌ CRITICAL: Still getting 500 error for team challenge creation"
+                )
+            else:
+                self.log_result(
+                    "Team System - POST /api/team-challenges",
+                    False,
+                    f"❌ Team challenge creation failed: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Team System - Team Challenges APIs",
+                False,
+                f"❌ Team Challenges API test failed: {str(e)}"
+            )
+
+    def test_regression_apis(self):
+        """Test Regression APIs - Ensure still working"""
+        print("🎯 Testing Regression APIs (Ensure still working)...")
+        
+        # Test 1: Profiles API (/api/profiles)
+        try:
+            print("Testing Profiles API...")
+            
+            # Test GET /api/profiles
+            response = self.make_request_with_monitoring('GET', '/profiles', params={'limit': 10})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                profiles = data.get('profiles', [])
+                self.log_result(
+                    "Regression - GET /api/profiles",
+                    True,
+                    f"✅ Profiles API still working perfectly! Status: {response.status_code}, Profiles: {len(profiles)}"
+                )
+            else:
+                self.log_result(
+                    "Regression - GET /api/profiles",
+                    False,
+                    f"❌ REGRESSION: Profiles API broken! Status: {response.status_code if response else 'No response'}"
+                )
+                
+            # Test POST /api/profiles
+            profile_data = {
+                'full_name': 'Final Verification User',
+                'sport': 'Basketball',
+                'grad_year': 2025,
+                'location': 'Test City'
+            }
+            
+            response = self.make_request_with_monitoring('POST', '/profiles', data=profile_data)
+            
+            if response and response.status_code in [200, 201]:
+                self.log_result(
+                    "Regression - POST /api/profiles",
+                    True,
+                    f"✅ Profile creation still working perfectly! Status: {response.status_code}"
+                )
+            else:
+                self.log_result(
+                    "Regression - POST /api/profiles",
+                    False,
+                    f"❌ REGRESSION: Profile creation broken! Status: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Regression - Profiles API",
+                False,
+                f"❌ Profiles API test failed: {str(e)}"
+            )
+
+        # Test 2: Storage API (/api/storage)
+        try:
+            print("Testing Storage API...")
+            
+            # Test GET /api/storage
+            response = self.make_request_with_monitoring('GET', '/storage', params={'action': 'check_bucket'})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "Regression - GET /api/storage",
+                    True,
+                    f"✅ Storage API still working perfectly! Status: {response.status_code}, Bucket exists: {data.get('bucketExists', False)}"
+                )
+            else:
+                self.log_result(
+                    "Regression - GET /api/storage",
+                    False,
+                    f"❌ REGRESSION: Storage API broken! Status: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Regression - Storage API",
+                False,
+                f"❌ Storage API test failed: {str(e)}"
+            )
+
+        # Test 3: Challenges API (/api/challenges)
+        try:
+            print("Testing Challenges API...")
+            
+            # Test GET /api/challenges
+            response = self.make_request_with_monitoring('GET', '/challenges', params={'limit': 10})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                challenges = data.get('challenges', [])
+                self.log_result(
+                    "Regression - GET /api/challenges",
+                    True,
+                    f"✅ Challenges API still working perfectly! Status: {response.status_code}, Challenges: {len(challenges)}"
+                )
+            else:
+                self.log_result(
+                    "Regression - GET /api/challenges",
+                    False,
+                    f"❌ REGRESSION: Challenges API broken! Status: {response.status_code if response else 'No response'}"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Regression - Challenges API",
+                False,
+                f"❌ Challenges API test failed: {str(e)}"
+            )
+
+        # Test 4: Stats API (/api/stats) - Should now work (foreign keys fixed)
+        try:
+            print("Testing Stats API...")
+            
+            # Test GET /api/stats
+            response = self.make_request_with_monitoring('GET', '/stats', params={'user_id': TEST_USER_ID})
+            
+            if response and response.status_code == 200:
+                data = response.json()
+                self.log_result(
+                    "Regression - GET /api/stats",
+                    True,
+                    f"✅ Stats API now working perfectly! Status: {response.status_code}, Foreign keys fixed!"
+                )
+            else:
+                self.log_result(
+                    "Regression - GET /api/stats",
+                    False,
+                    f"❌ Stats API still broken! Status: {response.status_code if response else 'No response'} - Foreign keys may not be fixed"
+                )
+                
+        except Exception as e:
+            self.log_result(
+                "Regression - Stats API",
+                False,
+                f"❌ Stats API test failed: {str(e)}"
+            )
+
+    def generate_final_report(self):
+        """Generate comprehensive final verification report"""
+        print("\n" + "="*80)
+        print("🎯 FINAL VERIFICATION REPORT: BABY GOATS SOCIAL PLATFORM")
+        print("="*80)
+        
+        # Categorize results
+        social_results = [r for r in self.results if r['category'] == 'SOCIAL_FEATURES']
+        team_results = [r for r in self.results if r['category'] == 'TEAM_SYSTEM']
+        regression_results = [r for r in self.results if r['category'] == 'REGRESSION']
+        
+        # Calculate success rates
+        social_success = sum(1 for r in social_results if r['success']) / len(social_results) * 100 if social_results else 0
+        team_success = sum(1 for r in team_results if r['success']) / len(team_results) * 100 if team_results else 0
+        regression_success = sum(1 for r in regression_results if r['success']) / len(regression_results) * 100 if regression_results else 0
+        overall_success = sum(1 for r in self.results if r['success']) / len(self.results) * 100 if self.results else 0
+        
+        print(f"\n📊 SUCCESS RATES:")
+        print(f"   🔥 Social Features APIs: {social_success:.1f}% ({sum(1 for r in social_results if r['success'])}/{len(social_results)})")
+        print(f"   👥 Team System APIs: {team_success:.1f}% ({sum(1 for r in team_results if r['success'])}/{len(team_results)})")
+        print(f"   🔄 Regression Testing: {regression_success:.1f}% ({sum(1 for r in regression_results if r['success'])}/{len(regression_results)})")
+        print(f"   🎯 OVERALL SUCCESS RATE: {overall_success:.1f}% ({sum(1 for r in self.results if r['success'])}/{len(self.results)})")
+        
+        # Performance metrics
+        if self.performance_metrics:
+            avg_response_time = sum(sum(times) / len(times) for times in self.performance_metrics.values()) / len(self.performance_metrics)
+            print(f"\n⚡ PERFORMANCE:")
+            print(f"   Average Response Time: {avg_response_time:.2f}s")
+            print(f"   Endpoints Tested: {len(self.performance_metrics)}")
+        
+        # Critical findings
+        print(f"\n🔍 CRITICAL FINDINGS:")
+        failed_tests = [r for r in self.results if not r['success']]
+        
+        if not failed_tests:
+            print("   🎉 ALL TESTS PASSED! Baby Goats social platform is 100% functional!")
+            print("   ✅ Database foreign key constraints successfully applied")
+            print("   ✅ All 500 'Failed to fetch' errors resolved")
+            print("   ✅ Social and team features are production-ready")
+            print("   ✅ Platform ready for frontend testing and deployment")
+        else:
+            print("   ❌ Issues found that need attention:")
+            for test in failed_tests:
+                print(f"      - {test['test']}: {test['details']}")
+        
+        # Final verdict
+        print(f"\n🏆 FINAL VERDICT:")
+        if overall_success >= 90:
+            print("   🎉 SUCCESS: Baby Goats social platform is PRODUCTION-READY!")
+            print("   ✅ Target achieved: 90%+ backend success rate")
+            print("   ✅ Database issues resolved")
+            print("   ✅ Ready for frontend testing and production deployment")
+        elif overall_success >= 70:
+            print("   ⚠️  PARTIAL SUCCESS: Most features working but some issues remain")
+            print("   🔧 Minor fixes needed before full production readiness")
+        else:
+            print("   ❌ CRITICAL ISSUES: Major problems still exist")
+            print("   🚨 Database foreign key constraints may not be properly applied")
+            print("   🔧 Significant fixes needed before production deployment")
+        
+        print("="*80)
+        
+        return {
+            'overall_success_rate': overall_success,
+            'social_success_rate': social_success,
+            'team_success_rate': team_success,
+            'regression_success_rate': regression_success,
+            'total_tests': len(self.results),
+            'passed_tests': sum(1 for r in self.results if r['success']),
+            'failed_tests': len(failed_tests),
+            'production_ready': overall_success >= 90
+        }
+
+def main():
+    """Run final verification testing"""
+    print("🚀 STARTING FINAL VERIFICATION: BABY GOATS SOCIAL PLATFORM")
+    print("🎯 Testing complete functionality after database foreign key fixes")
+    print("="*80)
+    
+    tester = FinalVerificationTester()
+    
+    # Run all test suites
+    tester.test_social_features_apis()
+    tester.test_team_system_apis()
+    tester.test_regression_apis()
+    
+    # Generate final report
+    report = tester.generate_final_report()
+    
+    return report
+
+if __name__ == "__main__":
+    main()
+"""
 FINAL VERIFICATION: BABY GOATS SOCIAL PLATFORM COMPLETE TESTING
 
 **CRITICAL UPDATE:** User has confirmed ALL required database tables are now created in Supabase:
