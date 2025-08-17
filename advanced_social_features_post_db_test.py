@@ -17,7 +17,7 @@ from datetime import datetime
 import time
 
 # Configuration - Using production URLs from environment
-BASE_URL = "https://45233c9f-3110-44bd-81ab-327238734657.preview.emergentagent.com/api"
+BASE_URL = "https://babygoats-teams.preview.emergentagent.com/api"
 
 HEADERS = {
     'Content-Type': 'application/json',

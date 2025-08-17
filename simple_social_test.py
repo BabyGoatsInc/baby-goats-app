@@ -8,7 +8,7 @@ import requests
 import json
 import uuid
 
-BASE_URL = "https://goat-realtime.preview.emergentagent.com/api"
+BASE_URL = "https://babygoats-teams.preview.emergentagent.com/api"
 
 def test_endpoint(method, endpoint, data=None, params=None):
     """Test a single endpoint and return detailed response"""

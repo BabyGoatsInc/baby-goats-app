@@ -8,7 +8,7 @@ import requests
 import json
 
 # Configuration
-BASE_URL = "https://45233c9f-3110-44bd-81ab-327238734657.preview.emergentagent.com/api"
+BASE_URL = "https://babygoats-teams.preview.emergentagent.com/api"
 
 def test_social_endpoints():
     """Test if advanced social features endpoints return proper database errors vs 404s"""
