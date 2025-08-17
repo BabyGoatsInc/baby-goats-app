@@ -1,33 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-// import { supabase, AuthUser, UserProfile } from '../lib/supabase';
-// import { Session, User } from '@supabase/supabase-js';
-
-// Temporary mock types for testing
-interface AuthUser {
-  id: string;
-  email: string;
-  full_name: string;
-  sport?: string;
-  grad_year?: number;
-}
-
-interface UserProfile {
-  id: string;
-  full_name: string;
-  sport?: string;
-  grad_year?: number;
-  avatar_url?: string;
-}
-
-interface Session {
-  user: AuthUser;
-  access_token: string;
-}
-
-interface User {
-  id: string;
-  email: string;
-}
+import { supabase, AuthUser, UserProfile } from '../lib/supabase';
+import { Session, User } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -46,27 +19,105 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Mock initialization - for testing social features without Supabase
-  useEffect(() => {
-    setTimeout(() => {
-      // Create a mock user for testing social features
-      const mockUser: AuthUser = {
-        id: 'mock-user-123',
-        email: 'athlete@babygoats.com',
-        full_name: 'Elite Athlete',
-        sport: 'Soccer',
-        grad_year: 2025,
-      };
-      
-      const mockSession: Session = {
-        user: mockUser,
-        access_token: 'mock-token-123'
-      };
-      
-      setUser(mockUser);
-      setSession(mockSession);
+  // Function to load user profile from database
+  const loadUserProfile = async (authUser: User) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authUser.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // Not found error
+        console.error('Error loading user profile:', error);
+        setUser({
+          id: authUser.id,
+          email: authUser.email || '',
+        });
+      } else if (profile) {
+        setUser({
+          id: profile.id,
+          email: profile.email || authUser.email || '',
+          full_name: profile.full_name || '',
+          sport: profile.sport,
+          grad_year: profile.grad_year,
+          email_verified: true,
+          is_parent_approved: profile.is_parent_approved,
+          created_at: profile.created_at,
+        });
+      } else {
+        // No profile found, create minimal user object
+        setUser({
+          id: authUser.id,
+          email: authUser.email || '',
+        });
+      }
       setLoading(false);
-    }, 1000);
+    } catch (error) {
+      console.error('Error loading user profile:', error);
+      // Create minimal user object even if profile loading fails
+      setUser({
+        id: authUser.id,
+        email: authUser.email || '',
+      });
+      setLoading(false);
+    }
+  };
+
+  // Initialize auth state
+  useEffect(() => {
+    let mounted = true;
+
+    // Get initial session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          if (mounted) {
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (mounted) {
+          setSession(session);
+          if (session?.user) {
+            await loadUserProfile(session.user);
+          } else {
+            setLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return;
+
+        setSession(session);
+        if (session?.user) {
+          await loadUserProfile(session.user);
+        } else {
+          setUser(null);
+          setLoading(false);
+        }
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Mock function - not needed with mock data
