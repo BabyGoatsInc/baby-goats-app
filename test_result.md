@@ -57,8 +57,8 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 ## agent_communication:
-##     -agent: "main"  # or "testing" or "user"
-##     -message: "Communication message between agents"
+##     - agent: "main"
+##       message: "Starting Profile Photo Integration comprehensive testing while user sets up database schema. Focus on end-to-end testing of ProfilePhotoSelector component, camera/gallery integration, image processing, Supabase Storage upload/delete operations, and mobile UI validation. This is high-priority pending task that doesn't depend on new social database tables."
 
 # Protocol Guidelines for Main agent
 #
