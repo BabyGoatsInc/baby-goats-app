@@ -700,6 +700,53 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     fontFamily: 'Inter_400Regular',
   },
+  sectionSubtitle: {
+    fontSize: isTablet ? 16 : 14,
+    color: '#CCCCCC',
+    fontWeight: '400',
+    textAlign: 'center',
+    fontFamily: 'Inter_400Regular',
+    marginBottom: 24,
+    letterSpacing: 0.5,
+  },
+  advancedSocialButtons: {
+    flexDirection: isTablet ? 'row' : 'column',
+    gap: 16,
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 24,
+  },
+  advancedSocialButton: {
+    backgroundColor: 'rgba(236, 22, 22, 0.1)',
+    borderWidth: 1,
+    borderColor: '#EC1616',
+    paddingVertical: 20,
+    paddingHorizontal: isTablet ? 32 : 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    minWidth: isTablet ? 200 : 220,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  advancedSocialButtonEmoji: {
+    fontSize: 20,
+  },
+  advancedSocialButtonText: {
+    fontSize: 14,
+    color: '#EC1616',
+    fontWeight: '500',
+    letterSpacing: 1,
+    fontFamily: 'Inter_500Medium',
+  },
+  advancedSocialButtonSubtext: {
+    fontSize: 10,
+    color: '#CCCCCC',
+    fontWeight: '400',
+    letterSpacing: 0.5,
+    fontFamily: 'Inter_400Regular',
+    textAlign: 'center',
+  },
 
   // Stats Section
   statsContainer: {
