@@ -1,0 +1,528 @@
+{
+  "summary": {
+    "total_tests": 21,
+    "successful_tests": 7,
+    "success_rate": 100.0,
+    "api_status": {
+      "/api/profiles": {
+        "total": 2,
+        "success": 1,
+        "errors": [
+          "\u274c Unexpected response: No response"
+        ]
+      },
+      "/api/challenges": {
+        "total": 1,
+        "success": 1,
+        "errors": []
+      },
+      "/api/storage": {
+        "total": 1,
+        "success": 0,
+        "errors": [
+          "\u274c Storage API failed: No response"
+        ]
+      },
+      "/api/stats": {
+        "total": 1,
+        "success": 1,
+        "errors": []
+      },
+      "/api/teams": {
+        "total": 2,
+        "success": 0,
+        "errors": [
+          "\u274c Unexpected response: No response",
+          "\u274c Unexpected response: No response"
+        ]
+      },
+      "/api/team-members": {
+        "total": 2,
+        "success": 0,
+        "errors": [
+          "\u274c Unexpected response: No response",
+          "\u274c Unexpected response: No response"
+        ]
+      },
+      "/api/team-challenges": {
+        "total": 2,
+        "success": 0,
+        "errors": [
+          "\u274c Unexpected response: No response",
+          "\u274c Unexpected response: No response"
+        ]
+      },
+      "/api/messages": {
+        "total": 2,
+        "success": 1,
+        "errors": [
+          "\u274c Unexpected response: No response"
+        ]
+      },
+      "/api/friendships": {
+        "total": 1,
+        "success": 0,
+        "errors": [
+          "\u274c Unexpected response: No response"
+        ]
+      },
+      "/api/leaderboards": {
+        "total": 1,
+        "success": 1,
+        "errors": []
+      },
+      "/api/notifications": {
+        "total": 1,
+        "success": 0,
+        "errors": [
+          "\u274c Unexpected response: No response"
+        ]
+      }
+    },
+    "categories": {
+      "CORE_API": {
+        "total": 5,
+        "success": 3
+      },
+      "TEAM_SYSTEM": {
+        "total": 8,
+        "success": 0
+      },
+      "SOCIAL_FEATURES": {
+        "total": 5,
+        "success": 2
+      },
+      "GENERAL": {
+        "total": 2,
+        "success": 1
+      },
+      "RLS_POLICY": {
+        "total": 1,
+        "success": 1
+      }
+    },
+    "critical_issues": 0,
+    "performance_metrics": {
+      "GET /profiles": [
+        1.1455960273742676,
+        0.1284620761871338
+      ],
+      "POST /profiles": [
+        0.3425126075744629,
+        0.16975617408752441
+      ],
+      "GET /challenges": [
+        0.5702638626098633,
+        0.3255736827850342
+      ],
+      "GET /storage": [
+        0.40581822395324707,
+        0.03772377967834473
+      ],
+      "GET /stats": [
+        0.35123586654663086
+      ],
+      "GET /teams": [
+        1.3225231170654297,
+        0.20551800727844238
+      ],
+      "POST /teams": [
+        0.3578019142150879,
+        0.28035473823547363
+      ],
+      "GET /team-members": [
+        0.30762219429016113
+      ],
+      "POST /team-members": [
+        0.10816526412963867,
+        0.1573798656463623,
+        0.08642387390136719
+      ],
+      "GET /team-challenges": [
+        0.2936558723449707
+      ],
+      "POST /team-challenges": [
+        0.06278491020202637
+      ],
+      "GET /messages": [
+        0.560286283493042,
+        0.11956214904785156
+      ],
+      "POST /messages": [
+        0.04125666618347168
+      ],
+      "GET /friendships": [
+        0.32605409622192383,
+        0.22307133674621582
+      ],
+      "GET /leaderboards": [
+        0.41004180908203125
+      ],
+      "GET /notifications": [
+        0.289905309677124
+      ],
+      "POST /challenges": [
+        0.1331040859222412
+      ]
+    }
+  },
+  "detailed_results": [
+    {
+      "test": "Core API Regression - GET /api/profiles",
+      "success": true,
+      "details": "\u2705 Profiles API working: 1 profiles retrieved",
+      "timestamp": "2025-08-17T15:50:33.368398",
+      "category": "CORE_API"
+    },
+    {
+      "test": "Core API Regression - POST /api/profiles (RLS Policy Test)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:33.711368",
+      "category": "CORE_API"
+    },
+    {
+      "test": "Core API Regression - GET /api/challenges",
+      "success": true,
+      "details": "\u2705 Challenges API working: 10 challenges retrieved",
+      "timestamp": "2025-08-17T15:50:34.282021",
+      "category": "CORE_API"
+    },
+    {
+      "test": "Core API Regression - GET /api/storage",
+      "success": false,
+      "details": "\u274c Storage API failed: No response",
+      "timestamp": "2025-08-17T15:50:34.688206",
+      "category": "CORE_API"
+    },
+    {
+      "test": "Core API Regression - GET /api/stats",
+      "success": true,
+      "details": "\u2705 Stats API working: response received",
+      "timestamp": "2025-08-17T15:50:35.039804",
+      "category": "CORE_API"
+    },
+    {
+      "test": "Team Management - GET /api/teams (Post-RLS Fix)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:36.362652",
+      "category": "TEAM_SYSTEM"
+    },
+    {
+      "test": "Team Management - POST /api/teams (RLS Policy Test)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:36.720808",
+      "category": "TEAM_SYSTEM"
+    },
+    {
+      "test": "Team Management - GET /api/team-members (Post-RLS Fix)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:37.028757",
+      "category": "TEAM_SYSTEM"
+    },
+    {
+      "test": "Team Management - POST /api/team-members (RLS Policy Test)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:37.137288",
+      "category": "TEAM_SYSTEM"
+    },
+    {
+      "test": "Team Management - GET /api/team-challenges (Post-RLS Fix)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:37.431284",
+      "category": "TEAM_SYSTEM"
+    },
+    {
+      "test": "Team Management - POST /api/team-challenges (RLS Policy Test)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:37.494428",
+      "category": "TEAM_SYSTEM"
+    },
+    {
+      "test": "Social Features - GET /api/messages (Post-RLS Fix)",
+      "success": true,
+      "details": "\ud83c\udf89 Messages API now working: 0 messages retrieved",
+      "timestamp": "2025-08-17T15:50:38.054995",
+      "category": "SOCIAL_FEATURES"
+    },
+    {
+      "test": "Social Features - POST /api/messages (RLS Policy Test)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:38.096647",
+      "category": "SOCIAL_FEATURES"
+    },
+    {
+      "test": "Social Features - GET /api/friendships (Post-RLS Fix)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:38.423031",
+      "category": "SOCIAL_FEATURES"
+    },
+    {
+      "test": "Social Features - GET /api/leaderboards (Post-RLS Fix)",
+      "success": true,
+      "details": "\ud83c\udf89 Leaderboards API now working: 0 leaderboards retrieved",
+      "timestamp": "2025-08-17T15:50:38.833440",
+      "category": "SOCIAL_FEATURES"
+    },
+    {
+      "test": "Social Features - GET /api/notifications (Post-RLS Fix)",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:39.123672",
+      "category": "SOCIAL_FEATURES"
+    },
+    {
+      "test": "Service Role Key - Profile Creation with Service Role",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:39.293745",
+      "category": "GENERAL"
+    },
+    {
+      "test": "Service Role Key - Challenge Completion with Service Role",
+      "success": true,
+      "details": "Challenge completion response: No response",
+      "timestamp": "2025-08-17T15:50:39.427250",
+      "category": "GENERAL"
+    },
+    {
+      "test": "Foreign Key Relationships - Team Member with Valid Team Reference",
+      "success": false,
+      "details": "\u274c Foreign key test failed: No response from APIs",
+      "timestamp": "2025-08-17T15:50:39.865276",
+      "category": "TEAM_SYSTEM"
+    },
+    {
+      "test": "Foreign Key Relationships - Invalid Team Reference Validation",
+      "success": false,
+      "details": "\u274c Unexpected response: No response",
+      "timestamp": "2025-08-17T15:50:39.951820",
+      "category": "TEAM_SYSTEM"
+    },
+    {
+      "test": "Performance After RLS Fixes - API Response Times",
+      "success": true,
+      "details": "Performance: 6/6 under 3s, avg: 0.17s",
+      "timestamp": "2025-08-17T15:50:40.993722",
+      "category": "RLS_POLICY"
+    }
+  ],
+  "error_logs": [
+    {
+      "endpoint": "/profiles",
+      "method": "POST",
+      "status_code": 500,
+      "response_time": 0.3425126075744629,
+      "response_text": "{\"error\":\"Failed to create profile\",\"details\":\"insert or update on table \\\"profiles\\\" violates foreign key constraint \\\"profiles_id_fkey\\\"\"}",
+      "timestamp": "2025-08-17T15:50:33.711006",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/storage",
+      "method": "GET",
+      "status_code": 401,
+      "response_time": 0.40581822395324707,
+      "response_text": "{\"error\":\"Unauthorized\",\"details\":\"Missing or invalid authorization header\"}",
+      "timestamp": "2025-08-17T15:50:34.687907",
+      "severity": "MEDIUM"
+    },
+    {
+      "endpoint": "/teams",
+      "method": "GET",
+      "status_code": 500,
+      "response_time": 1.3225231170654297,
+      "response_text": "{\"error\":\"Failed to fetch teams\"}",
+      "timestamp": "2025-08-17T15:50:36.362617",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/teams",
+      "method": "POST",
+      "status_code": 500,
+      "response_time": 0.3578019142150879,
+      "response_text": "{\"error\":\"Failed to create team\"}",
+      "timestamp": "2025-08-17T15:50:36.720505",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/team-members",
+      "method": "GET",
+      "status_code": 500,
+      "response_time": 0.30762219429016113,
+      "response_text": "{\"error\":\"Failed to fetch team members\"}",
+      "timestamp": "2025-08-17T15:50:37.028480",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/team-members",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 0.10816526412963867,
+      "response_text": "{\"error\":\"Team not found\"}",
+      "timestamp": "2025-08-17T15:50:37.136990",
+      "severity": "MEDIUM"
+    },
+    {
+      "endpoint": "/team-challenges",
+      "method": "GET",
+      "status_code": 500,
+      "response_time": 0.2936558723449707,
+      "response_text": "{\"error\":\"Failed to fetch team challenges\"}",
+      "timestamp": "2025-08-17T15:50:37.430992",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/team-challenges",
+      "method": "POST",
+      "status_code": 400,
+      "response_time": 0.06278491020202637,
+      "response_text": "{\"error\":\"Missing required fields: title, description, challenge_type, target_metric, target_value, created_by\"}",
+      "timestamp": "2025-08-17T15:50:37.494154",
+      "severity": "MEDIUM"
+    },
+    {
+      "endpoint": "/messages",
+      "method": "POST",
+      "status_code": 400,
+      "response_time": 0.04125666618347168,
+      "response_text": "{\"error\":\"Missing required fields: sender_id, receiver_id, content\"}",
+      "timestamp": "2025-08-17T15:50:38.096343",
+      "severity": "MEDIUM"
+    },
+    {
+      "endpoint": "/friendships",
+      "method": "GET",
+      "status_code": 500,
+      "response_time": 0.32605409622192383,
+      "response_text": "{\"error\":\"Failed to fetch friends\"}",
+      "timestamp": "2025-08-17T15:50:38.422747",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/notifications",
+      "method": "GET",
+      "status_code": 500,
+      "response_time": 0.289905309677124,
+      "response_text": "{\"error\":\"Internal server error\"}",
+      "timestamp": "2025-08-17T15:50:39.123397",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/profiles",
+      "method": "POST",
+      "status_code": 500,
+      "response_time": 0.16975617408752441,
+      "response_text": "{\"error\":\"Failed to create profile\",\"details\":\"insert or update on table \\\"profiles\\\" violates foreign key constraint \\\"profiles_id_fkey\\\"\"}",
+      "timestamp": "2025-08-17T15:50:39.293714",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/challenges",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 0.1331040859222412,
+      "response_text": "{\"error\":\"User not found\"}",
+      "timestamp": "2025-08-17T15:50:39.426949",
+      "severity": "MEDIUM"
+    },
+    {
+      "endpoint": "/teams",
+      "method": "POST",
+      "status_code": 500,
+      "response_time": 0.28035473823547363,
+      "response_text": "{\"error\":\"Failed to create team\"}",
+      "timestamp": "2025-08-17T15:50:39.707852",
+      "severity": "HIGH"
+    },
+    {
+      "endpoint": "/team-members",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 0.1573798656463623,
+      "response_text": "{\"error\":\"Team not found\"}",
+      "timestamp": "2025-08-17T15:50:39.865251",
+      "severity": "MEDIUM"
+    },
+    {
+      "endpoint": "/team-members",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 0.08642387390136719,
+      "response_text": "{\"error\":\"Team not found\"}",
+      "timestamp": "2025-08-17T15:50:39.951768",
+      "severity": "MEDIUM"
+    }
+  ],
+  "performance_metrics": {
+    "GET /profiles": [
+      1.1455960273742676,
+      0.1284620761871338
+    ],
+    "POST /profiles": [
+      0.3425126075744629,
+      0.16975617408752441
+    ],
+    "GET /challenges": [
+      0.5702638626098633,
+      0.3255736827850342
+    ],
+    "GET /storage": [
+      0.40581822395324707,
+      0.03772377967834473
+    ],
+    "GET /stats": [
+      0.35123586654663086
+    ],
+    "GET /teams": [
+      1.3225231170654297,
+      0.20551800727844238
+    ],
+    "POST /teams": [
+      0.3578019142150879,
+      0.28035473823547363
+    ],
+    "GET /team-members": [
+      0.30762219429016113
+    ],
+    "POST /team-members": [
+      0.10816526412963867,
+      0.1573798656463623,
+      0.08642387390136719
+    ],
+    "GET /team-challenges": [
+      0.2936558723449707
+    ],
+    "POST /team-challenges": [
+      0.06278491020202637
+    ],
+    "GET /messages": [
+      0.560286283493042,
+      0.11956214904785156
+    ],
+    "POST /messages": [
+      0.04125666618347168
+    ],
+    "GET /friendships": [
+      0.32605409622192383,
+      0.22307133674621582
+    ],
+    "GET /leaderboards": [
+      0.41004180908203125
+    ],
+    "GET /notifications": [
+      0.289905309677124
+    ],
+    "POST /challenges": [
+      0.1331040859222412
+    ]
+  },
+  "timestamp": "2025-08-17T15:50:40.994426"
+}
