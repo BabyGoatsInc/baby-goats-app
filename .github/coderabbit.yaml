@@ -1,0 +1,21 @@
+review:
+  suggestion_style: "patch"
+  tone: "direct"
+  max_comments: 80
+
+  general_guidelines: |
+    - Fix TypeScript errors and ESLint violations.
+    - Remove unused imports/vars and dead code.
+    - Use try/catch for async calls in API routes.
+    - Never hardcode secrets; use process.env.
+
+  path_instructions:
+    - path: "src/app/api/**"
+      instructions: |
+        - Validate inputs (Zod or guards).
+        - Use Supabase server client correctly (cookies where needed).
+        - Return typed NextResponse with accurate status codes.
+    - path: "src/**"
+      instructions: |
+        - Replace `any` with specific types or generics.
+        - Keep functions small and focused.
