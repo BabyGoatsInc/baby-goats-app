@@ -19,6 +19,99 @@ type Profile = Database['public']['Tables']['profiles']['Row']
 type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
 
+/**
+ * Sanitize and validate input to prevent XSS and injection attacks
+ */
+function sanitizeInput(input: string): string {
+  if (typeof input !== 'string') return '';
+  
+  return input
+    // Remove HTML tags and scripts
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    // Remove JavaScript protocols
+    .replace(/javascript:/gi, '')
+    // Remove event handlers
+    .replace(/on\w+\s*=/gi, '')
+    // Remove potential SQL injection patterns
+    .replace(/(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|EXEC|EXECUTE)\s/gi, '')
+    // Remove potential command injection
+    .replace(/[;&|`$(){}[\]]/g, '')
+    // Escape special characters for SQL safety
+    .replace(/'/g, "''")
+    // Limit length
+    .substring(0, 1000)
+    .trim();
+}
+
+/**
+ * Validate profile data
+ */
+function validateProfileData(data: any): { isValid: boolean; errors: string[]; sanitizedData: any } {
+  const errors: string[] = [];
+  const sanitizedData: any = {};
+
+  // Validate and sanitize each field
+  if (data.full_name !== undefined) {
+    if (typeof data.full_name !== 'string' || data.full_name.length < 1) {
+      errors.push('Full name is required and must be at least 1 character');
+    } else {
+      sanitizedData.full_name = sanitizeInput(data.full_name);
+      if (sanitizedData.full_name.length > 100) {
+        errors.push('Full name must not exceed 100 characters');
+      }
+    }
+  }
+
+  if (data.sport !== undefined) {
+    if (typeof data.sport !== 'string' || data.sport.length < 1) {
+      errors.push('Sport is required');
+    } else {
+      sanitizedData.sport = sanitizeInput(data.sport);
+      if (sanitizedData.sport.length > 50) {
+        errors.push('Sport name must not exceed 50 characters');
+      }
+    }
+  }
+
+  if (data.location !== undefined && data.location !== null) {
+    sanitizedData.location = sanitizeInput(data.location.toString());
+    if (sanitizedData.location.length > 100) {
+      errors.push('Location must not exceed 100 characters');
+    }
+  }
+
+  if (data.grad_year !== undefined) {
+    const currentYear = new Date().getFullYear();
+    const gradYear = parseInt(data.grad_year);
+    if (isNaN(gradYear) || gradYear < currentYear || gradYear > currentYear + 10) {
+      errors.push(`Graduation year must be between ${currentYear} and ${currentYear + 10}`);
+    } else {
+      sanitizedData.grad_year = gradYear;
+    }
+  }
+
+  if (data.username !== undefined && data.username !== null) {
+    const username = sanitizeInput(data.username.toString());
+    const usernameRegex = /^[a-zA-Z0-9_]{3,30}$/;
+    if (!usernameRegex.test(username)) {
+      errors.push('Username must be 3-30 characters and contain only letters, numbers, and underscores');
+    } else {
+      sanitizedData.username = username;
+    }
+  }
+
+  // Copy other safe fields
+  if (data.id !== undefined) sanitizedData.id = data.id;
+  if (data.avatar_url !== undefined) sanitizedData.avatar_url = data.avatar_url;
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    sanitizedData
+  };
+}
+
 // GET /api/profiles - Search/filter profiles
 // Query params: sport, grad_year, search (name), limit, offset
 export async function GET(request: NextRequest) {
