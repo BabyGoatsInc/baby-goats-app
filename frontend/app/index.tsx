@@ -280,6 +280,56 @@ function MainApp() {
     );
   }
 
+  if (currentScreen === 'social_messages') {
+    return (
+      <View style={styles.screenContainer}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => setCurrentScreen('home')}
+        >
+          <Text style={styles.backButtonText}>← Back to Home</Text>
+        </TouchableOpacity>
+        <Text style={styles.screenTitle}>Live Chat & Messaging</Text>
+        <Text style={styles.screenDescription}>
+          Connect and chat with your friends in real-time. Stay motivated together!
+        </Text>
+        <View style={styles.comingSoonContainer}>
+          <Text style={styles.comingSoonEmoji}>💬</Text>
+          <Text style={styles.comingSoonTitle}>Coming Soon!</Text>
+          <Text style={styles.comingSoonText}>
+            Live messaging features are being developed. You'll be able to chat with friends, 
+            share achievements, and motivate each other in real-time.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (currentScreen === 'social_leaderboards') {
+    return (
+      <View style={styles.screenContainer}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => setCurrentScreen('home')}
+        >
+          <Text style={styles.backButtonText}>← Back to Home</Text>
+        </TouchableOpacity>
+        <Text style={styles.screenTitle}>Leaderboards & Rankings</Text>
+        <Text style={styles.screenDescription}>
+          See how you rank among elite young athletes worldwide.
+        </Text>
+        <View style={styles.comingSoonContainer}>
+          <Text style={styles.comingSoonEmoji}>🏆</Text>
+          <Text style={styles.comingSoonTitle}>Coming Soon!</Text>
+          <Text style={styles.comingSoonText}>
+            Competitive leaderboards are being developed. Track your progress against 
+            other athletes and climb the rankings!
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
   if (currentScreen === 'challenges') {
     return (
       <DailyChallenges 
