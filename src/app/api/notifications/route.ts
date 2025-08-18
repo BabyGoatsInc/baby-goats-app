@@ -2,24 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 
-/**
- * Notifications API - Real-time Notification System
- * Handles user notifications for messages, friend requests, achievements, etc.
- */
-
-// GET /api/notifications - Get user notifications
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('user_id');
-    const unreadOnly = searchParams.get('unread_only') === 'true';
-    const type = searchParams.get('type'); // filter by notification type
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const unreadOnly = searchParams.get('unread_only');
+    const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
     if (!userId) {
       return NextResponse.json({ 
-        error: 'Missing required parameter: user_id' 
+        error: 'User ID is required' 
       }, { status: 400 });
     }
 
@@ -34,57 +27,41 @@ export async function GET(request: NextRequest) {
       .select('*')
       .eq('user_id', userId);
 
-    if (unreadOnly) {
+    if (unreadOnly === 'true') {
       query = query.eq('read', false);
     }
 
-    if (type) {
-      query = query.eq('type', type);
-    }
-
-    const { data: notifications, error } = await query
+    query = query
       .order('created_at', { ascending: false })
       .limit(limit)
       .offset(offset);
+
+    const { data: notifications, error } = await query;
 
     if (error) {
       console.error('Error fetching notifications:', error);
       return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
     }
 
-    // Get unread count
-    const { count: unreadCount, error: countError } = await supabase
-      .from('notifications')
-      .select('id', { count: 'exact' })
-      .eq('user_id', userId)
-      .eq('read', false);
-
-    if (countError) {
-      console.error('Error fetching unread count:', countError);
-    }
-
-    return NextResponse.json({
-      success: true,
+    return NextResponse.json({ 
       notifications: notifications || [],
-      unreadCount: unreadCount || 0,
-      count: notifications?.length || 0
+      total: notifications?.length || 0
     });
 
   } catch (error) {
-    console.error('Notifications GET error:', error);
+    console.error('API Error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// POST /api/notifications - Create a new notification (system use)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { user_id, type, title, message, data } = body;
+    const { user_id, type, title, message, data = {} } = body;
 
     if (!user_id || !type || !title || !message) {
       return NextResponse.json({ 
-        error: 'Missing required fields: user_id, type, title, message' 
+        error: 'User ID, type, title, and message are required' 
       }, { status: 400 });
     }
 
@@ -101,9 +78,10 @@ export async function POST(request: NextRequest) {
         type,
         title,
         message,
-        data
+        data,
+        read: false
       })
-      .select()
+      .select('*')
       .single();
 
     if (error) {
@@ -111,27 +89,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 });
     }
 
-    return NextResponse.json({
-      success: true,
-      notification,
-      created: true
+    return NextResponse.json({ 
+      message: 'Notification created successfully',
+      notification
     });
 
   } catch (error) {
-    console.error('Notifications POST error:', error);
+    console.error('API Error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// PUT /api/notifications - Mark notifications as read
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { user_id, notification_ids, mark_all_read } = body;
+    const { notification_id, user_id, read } = body;
 
-    if (!user_id) {
+    if (!notification_id || !user_id) {
       return NextResponse.json({ 
-        error: 'Missing required field: user_id' 
+        error: 'Notification ID and user ID are required' 
       }, { status: 400 });
     }
 
@@ -141,45 +117,39 @@ export async function PUT(request: NextRequest) {
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
     });
 
-    let query = supabase
+    const { data: notification, error } = await supabase
       .from('notifications')
-      .update({ read: true })
-      .eq('user_id', user_id)
-      .eq('read', false);
-
-    if (!mark_all_read && notification_ids && Array.isArray(notification_ids) && notification_ids.length > 0) {
-      query = query.in('id', notification_ids);
-    }
-
-    const { error, count } = await query;
+      .update({ read: read !== undefined ? read : true })
+      .eq('id', notification_id)
+      .eq('user_id', user_id) // Only update user's own notifications
+      .select('*')
+      .single();
 
     if (error) {
-      console.error('Error marking notifications as read:', error);
-      return NextResponse.json({ error: 'Failed to mark notifications as read' }, { status: 500 });
+      console.error('Error updating notification:', error);
+      return NextResponse.json({ error: 'Failed to update notification' }, { status: 500 });
     }
 
-    return NextResponse.json({
-      success: true,
-      notificationsMarkedRead: count || 0
+    return NextResponse.json({ 
+      message: 'Notification updated successfully',
+      notification
     });
 
   } catch (error) {
-    console.error('Notifications PUT error:', error);
+    console.error('API Error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-// DELETE /api/notifications - Delete notifications
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('user_id');
     const notificationId = searchParams.get('notification_id');
-    const deleteAll = searchParams.get('delete_all') === 'true';
+    const userId = searchParams.get('user_id');
 
-    if (!userId) {
+    if (!notificationId || !userId) {
       return NextResponse.json({ 
-        error: 'Missing required parameter: user_id' 
+        error: 'Notification ID and user ID are required' 
       }, { status: 400 });
     }
 
@@ -189,29 +159,23 @@ export async function DELETE(request: NextRequest) {
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
     });
 
-    let query = supabase
+    const { error } = await supabase
       .from('notifications')
       .delete()
-      .eq('user_id', userId);
-
-    if (!deleteAll && notificationId) {
-      query = query.eq('id', notificationId);
-    }
-
-    const { error, count } = await query;
+      .eq('id', notificationId)
+      .eq('user_id', userId); // Only delete user's own notifications
 
     if (error) {
-      console.error('Error deleting notifications:', error);
-      return NextResponse.json({ error: 'Failed to delete notifications' }, { status: 500 });
+      console.error('Error deleting notification:', error);
+      return NextResponse.json({ error: 'Failed to delete notification' }, { status: 500 });
     }
 
-    return NextResponse.json({
-      success: true,
-      notificationsDeleted: count || 0
+    return NextResponse.json({ 
+      message: 'Notification deleted successfully'
     });
 
   } catch (error) {
-    console.error('Notifications DELETE error:', error);
+    console.error('API Error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
