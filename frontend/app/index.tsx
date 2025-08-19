@@ -40,7 +40,7 @@ type Screen = 'auth' | 'onboarding' | 'home' | 'challenges' | 'profile' | 'goals
 export default function Index() {
   const { user, signOut, isLoading } = useAuth();
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false); // Force skip onboarding
 
   useEffect(() => {
     if (!isLoading) {
