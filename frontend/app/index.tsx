@@ -471,6 +471,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  // Live Streaming Button Special Styles
+  liveStreamingButton: {
+    backgroundColor: 'rgba(236, 22, 22, 0.1)',
+    borderColor: 'rgba(236, 22, 22, 0.3)',
+    borderWidth: 2,
+  },
+  liveStreamingText: {
+    color: '#EC1616',
+  },
+  liveStreamingSubtext: {
+    color: '#EC1616',
+    opacity: 0.8,
+  },
+
   // Social Buttons
   socialButtons: {
     flexDirection: 'row',
