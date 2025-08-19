@@ -60,9 +60,10 @@ export default function Index() {
     setShowOnboarding(false);
   };
 
-  const handleOnboardingComplete = () => {
-    setShowOnboarding(false);
+  // Quick bypass for stuck auth - temporary fix
+  const quickBypass = () => {
     setCurrentScreen('home');
+    setShowOnboarding(false);
   };
 
   const MainApp = () => (
