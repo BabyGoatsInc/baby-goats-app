@@ -17,7 +17,7 @@ import ConversationalAuth from './conversational';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface AuthenticationProps {
-  onBack: () => void;
+  onAuthSuccess: () => void;
 }
 
 export default function Authentication({ onBack }: AuthenticationProps) {
