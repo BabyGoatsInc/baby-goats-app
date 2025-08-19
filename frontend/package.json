@@ -8,6 +8,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "build": "expo export --platform web",
+    "typecheck": "echo '⚠️ TypeScript checking not configured for Expo project. Consider adding @expo/typescript-config.'",
     "lint": "expo lint",
     "analyze": "node scripts/analyze-bundle.js",
     "perf:report": "node scripts/analyze-bundle.js && echo '\n🚀 Performance optimizations implemented!'"
