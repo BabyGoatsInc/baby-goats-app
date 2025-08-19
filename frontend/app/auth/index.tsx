@@ -20,7 +20,7 @@ interface AuthenticationProps {
   onAuthSuccess: () => void;
 }
 
-export default function Authentication({ onBack }: AuthenticationProps) {
+export default function Authentication({ onAuthSuccess }: AuthenticationProps) {
   const [mode, setMode] = useState<'choice' | 'signup' | 'login'>('choice');
   const [fadeAnim] = useState(new Animated.Value(0));
   const [loginData, setLoginData] = useState({ email: '', password: '' });
