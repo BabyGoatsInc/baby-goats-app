@@ -202,11 +202,10 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const supabase = createServerComponentClient({ 
-      cookies,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
-    });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     // Build update object
     const updateData: any = {};
