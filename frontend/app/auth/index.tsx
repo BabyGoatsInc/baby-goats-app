@@ -168,6 +168,10 @@ export default function Authentication({ onAuthSuccess }: AuthenticationProps) {
           </Text>
         </View>
 
+        <TouchableOpacity style={styles.skipButton} onPress={onAuthSuccess}>
+          <Text style={styles.skipButtonText}>🚀 SKIP LOGIN (TEMP)</Text>
+        </TouchableOpacity>
+
         {/* Choice Actions */}
         <View style={styles.choiceContainer}>
           <TouchableOpacity
