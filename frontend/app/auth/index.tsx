@@ -40,7 +40,7 @@ export default function Authentication({ onAuthSuccess }: AuthenticationProps) {
   if (mode === 'signup') {
     return (
       <ConversationalAuth 
-        onBack={() => setMode('choice')}
+        onAuthSuccess={onAuthSuccess}
       />
     );
   }
