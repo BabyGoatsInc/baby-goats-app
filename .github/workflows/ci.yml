@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+        cache-dependency-path: frontend/yarn.lock
+        
+    - name: Install dependencies
+      run: |
+        cd frontend
+        yarn install --frozen-lockfile
+        
+    - name: Run typecheck (optional)
+      run: |
+        cd frontend
+        npm run typecheck || true
+        
+    - name: Run lint (optional)
+      run: |
+        cd frontend
+        npm run lint || true
+        
+    - name: Run build (optional)
+      run: |
+        cd frontend
+        npm run build || true
