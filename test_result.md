@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Complete Supabase Storage Integration for Profile Photos - Replace current base64/preset avatar system with full Supabase Storage for persistent profile photos"
+user_problem_statement: "Implement Live Broadcasting System for Baby Goats social platform - Build mobile-first live streaming infrastructure with real-time viewer management and integrated chat system"
 
 backend:
   - task: "Achievement System Navigation & Display"
