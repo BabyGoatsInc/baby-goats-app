@@ -238,7 +238,7 @@ export default function Index() {
       case 'onboarding':
         return <OnboardingScreen onComplete={handleOnboardingComplete} />;
       case 'challenges':
-        return <ChallengesIndexScreen />;
+        return <ChallengesIndexScreen onBack={() => setCurrentScreen('home')} />;
       case 'profile':
         return <ProfileIndexScreen />;
       case 'goals':
