@@ -35,7 +35,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const isTablet = screenWidth > 768;
 
 type Screen = 'auth' | 'onboarding' | 'home' | 'challenges' | 'profile' | 'goals' | 'achievements' | 
-              'social_feed' | 'social_friends' | 'social_profile' | 'social_messages' | 'social_leaderboards' | 'teams';
+              'social_feed' | 'social_friends' | 'social_profile' | 'social_messages' | 'social_leaderboards' | 'teams' | 'streaming';
 
 export default function Index() {
   const { user, signOut, isLoading } = useAuth();
