@@ -57,25 +57,7 @@ export async function GET(request: NextRequest) {
       // Get viewing history for a user
       const { data: viewingHistory, error } = await supabase
         .from('stream_viewers')
-        .select(`
-          id,
-          stream_id,
-          joined_at,
-          left_at,
-          total_watch_time,
-          live_streams!stream_viewers_stream_id_fkey (
-            id,
-            title,
-            category,
-            status,
-            streamer_id,
-            profiles!live_streams_streamer_id_fkey (
-              username,
-              full_name,
-              avatar_url
-            )
-          )
-        `)
+        .select('*')
         .eq('user_id', userId)
         .order('joined_at', { ascending: false })
         .limit(limit);
