@@ -251,6 +251,8 @@ export default function Index() {
         return <SocialProfileScreen onBack={() => setCurrentScreen('home')} />;
       case 'teams':
         return <TeamsScreen />;
+      case 'streaming':
+        return <StreamingIndex onBack={() => setCurrentScreen('home')} />;
       case 'social_messages':
         return (
           <View style={styles.screenContainer}>
