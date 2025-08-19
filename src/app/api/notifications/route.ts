@@ -6,9 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('user_id');
-    const unreadOnly = searchParams.get('unread_only');
     const limit = parseInt(searchParams.get('limit') || '20');
-    const offset = parseInt(searchParams.get('offset') || '0');
 
     if (!userId) {
       return NextResponse.json({ 
@@ -22,21 +20,10 @@ export async function GET(request: NextRequest) {
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
     });
 
-    let query = supabase
+    const { data: notifications, error } = await supabase
       .from('notifications')
       .select('*')
-      .eq('user_id', userId);
-
-    if (unreadOnly === 'true') {
-      query = query.eq('read', false);
-    }
-
-    query = query
-      .order('created_at', { ascending: false })
-      .limit(limit)
-      .offset(offset);
-
-    const { data: notifications, error } = await query;
+      .limit(limit);
 
     if (error) {
       console.error('Error fetching notifications:', error);
