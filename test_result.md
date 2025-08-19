@@ -105,6 +105,18 @@
 user_problem_statement: "Implement Live Broadcasting System for Baby Goats social platform - Build mobile-first live streaming infrastructure with real-time viewer management and integrated chat system"
 
 backend:
+  - task: "Live Broadcasting System - Backend Infrastructure"
+    implemented: false
+    working: false
+    file: "/app/src/app/api/streams/route.ts, /app/src/app/api/viewers/route.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "Starting implementation of Live Broadcasting System backend APIs for stream management, viewer tracking, and real-time chat integration. Will create RTMP-compatible streaming endpoints and real-time viewer management."
+
   - task: "Achievement System Navigation & Display"
     implemented: true
     working: true
