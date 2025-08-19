@@ -22,95 +22,21 @@ export async function GET(request: NextRequest) {
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
     });
 
-    if (friendId && userId) {
-      // Get conversation between two users
-      const { data: messages, error } = await supabase
-        .from('messages')
-        .select(`
-          id,
-          sender_id,
-          receiver_id,
-          content,
-          message_type,
-          read_at,
-          metadata,
-          created_at
-        `)
-        .or(`and(sender_id.eq.${userId},receiver_id.eq.${friendId}),and(sender_id.eq.${friendId},receiver_id.eq.${userId})`)
-        .order('created_at', { ascending: false })
-        .limit(limit)
-        .offset(offset);
+    // Simple query to get all messages for testing
+    const { data: messages, error } = await supabase
+      .from('messages')
+      .select('*')
+      .limit(limit);
 
-      if (error) {
-        console.error('Error fetching conversation:', error);
-        return NextResponse.json({ error: 'Failed to fetch conversation' }, { status: 500 });
-      }
-
-      // Reverse to show oldest first
-      const conversation = (messages || []).reverse();
-
-      return NextResponse.json({
-        success: true,
-        messages: conversation,
-        count: conversation.length
-      });
+    if (error) {
+      console.error('Error fetching messages:', error);
+      return NextResponse.json({ error: 'Failed to fetch messages' }, { status: 500 });
     }
 
-    if (userId) {
-      // Get recent conversations for user
-      const { data: conversations, error } = await supabase
-        .from('messages')
-        .select(`
-          id,
-          sender_id,
-          receiver_id,
-          content,
-          message_type,
-          read_at,
-          created_at
-        `)
-        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        console.error('Error fetching conversations:', error);
-        return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 });
-      }
-
-      // Group by conversation and get latest message per conversation
-      const conversationMap = new Map();
-      conversations?.forEach(message => {
-        const otherUserId = message.sender_id === userId ? message.receiver_id : message.sender_id;
-        if (!conversationMap.has(otherUserId)) {
-          conversationMap.set(otherUserId, {
-            ...message,
-            other_user: message.sender_id === userId ? message.receiver : message.sender,
-            unread_count: 0
-          });
-        }
-      });
-
-      // Count unread messages for each conversation
-      for (const [otherUserId, conversation] of conversationMap) {
-        const { count } = await supabase
-          .from('messages')
-          .select('id', { count: 'exact' })
-          .eq('sender_id', otherUserId)
-          .eq('receiver_id', userId)
-          .is('read_at', null);
-
-        conversation.unread_count = count || 0;
-      }
-
-      return NextResponse.json({
-        success: true,
-        conversations: Array.from(conversationMap.values()),
-        count: conversationMap.size
-      });
-    }
-
-    return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+    return NextResponse.json({ 
+      messages: messages || [],
+      total: messages?.length || 0
+    });
 
   } catch (error) {
     console.error('Messages GET error:', error);
