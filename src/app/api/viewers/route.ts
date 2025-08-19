@@ -24,21 +24,7 @@ export async function GET(request: NextRequest) {
       // Get viewers for a specific stream
       let query = supabase
         .from('stream_viewers')
-        .select(`
-          id,
-          user_id,
-          stream_id,
-          joined_at,
-          left_at,
-          is_active,
-          total_watch_time,
-          profiles!stream_viewers_user_id_fkey (
-            id,
-            username,
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('stream_id', streamId)
         .order('joined_at', { ascending: false });
 
