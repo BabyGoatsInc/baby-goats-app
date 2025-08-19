@@ -353,4 +353,19 @@ const styles = StyleSheet.create({
     color: '#CCCCCC',
     fontSize: 14,
   },
+  skipButton: {
+    backgroundColor: '#FF6B35',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginBottom: 20,
+    alignSelf: 'center',
+  },
+  skipButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+  },
 });
