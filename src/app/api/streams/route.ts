@@ -23,31 +23,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('live_streams')
-      .select(`
-        id,
-        streamer_id,
-        title,
-        description,
-        category,
-        status,
-        viewer_count,
-        max_viewers,
-        stream_key,
-        stream_url,
-        thumbnail_url,
-        chat_enabled,
-        is_private,
-        scheduled_for,
-        started_at,
-        ended_at,
-        created_at,
-        profiles!live_streams_streamer_id_fkey (
-          id,
-          username,
-          full_name,
-          avatar_url
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
