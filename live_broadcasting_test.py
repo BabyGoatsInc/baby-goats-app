@@ -108,7 +108,7 @@ class LiveBroadcastingAPITester:
             "response_code": response["status_code"],
             "response_time": f"{time.time():.2f}s",
             "expected": expected_behavior or "API should respond with expected error (table not found)",
-            "actual": response["data"].get("error", "No error message") if not success else "Success"
+            "actual": response["data"].get("error", "No error message") if not success else "Expected error response"
         }
         
         self.results[api_name]["tests"].append(test_result)
