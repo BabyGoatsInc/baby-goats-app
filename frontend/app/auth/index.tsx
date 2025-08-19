@@ -63,7 +63,7 @@ export default function Authentication({ onAuthSuccess }: AuthenticationProps) {
 
       if (user) {
         // Successfully signed in, AuthContext will handle the state update
-        onBack(); // Navigate back to home
+        onAuthSuccess(); // Navigate to home after successful login
       }
     } catch (error) {
       Alert.alert('Login Error', 'Something went wrong. Please try again.');
