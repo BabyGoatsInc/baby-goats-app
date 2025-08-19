@@ -7,7 +7,7 @@ import requests
 import json
 import uuid
 
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
 
 def check_api_status(endpoint, params=None, method='GET', data=None):
     """Check API status and return detailed info"""

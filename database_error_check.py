@@ -7,7 +7,7 @@ import requests
 import json
 import uuid
 
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
 
 def test_specific_endpoints():
     """Test specific endpoints to see exact error messages"""

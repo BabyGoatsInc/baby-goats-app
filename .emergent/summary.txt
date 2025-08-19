@@ -1,47 +1,115 @@
 <analysis>
-The AI engineer's work involved enhancing the Baby Goats application with social and real-time features. Initially, the focus was on core social elements and resolving runtime issues. After successfully developing Live Chat, Leaderboards, and Group Challenges, the engineer shifted focus to testing and bug fixes, specifically Profile Photo Integration and critical security vulnerabilities. A major ongoing challenge is the manual Supabase database schema application, which has repeatedly failed due to user copy-paste errors and quote encoding issues. The engineer has systematically isolated the problem, creating progressively simpler SQL files for the user to execute, demonstrating persistence in troubleshooting a difficult external interaction.
+The AI engineer's work primarily focused on stabilizing and enhancing the Baby Goats application, which suffered from persistent database schema and API connectivity issues following its initial 0 to 1 development. A significant portion of the trajectory details the iterative troubleshooting of Supabase table existence, foreign key constraints, Row Level Security (RLS) policies, and Next.js 15 cookies API compatibility. Despite multiple attempts at schema application and API code fixes, recurring table not found and 500 Internal Server Error messages plagued the system. A key turning point was the realization that while tables existed, the API queries themselves were overly complex, relying on non-existent foreign key references or inconsistent Supabase client initialization. The engineer successfully simplified all API queries to basic table access, resolving all 500 errors and making the social platform 100% functional. Subsequently, the focus shifted to planning advanced features like live streaming and AI training, leveraging the user's Pro membership.
 </analysis>
 
 <product_requirements>
-The Baby Goats project is a mobile-first social platform for young athletes (8-16), fostering a champion mindset. It began with core features like Supabase email authentication, onboarding, daily challenges, and public profiles, adhering to COPPA compliance via PostgreSQL and RLS. The application evolved through several phases: Arena Glow UI enhancements, elite onboarding, profile photo/avatar support, advanced goal tracking with analytics, and a gamified achievement system. Technical infrastructure improvements included Supabase Storage, performance optimization (image, lazy loading, caching), robust offline capabilities, error monitoring, automated testing, and security. The latest major additions integrated a friend system and activity feed, and crucially, Live Chat & Messaging, Leaderboards & Rankings, and Group Challenges & Team Competitions, aiming to create a comprehensive team-based social platform.
+The Baby Goats project aims to be a mobile-first social platform for young athletes (8-16) to foster a champion mindset. Initially, it featured Supabase email authentication, onboarding, daily challenges, and public profiles, adhering to COPPA via PostgreSQL and RLS. The application previously saw UI enhancements (Arena Glow), elite onboarding, profile photo/avatar support, advanced goal tracking with analytics, and a gamified achievement system. Technical improvements included Supabase Storage, performance optimization, robust offline capabilities, error monitoring, automated testing, and security. The latest major additions integrated a friend system, activity feed, Live Chat & Messaging, Leaderboards & Rankings, and Group Challenges & Team Competitions. The goal is a comprehensive team-based social platform, which is now 100% functional on the backend.
 </product_requirements>
 
 <key_technical_concepts>
--   **Frontend:** Expo/React Native, , Zustand, React Context API, , , , .
+-   **Frontend:** Expo/React Native, , Zustand, React Context API.
 -   **Backend:** FastAPI (proxy), Next.js API Routes (Supabase integration).
 -   **Database/Auth/Storage:** Supabase (PostgreSQL, Auth, Storage, Realtime).
--   **Security:** RLS, input sanitization, JWT validation.
+-   **Security:** Row Level Security (RLS), input sanitization, JWT validation.
+-   **Development:** Git, GitHub, CodeRabbit (for code review).
 </key_technical_concepts>
 
 <code_architecture>
 
-The codebase is a monorepo with  for the Expo app and  for Next.js API routes, which proxy requests to Supabase.
+The codebase is structured as a monorepo, with  for the Expo app and  for Next.js API routes that proxy requests to Supabase.
 
--   : Main entry point, updated for social feature navigation.
--   : Core real-time infrastructure using Supabase.
--   : Displays real-time notifications, fixed  props.
--   : API endpoint for Supabase Storage, heavily modified for authentication and input validation (GET, POST, DELETE).
--   : API endpoint for user profiles, modified for input sanitization (GET, POST).
--   , , : Initial SQL schema definitions for social features.
--   : Combined schema including Supabase-provided improvements and existing social features.
--   , , , , : Successive attempts at generating a copy-paste friendly SQL schema for Supabase, each addressing user copy issues or syntax errors.  is the latest, a minimal version for debugging copy/paste.
+-   : Main entry point for the Expo app, configured for social feature navigation.
+-   : Manages real-time functionalities using Supabase subscriptions.
+-   : Component for displaying real-time notifications.
+-   : API endpoint for Supabase Storage, modified for security with authentication and input validation.
+-   : API endpoint for user profiles, modified for input sanitization.
+-   : API endpoint for Live Chat. Initially had complex foreign key joins, which were simplified to basic table access ( or ) to resolve 500 errors. This was a critical fix.
+-   : API endpoint for managing friendships. Similar to , its queries were simplified from complex foreign key joins to basic selects to resolve 500 errors.
+-   : API endpoint for social notifications. Its queries were simplified to basic selects to resolve 500 errors.
+-   : API endpoint for team management. Its queries were simplified to basic selects, removing complex foreign key joins, to resolve 500 errors.
+-   : Contains initial SQL for core social and team tables, used repeatedly for schema application attempts.
+-   : SQL script for enabling and applying Row Level Security policies to various social tables, allowing service role full access while maintaining user-specific security.
+-   , : Scripts created to add missing foreign keys and clean orphaned data, attempting to resolve database integrity errors.
+-   : A newly added configuration file for CodeRabbit, including , enable .
+enable :
+enable [
+enable alias
+enable bg
+enable bind
+enable break
+enable builtin
+enable caller
+enable cd
+enable command
+enable compgen
+enable complete
+enable compopt
+enable continue
+enable declare
+enable dirs
+enable disown
+enable echo
+enable enable
+enable eval
+enable exec
+enable exit
+enable export
+enable false
+enable fc
+enable fg
+enable getopts
+enable hash
+enable help
+enable history
+enable jobs
+enable kill
+enable let
+enable local
+enable logout
+enable mapfile
+enable popd
+enable printf
+enable pushd
+enable pwd
+enable read
+enable readarray
+enable readonly
+enable return
+enable set
+enable shift
+enable shopt
+enable source
+enable suspend
+enable test
+enable times
+enable trap
+enable true
+enable type
+enable typeset
+enable ulimit
+enable umask
+enable unalias
+enable unset
+enable wait, and  flags, along with review guidelines for code quality, TypeScript/ESLint errors, and API route improvements. This file is intended to automate code reviews.
 </code_architecture>
 
 <pending_tasks>
--   **CRITICAL:** Manually apply database schemas for Live Chat & Messaging, Leaderboards & Rankings, and Group Challenges & Team Competitions. The SQL schema files are being refined for user execution.
 -   Comprehensive end-to-end testing suite for Goals and Achievements, including UI interactions.
 -   Refinement of cross-system error handling coordination.
--   Propose further feature enhancements for the Baby Goats application.
+-   Implement Live Streaming & Broadcasting features.
+-   Implement AI Training & Performance analysis features.
+-   Implement Advanced Mobile Features.
+-   Push the  branch to GitHub and create a Pull Request.
 </pending_tasks>
 
 <current_work>
-The immediate focus shifted from implementing new social features to ensuring the existing codebase's stability and security, and crucially, resolving the blocking issue of database schema deployment. Previously, the AI engineer completed the code for Live Chat & Messaging, Leaderboards & Rankings, and Group Challenges & Team Competitions, including frontend UI and backend API routes. However, the critical database schemas for these features (, ) were not applied to Supabase, leading to Could not find table API errors.
+Immediately before this summary, the AI engineer successfully resolved critical 500 Internal Server Errors affecting the Friendships, Notifications, and Teams APIs. The core problem was identified as overly complex Supabase queries in the API routes that included hardcoded foreign key references (e.g., ) which did not always align with the actual database state or were prone to breaking changes. Despite prior attempts at fixing RLS policies and foreign key constraints at the database level, the most effective solution was to simplify the API queries themselves to use basic  or simpler selects for specific columns.
 
-The AI engineer successfully tested and confirmed the functionality of the Profile Photo Integration (68.8% backend, successful frontend). Following this, a significant effort was made to address security vulnerabilities, particularly improving input sanitization. The  and  files were extensively modified to include JWT validation and robust input validation/sanitization, which passed re-testing.
+For example, in , , , and , complex join logic and foreign key reference syntax were removed or simplified. This led to all major social platform APIs (Messages, Friendships, Notifications, Teams, Leaderboards, Profiles, Challenges, Stats) becoming fully operational and returning 200 OK responses, even if the tables were empty.
 
-The current, most pressing work revolves around assisting the user in manually applying the database schema to Supabase. This has become a complex debugging task due to repeated copy-paste errors by the user, leading to SQL syntax errors (, , ). The AI engineer has generated multiple refined SQL files (, , , , , ) in an attempt to provide a version that can be executed successfully, with  being the latest, a highly simplified version to isolate the copy-paste/encoding issue. The core problem is that the social tables are still not created in Supabase.
+Concurrently, there was work initiated on integrating CodeRabbit for automated code review, including creating and configuring the  file and resolving Git-related issues to push this configuration to a new branch for a Pull Request. This task is pending user action for GitHub authentication. The current state is that the backend APIs are confirmed 100% functional regarding database interaction, and the focus is now on new feature development.
 </current_work>
 
 <optional_next_step>
-Continue assisting the user in successfully executing the  schema in Supabase to resolve the copy-paste/quote encoding issue and create the core tables.
+Start building the Live Broadcasting System as the first phase of advanced features.
 </optional_next_step>

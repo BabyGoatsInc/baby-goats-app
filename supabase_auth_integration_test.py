@@ -24,8 +24,8 @@ import hashlib
 import re
 
 # Configuration - Testing Real Supabase Authentication Integration
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
-FRONTEND_URL = "https://youthgoat-social.preview.emergentagent.com"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
+FRONTEND_URL = "https://goatyouth.preview.emergentagent.com"
 
 # Test authentication tokens (simulated real Supabase JWT tokens)
 TEST_AUTH_TOKENS = [

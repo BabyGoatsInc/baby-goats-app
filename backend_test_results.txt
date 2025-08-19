@@ -1,7 +1,7 @@
 🚀 Starting Baby Goats Comprehensive Social Platform Backend Testing
-📍 Backend API URL: https://8876a58b-10cc-4c7a-8c80-655e2086a9db.preview.emergentagent.com/api
-📍 Next.js API URL: https://8876a58b-10cc-4c7a-8c80-655e2086a9db.preview.emergentagent.com/api
-📍 Frontend URL: https://8876a58b-10cc-4c7a-8c80-655e2086a9db.preview.emergentagent.com
+📍 Backend API URL: https://goatyouth.preview.emergentagent.com/api
+📍 Next.js API URL: https://goatyouth.preview.emergentagent.com/api
+📍 Frontend URL: https://goatyouth.preview.emergentagent.com
 🎯 Focus: Production readiness validation while user applies database schema
 🔍 Testing: Social Features, Team System, Regression Testing
 🕐 Started at: 2025-08-19T02:55:33.126435

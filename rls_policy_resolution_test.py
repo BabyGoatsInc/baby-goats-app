@@ -49,7 +49,7 @@ from PIL import Image
 import threading
 
 # Configuration - Testing RLS Policy Resolution
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

@@ -25,8 +25,8 @@ import threading
 import random
 
 # Configuration - Testing Advanced Social Features
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
-NEXTJS_API_BASE = "https://youthgoat-social.preview.emergentagent.com/api"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
+NEXTJS_API_BASE = "https://goatyouth.preview.emergentagent.com/api"
 
 HEADERS = {
     'Content-Type': 'application/json',

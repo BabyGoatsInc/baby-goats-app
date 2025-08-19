@@ -33,8 +33,8 @@ import random
 import string
 
 # Configuration
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
-FRONTEND_URL = "https://youthgoat-social.preview.emergentagent.com"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
+FRONTEND_URL = "https://goatyouth.preview.emergentagent.com"
 
 HEADERS = {
     'Content-Type': 'application/json',

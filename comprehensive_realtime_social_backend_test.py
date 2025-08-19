@@ -25,9 +25,9 @@ import hashlib
 import re
 
 # Configuration - Testing Real-time Social Features Backend
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
-NEXTJS_API_BASE = "https://youthgoat-social.preview.emergentagent.com/api"
-FRONTEND_URL = "https://youthgoat-social.preview.emergentagent.com"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
+NEXTJS_API_BASE = "https://goatyouth.preview.emergentagent.com/api"
+FRONTEND_URL = "https://goatyouth.preview.emergentagent.com"
 
 HEADERS = {
     'Content-Type': 'application/json',

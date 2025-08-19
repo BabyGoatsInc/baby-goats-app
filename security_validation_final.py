@@ -19,7 +19,7 @@ import base64
 import threading
 
 # Configuration
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
 
 HEADERS = {
     'Content-Type': 'application/json',

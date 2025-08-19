@@ -32,8 +32,8 @@ import hashlib
 import re
 
 # Configuration - Profile Photo Integration Testing
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
-FRONTEND_URL = "https://youthgoat-social.preview.emergentagent.com"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
+FRONTEND_URL = "https://goatyouth.preview.emergentagent.com"
 
 HEADERS = {
     'Content-Type': 'application/json',

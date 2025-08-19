@@ -28,8 +28,8 @@ import time
 import threading
 
 # Configuration - Using production URLs from environment
-BASE_URL = "https://youthgoat-social.preview.emergentagent.com/api"
-FRONTEND_URL = "https://youthgoat-social.preview.emergentagent.com"
+BASE_URL = "https://goatyouth.preview.emergentagent.com/api"
+FRONTEND_URL = "https://goatyouth.preview.emergentagent.com"
 
 HEADERS = {
     'Content-Type': 'application/json',
