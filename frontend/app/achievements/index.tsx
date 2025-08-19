@@ -4,11 +4,11 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  SafeAreaView,
-  StatusBar,
   TouchableOpacity,
+  Dimensions,
   Animated,
-  Alert,
+  Easing,
+  Platform
 } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import Avatar from '../../components/Avatar';
