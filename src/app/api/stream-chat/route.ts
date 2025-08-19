@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createClient } from '@supabase/supabase-js';
 
 /**
  * Stream Chat API - Live Broadcasting System
@@ -22,11 +21,10 @@ export async function GET(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const supabase = createServerComponentClient({ 
-      cookies,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
-    });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     let query = supabase
       .from('stream_chat_messages')
@@ -100,11 +98,10 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const supabase = createServerComponentClient({ 
-      cookies,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
-    });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     // Verify stream exists and is live
     const { data: stream, error: streamError } = await supabase
@@ -252,11 +249,10 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const supabase = createServerComponentClient({ 
-      cookies,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
-    });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     // Verify moderator is the stream owner
     const { data: stream, error: streamError } = await supabase
@@ -347,11 +343,10 @@ export async function DELETE(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const supabase = createServerComponentClient({ 
-      cookies,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
-    });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     // Verify moderator is the stream owner
     const { data: stream, error: streamError } = await supabase
