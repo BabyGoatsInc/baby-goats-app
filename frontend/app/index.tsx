@@ -25,6 +25,7 @@ import FeedScreen from './social/feed';
 import FriendsScreen from './social/friends';
 import SocialProfileScreen from './social/profile';
 import TeamsScreen from './teams'; // New teams screen
+import StreamingIndex from './streaming'; // New streaming screen
 
 // Import components
 import SocialNotifications from '../components/SocialNotifications';
