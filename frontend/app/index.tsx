@@ -240,11 +240,11 @@ export default function Index() {
       case 'challenges':
         return <ChallengesIndexScreen onBack={() => setCurrentScreen('home')} />;
       case 'profile':
-        return <ProfileIndexScreen />;
+        return <ProfileIndexScreen onBack={() => setCurrentScreen('home')} />;
       case 'goals':
-        return <GoalsIndexScreen />;
+        return <GoalsIndexScreen onBack={() => setCurrentScreen('home')} />;
       case 'achievements':
-        return <AchievementsIndexScreen />;
+        return <AchievementsIndexScreen onBack={() => setCurrentScreen('home')} />;
       case 'social_feed':
         return <FeedScreen onBack={() => setCurrentScreen('home')} />;
       case 'social_friends':
