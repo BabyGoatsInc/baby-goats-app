@@ -1,0 +1,8 @@
+version: 1
+review:
+  enabled: true
+  auto_review: true
+  auto_fix: true
+  suggestion_style: "patch"
+  tone: "direct"
+  max_comments: 80
