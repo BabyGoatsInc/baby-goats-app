@@ -140,6 +140,15 @@ export default function Index() {
                 <Text style={styles.actionText}>TEAMS</Text>
                 <Text style={styles.actionSubtext}>Join forces</Text>
               </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.liveStreamingButton]}
+                onPress={() => setCurrentScreen('streaming')}
+              >
+                <Text style={styles.actionEmoji}>🎥</Text>
+                <Text style={[styles.actionText, styles.liveStreamingText]}>LIVE STREAMING</Text>
+                <Text style={[styles.actionSubtext, styles.liveStreamingSubtext]}>Broadcast to champions</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
