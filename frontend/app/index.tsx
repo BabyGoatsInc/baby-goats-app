@@ -46,13 +46,13 @@ export default function Index() {
     if (!isLoading) {
       if (!user) {
         setCurrentScreen('auth');
-      } else if (showOnboarding) {
-        setCurrentScreen('onboarding');
       } else {
+        // Skip onboarding completely and go straight to home
         setCurrentScreen('home');
+        setShowOnboarding(false);
       }
     }
-  }, [user, isLoading, showOnboarding]);
+  }, [user, isLoading]);
 
   const handleAuthSuccess = () => {
     setShowOnboarding(true);
