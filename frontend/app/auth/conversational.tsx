@@ -19,7 +19,7 @@ interface ConversationalAuthProps {
   onAuthSuccess: () => void;
 }
 
-export default function ConversationalAuth({ onBack }: ConversationalAuthProps) {
+export default function ConversationalAuth({ onAuthSuccess }: ConversationalAuthProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
