@@ -28,23 +28,7 @@ export async function GET(request: NextRequest) {
 
     let query = supabase
       .from('stream_chat_messages')
-      .select(`
-        id,
-        stream_id,
-        user_id,
-        message,
-        message_type,
-        is_highlighted,
-        is_moderator,
-        metadata,
-        created_at,
-        profiles!stream_chat_messages_user_id_fkey (
-          id,
-          username,
-          full_name,
-          avatar_url
-        )
-      `)
+      .select('*')
       .eq('stream_id', streamId)
       .order('created_at', { ascending: true })
       .range(offset, offset + limit - 1);
