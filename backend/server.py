@@ -29,7 +29,7 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 # Next.js API base URL (internal)
-NEXTJS_API_BASE = "http://localhost:3001/api"
+NEXTJS_API_BASE = "http://localhost:3000/api"
 
 # HTTP client for proxying requests
 http_client = httpx.AsyncClient()
