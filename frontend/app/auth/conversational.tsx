@@ -16,7 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface ConversationalAuthProps {
-  onBack: () => void;
+  onAuthSuccess: () => void;
 }
 
 export default function ConversationalAuth({ onBack }: ConversationalAuthProps) {
