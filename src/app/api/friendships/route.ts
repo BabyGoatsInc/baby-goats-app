@@ -22,87 +22,20 @@ export async function GET(request: NextRequest) {
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!
     });
 
-    if (status === 'pending') {
-      // Get pending friend requests received by the user
-      const { data: friendRequests, error } = await supabase
-        .from('friendships')
-        .select(`
-          id,
-          user_id,
-          friend_id,
-          status,
-          created_at,
-          initiated_by
-        `)
-        .eq('friend_id', userId)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false })
-        .limit(limit)
-        .offset(offset);
-
-      if (error) {
-        console.error('Error fetching friend requests:', error);
-        return NextResponse.json({ error: 'Failed to fetch friend requests' }, { status: 500 });
-      }
-
-      return NextResponse.json({ 
-        friendRequests: friendRequests || [],
-        total: friendRequests?.length || 0
-      });
-    }
-
-    if (status === 'accepted' || !status) {
-      // Get accepted friendships (friends list)
-      const { data: friendships, error } = await supabase
-        .from('friendships')
-        .select(`
-          id,
-          user_id,
-          friend_id,
-          status,
-          created_at,
-          accepted_at
-        `)
-        .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
-        .eq('status', 'accepted')
-        .order('accepted_at', { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        console.error('Error fetching friends:', error);
-        return NextResponse.json({ error: 'Failed to fetch friends' }, { status: 500 });
-      }
-
-      return NextResponse.json({ 
-        friends: friendships || [],
-        total: friendships?.length || 0
-      });
-    }
-
-    // Get all friendships for the user
-    const { data: allFriendships, error } = await supabase
+    // Simple query to test if table exists
+    const { data: friendships, error } = await supabase
       .from('friendships')
-      .select(`
-        id,
-        user_id,
-        friend_id,
-        status,
-        created_at,
-        accepted_at
-      `)
-      .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
-      .order('created_at', { ascending: false })
-      .limit(limit)
-      .offset(offset);
+      .select('*')
+      .limit(limit);
 
     if (error) {
       console.error('Error fetching friendships:', error);
-      return NextResponse.json({ error: 'Failed to fetch friendships' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to fetch friends' }, { status: 500 });
     }
 
     return NextResponse.json({ 
-      friendships: allFriendships || [],
-      total: allFriendships?.length || 0
+      friends: friendships || [],
+      total: friendships?.length || 0
     });
 
   } catch (error) {
