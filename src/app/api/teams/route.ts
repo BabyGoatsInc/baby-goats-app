@@ -6,11 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const teamId = searchParams.get('team_id');
-    const sport = searchParams.get('sport');
-    const region = searchParams.get('region');
-    const isPublic = searchParams.get('public');
     const limit = parseInt(searchParams.get('limit') || '10');
-    const offset = parseInt(searchParams.get('offset') || '0');
 
     const supabase = createServerComponentClient({ 
       cookies,
@@ -19,27 +15,10 @@ export async function GET(request: NextRequest) {
     });
 
     if (teamId) {
-      // Get specific team with detailed information
+      // Get specific team
       const { data: team, error } = await supabase
         .from('teams')
-        .select(`
-          id,
-          name,
-          description,
-          sport,
-          team_type,
-          captain_id,
-          max_members,
-          is_public,
-          invite_code,
-          team_image_url,
-          team_color,
-          region,
-          school_name,
-          founded_date,
-          created_at,
-          updated_at
-        `)
+        .select('*')
         .eq('id', teamId)
         .single();
 
@@ -48,70 +27,14 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Team not found' }, { status: 404 });
       }
 
-      // Get team members separately
-      const { data: members, error: membersError } = await supabase
-        .from('team_members')
-        .select(`
-          id,
-          user_id,
-          role,
-          joined_at,
-          status,
-          contribution_score
-        `)
-        .eq('team_id', teamId)
-        .eq('status', 'active');
-
-      if (membersError) {
-        console.error('Error fetching team members:', membersError);
-      }
-
-      return NextResponse.json({
-        team: {
-          ...team,
-          members: members || [],
-          member_count: members?.length || 0
-        }
-      });
+      return NextResponse.json({ team });
     }
 
-    // Get teams list with basic info
-    let query = supabase
+    // Get all teams
+    const { data: teams, error } = await supabase
       .from('teams')
-      .select(`
-        id,
-        name,
-        description,
-        sport,
-        team_type,
-        captain_id,
-        max_members,
-        is_public,
-        team_color,
-        region,
-        school_name,
-        created_at,
-        updated_at
-      `);
-
-    // Apply filters
-    if (sport) {
-      query = query.eq('sport', sport);
-    }
-    
-    if (region) {
-      query = query.eq('region', region);
-    }
-    
-    if (isPublic === 'true') {
-      query = query.eq('is_public', true);
-    }
-
-    query = query
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
-
-    const { data: teams, error } = await query;
+      .select('*')
+      .limit(limit);
 
     if (error) {
       console.error('Error fetching teams:', error);
