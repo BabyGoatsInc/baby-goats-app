@@ -158,7 +158,8 @@ export default function ConversationalAuth({ onAuthSuccess }: ConversationalAuth
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     } else {
-      onBack();
+      // If at first step, don't allow going back further
+      // User can use the back button in the parent component instead
     }
   };
 
