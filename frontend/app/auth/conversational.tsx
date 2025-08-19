@@ -91,7 +91,7 @@ export default function ConversationalAuth({ onAuthSuccess }: ConversationalAuth
     },
     {
       id: 'ready',
-      question: `You're all set, ${formData.name}! 🎉`,
+      question: `You&apos;re all set, ${formData.name}! 🎉`,
       subtitle: "Ready to start your champion journey?",
       type: 'completion'
     }
