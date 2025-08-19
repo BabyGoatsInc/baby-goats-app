@@ -392,6 +392,163 @@ async def proxy_notifications_delete(request: Request):
         logging.error(f"Error proxying notifications DELETE request: {e}")
         return JSONResponse(content={"error": "Failed to delete notifications"}, status_code=500)
 
+# Live Broadcasting System API Proxy Routes
+@api_router.get("/streams")
+async def proxy_streams_get(request: Request):
+    """Proxy streams GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/streams"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying streams GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch streams"}, status_code=500)
+
+@api_router.post("/streams")
+async def proxy_streams_post(request: Request):
+    """Proxy streams POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/streams", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying streams POST request: {e}")
+        return JSONResponse(content={"error": "Failed to create stream"}, status_code=500)
+
+@api_router.put("/streams")
+async def proxy_streams_put(request: Request):
+    """Proxy streams PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/streams", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying streams PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update stream"}, status_code=500)
+
+@api_router.delete("/streams")
+async def proxy_streams_delete(request: Request):
+    """Proxy streams DELETE requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/streams"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.delete(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying streams DELETE request: {e}")
+        return JSONResponse(content={"error": "Failed to delete stream"}, status_code=500)
+
+@api_router.get("/viewers")
+async def proxy_viewers_get(request: Request):
+    """Proxy viewers GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/viewers"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying viewers GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch viewers"}, status_code=500)
+
+@api_router.post("/viewers")
+async def proxy_viewers_post(request: Request):
+    """Proxy viewers POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/viewers", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying viewers POST request: {e}")
+        return JSONResponse(content={"error": "Failed to join stream"}, status_code=500)
+
+@api_router.put("/viewers")
+async def proxy_viewers_put(request: Request):
+    """Proxy viewers PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/viewers", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying viewers PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to update viewer status"}, status_code=500)
+
+@api_router.delete("/viewers")
+async def proxy_viewers_delete(request: Request):
+    """Proxy viewers DELETE requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/viewers"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.delete(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying viewers DELETE request: {e}")
+        return JSONResponse(content={"error": "Failed to cleanup viewers"}, status_code=500)
+
+@api_router.get("/stream-chat")
+async def proxy_stream_chat_get(request: Request):
+    """Proxy stream-chat GET requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/stream-chat"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.get(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying stream-chat GET request: {e}")
+        return JSONResponse(content={"error": "Failed to fetch chat messages"}, status_code=500)
+
+@api_router.post("/stream-chat")
+async def proxy_stream_chat_post(request: Request):
+    """Proxy stream-chat POST requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.post(f"{NEXTJS_API_BASE}/stream-chat", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying stream-chat POST request: {e}")
+        return JSONResponse(content={"error": "Failed to send chat message"}, status_code=500)
+
+@api_router.put("/stream-chat")
+async def proxy_stream_chat_put(request: Request):
+    """Proxy stream-chat PUT requests to Next.js API"""
+    try:
+        body = await request.json()
+        response = await http_client.put(f"{NEXTJS_API_BASE}/stream-chat", json=body, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying stream-chat PUT request: {e}")
+        return JSONResponse(content={"error": "Failed to moderate chat message"}, status_code=500)
+
+@api_router.delete("/stream-chat")
+async def proxy_stream_chat_delete(request: Request):
+    """Proxy stream-chat DELETE requests to Next.js API"""
+    try:
+        query_params = str(request.url.query) if request.url.query else ""
+        url = f"{NEXTJS_API_BASE}/stream-chat"
+        if query_params:
+            url += f"?{query_params}"
+        
+        response = await http_client.delete(url, timeout=10.0)
+        return JSONResponse(content=response.json(), status_code=response.status_code)
+    except Exception as e:
+        logging.error(f"Error proxying stream-chat DELETE request: {e}")
+        return JSONResponse(content={"error": "Failed to clear chat"}, status_code=500)
+
 # Team Management API Proxy Routes
 @api_router.get("/teams")
 async def proxy_teams_get(request: Request):
