@@ -193,7 +193,7 @@ export default function ConversationalAuth({ onBack }: ConversationalAuthProps) 
             'Check Your Email',
             'We sent you a confirmation email. Please check your inbox and click the link to activate your account.',
             [
-              { text: 'OK', onPress: () => onBack() }
+              { text: 'OK', onPress: () => onAuthSuccess() }
             ]
           );
         } else {
