@@ -55,8 +55,9 @@ export default function Index() {
   }, [user, isLoading]);
 
   const handleAuthSuccess = () => {
-    setShowOnboarding(true);
-    setCurrentScreen('onboarding');
+    // Go directly to home after authentication
+    setCurrentScreen('home');
+    setShowOnboarding(false);
   };
 
   const handleOnboardingComplete = () => {
