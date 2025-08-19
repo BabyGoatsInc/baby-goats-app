@@ -202,7 +202,7 @@ export default function ConversationalAuth({ onBack }: ConversationalAuthProps) 
             'Account Created!',
             'Your elite development account has been created successfully.',
             [
-              { text: 'Continue', onPress: () => onBack() }
+              { text: 'Continue', onPress: () => onAuthSuccess() }
             ]
           );
         }
