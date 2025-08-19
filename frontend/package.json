@@ -57,7 +57,9 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test"
+    "test": "craco test",
+    "typecheck": "echo 'TypeScript not configured - skipping typecheck'",
+    "lint": "eslint src/ --ext .js,.jsx --fix"
   },
   "browserslist": {
     "production": [
