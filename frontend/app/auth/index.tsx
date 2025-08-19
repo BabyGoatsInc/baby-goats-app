@@ -149,7 +149,7 @@ export default function Authentication({ onAuthSuccess }: AuthenticationProps) {
       <View style={styles.content}>
         {/* Elite Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+          <TouchableOpacity onPress={() => setMode('choice')} style={styles.backButton}>
             <Text style={styles.backText}>← Back</Text>
           </TouchableOpacity>
         </View>
